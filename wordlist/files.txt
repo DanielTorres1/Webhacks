@@ -1,0 +1,9 @@
+config
+config.php
+configuration.php
+LocalSettings.php
+mediawiki/LocalSettings.php
+mt-config.cgi
+mt-static/mt-config.cgi
+settings.php
+.htaccess
