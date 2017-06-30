@@ -47,7 +47,8 @@ sub usage {
   print "-p : Puerto del servidor web \n";
   print "-a : Ruta donde empezara a probar directorios \n";
   print "-m : Modo. Puede ser: \n";
-  print "	  normal: Probar si existen directorios comunes \n";
+  print "	  directorios: Probar si existen directorios comunes \n";
+  print "	  archivos: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
@@ -76,40 +77,41 @@ my $webHacks = webHacks->new( rhost => $target,
 						path => $path,						
 					    debug => 0);
 
-# Discover if SSL is in use
+# Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$target:$port$path",method => 'GET');
 
 # fuzz with common files names
-if ($mode eq "normal"){
-	print "### Buscando directorios #### \n";
-	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/spanish.txt");	
+if ($mode eq "archivos" or $mode eq "completo"){	
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");	
+	print "\n";
+}
+
+# fuzz with common directory names
+if ($mode eq "directorios" or $mode eq "completo" ){	
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
 	print "\n";
 }
 
 # fuzz with common cgi files names
-if ($mode eq "cgi"){
-	print "### Buscando archivos cgi #### \n";
+if ($mode eq "cgi" or $mode eq "completo"){
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/cgi.txt");	
 	print "\n";
 }
 
 # fuzz with common server files names
-if ($mode eq "webserver"){
-	print "### Buscando archivos webserver #### \n";
+if ($mode eq "webserver" or $mode eq "completo"){	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/webserver.txt");	
 	print "\n";
 }
 
 # fuzz with backup names (add .bak, .swp, etc)
-if ($mode eq "backup"){
-	print "### Buscando backups #### \n";
-	my $status = $webHacks->backupbuster("/usr/share/webhacks/wordlist/files.txt");	
+if ($mode eq "backup" or $mode eq "completo"){	
+	my $status = $webHacks->backupbuster("/usr/share/webhacks/wordlist/configFiles.txt");	
 	print "\n";
 }
 
 # fuzz with user names 
-if ($mode eq "username"){
-	print "### Buscando directorios de usuarios #### \n";
+if ($mode eq "username" or $mode eq "completo"){	
 	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/nombres.txt");	
 	print "\n";
 }

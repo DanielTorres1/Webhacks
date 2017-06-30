@@ -12,6 +12,9 @@ use URI::Escape;
 use HTTP::Request;
 use HTTP::Response;
 use Net::SSL (); # From Crypt-SSLeay
+use Term::ANSIColor;
+
+
 no warnings 'uninitialized';
 
 $Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL for proxy compatibility
@@ -50,8 +53,10 @@ my $lines = `wc -l $url_file | cut -d " " -f1`;
 $lines =~ s/\n//g;
 my $time = int($lines/600);
 
+print color('bold blue');
 print "######### Usando archivo: $url_file ##################### \n\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
+print color('reset');
 
 my $result_table = Text::Table->new(
         "URL", "  STATUS", "RISKY METHODS"
@@ -63,7 +68,9 @@ while (my $file=<MYINPUT>)
 { 
 $file =~ s/\n//g; 	
 
-if (! ($file =~ /\./m)){	 
+#Adicionar backslash
+#if (! ($file =~ /\./m)){	 
+if ($url_file =~ "directorios"){	 
 	$file = $file."/";
  }
 
@@ -73,10 +80,6 @@ if ($ssl)
 else
   {$url = "http://".$rhost.":".$rport.$path.$file;}
   
-#Adicionar backslash
- if(!($file =~ /\./m)){
-	$file=$file."/"; 
- } 
  
 #my $url;
 # We add httpS if is a SSL service en the GET,POST,etc function
@@ -84,7 +87,7 @@ else
 
 my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 my $status = $response->status_line;
-if($status !~ /404|500/m){	
+if($status !~ /404|500|302|301/m){	
 	my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
 	my $options = " ";
 	$options = $response2->{_headers}->{allow};	
@@ -115,8 +118,11 @@ my ($url_file) = @_;
 my $lines = `wc -l $url_file | cut -d " " -f1`;
 $lines =~ s/\n//g;
 my $time = int($lines/600);
+
+print color('bold blue');
 print "######### Usando archivo: $url_file ##################### \n\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
+print color('reset');
 
 my $result_table = Text::Table->new(
         "URL", "  STATUS"
@@ -166,9 +172,10 @@ my $lines = `wc -l $url_file | cut -d " " -f1`;
 $lines =~ s/\n//g;
 my $time = int($lines/600);
 
+print color('bold blue');
 print "######### Usando archivo: $url_file ##################### \n\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
-
+print color('reset');
 
 my $result_table = Text::Table->new(
         "URL", "  STATUS"
@@ -218,7 +225,10 @@ my $ssl = $self->ssl;
 
 my ($software) = @_;
 
+print color('bold blue');
 print "######### Testendo: $software ##################### \n\n" if($debug);
+print color('reset');
+
 
 my $url;
 if ($ssl)
@@ -378,6 +388,7 @@ my $browser = LWP::UserAgent->new;
 $browser->timeout(10);
 $browser->cookie_jar(HTTP::Cookies->new());
 $browser->show_progress(1) if ($debug);
+$browser->max_redirect(0);
 
 my $ssl_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
 if($ssl_output =~ /CN/m)

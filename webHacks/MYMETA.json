@@ -39,6 +39,7 @@
             "LWP::UserAgent" : "0",
             "Moose" : "0",
             "Net::SSL" : "0",
+            "Term::ANSIColor" : "0",
             "Text::Table" : "0",
             "URI::Escape" : "0",
             "perl" : "5.006"

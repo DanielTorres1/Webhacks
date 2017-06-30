@@ -27,6 +27,7 @@ WriteMakefile(
         'HTTP::Request' => 0,
         'HTTP::Response' => 0,
         'Getopt::Std' => 0,        
+        'Term::ANSIColor' => 0,   
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'webHacks-*' },
