@@ -5,12 +5,13 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('t:p:a:m:q:h', \%opts);
+getopts('s:p:a:m:t:q:h', \%opts);
 
-my $target = $opts{'t'} if $opts{'t'};
+my $site = $opts{'s'} if $opts{'s'};
 my $port = $opts{'p'} if $opts{'p'};
 my $path = $opts{'a'} if $opts{'a'};
 my $mode = $opts{'m'} if $opts{'m'};
+my $threads = $opts{'t'} if $opts{'t'};
 my $quiet = $opts{'q'} if $opts{'q'};
 # scan for comments
 
@@ -42,10 +43,12 @@ EOF
 
 sub usage { 
   
+  print $banner;
   print "Uso:  \n";  
-  print "-t : IP del servidor web \n";
+  print "-s : IP o dominio del servidor web \n";
   print "-p : Puerto del servidor web \n";
   print "-a : Ruta donde empezara a probar directorios \n";
+  print "-t : Numero de hilos (Conexiones en paralelo) \n";
   print "-m : Modo. Puede ser: \n";
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
@@ -53,12 +56,13 @@ sub usage {
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
   print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";
+  print "	  completo: Probara Todo lo anterior \n";
   print "\n";
-  print "Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  \n";
-  print "	  dirbuster.pl -t 192.168.0.2 -p 80 -a / -m normal\n";
+  print "Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos\n";
+  print "	  web-buster.pl -s 192.168.0.2 -p 80 -a / -m archivos -t 10 \n";
   print "\n";
   print "Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  \n";
-  print "	  dirbuster.pl -t 192.168.0.2 -p 443 -a /wordpress/ -m backup\n";
+  print "	  web-buster.pl -s 192.168.0.2 -p 443 -a /wordpress/ -m backup -t 30\n";
   print "\n";  
 }	
 
@@ -72,13 +76,14 @@ if ($quiet ne 1)
 {print $banner,"\n";}
 
 
-my $webHacks = webHacks->new( rhost => $target,
+my $webHacks = webHacks->new( rhost => $site,
 						rport => $port,
-						path => $path,						
+						path => $path,
+						threads => $threads,						
 					    debug => 0);
 
 # Need to make a request to discover if SSL is in use
-$webHacks->dispatch(url => "http://$target:$port$path",method => 'GET');
+$webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
 
 # fuzz with common files names
 if ($mode eq "archivos" or $mode eq "completo"){	

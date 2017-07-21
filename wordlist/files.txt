@@ -108,3 +108,6 @@ web.xml
 WS_FTP.LOG
 xmlrpc.php
 xmlrpc_server.php
+default.htm
+iisstart.htm
+index2.htm

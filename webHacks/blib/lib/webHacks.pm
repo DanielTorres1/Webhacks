@@ -11,6 +11,7 @@ use HTTP::Cookies;
 use URI::Escape;
 use HTTP::Request;
 use HTTP::Response;
+use Parallel::ForkManager;
 use Net::SSL (); # From Crypt-SSLeay
 use Term::ANSIColor;
 
@@ -31,6 +32,7 @@ has proxy_port      => ( isa => 'Str', is => 'rw', default => '' );
 has proxy_user      => ( isa => 'Str', is => 'rw', default => '' );
 has proxy_pass      => ( isa => 'Str', is => 'rw', default => '' );
 has proxy_env      => ( isa => 'Str', is => 'rw', default => '' );
+has threads      => ( isa => 'Int', is => 'rw', default => 10 );
 has debug      => ( isa => 'Int', is => 'rw', default => 0 );
 has headers  => ( isa => 'Object', is => 'rw', lazy => 1, builder => '_build_headers' );
 has browser  => ( isa => 'Object', is => 'rw', lazy => 1, builder => '_build_browser' );
@@ -44,8 +46,24 @@ my $debug = $self->debug;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
+my $threads = $self->threads;
 my $ssl = $self->ssl;
 my ($url_file) = @_;
+
+# Max parallel processes  
+my $pm = new Parallel::ForkManager($threads); 
+my @links;
+
+########### file to array (url_file) #######
+open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
+while (my $url=<MYINPUT>)
+{ 
+$url =~ s/\n//g; 	
+push @links, $url;
+}
+close MYINPUT;
+#########################################
+
 
 print "ssl in dirbuster $ssl \n" if ($debug);
 
@@ -54,51 +72,51 @@ $lines =~ s/\n//g;
 my $time = int($lines/600);
 
 print color('bold blue');
-print "######### Usando archivo: $url_file ##################### \n\n";
+print "######### Usando archivo: $url_file ##################### \n";
+print "Hilos: $threads \n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
 
 my $result_table = Text::Table->new(
-        "URL", "  STATUS", "RISKY METHODS"
+        "STATUS", "  URL", "\t\t\t\t RISKY METHODS"
 );
     
-my $i=0;
-open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
-while (my $file=<MYINPUT>)
-{ 
-$file =~ s/\n//g; 	
 
-#Adicionar backslash
-#if (! ($file =~ /\./m)){	 
-if ($url_file =~ "directorios"){	 
-	$file = $file."/";
- }
 
-my $url;
-if ($ssl)
-  {$url = "https://".$rhost.":".$rport.$path.$file;}
-else
-  {$url = "http://".$rhost.":".$rport.$path.$file;}
-  
- 
-#my $url;
-# We add httpS if is a SSL service en the GET,POST,etc function
-#$url = "http://".$rhost.":".$rport.$path.$file;
+foreach my $file (@links) {
+    $pm->start and next; # do the fork   
+    $file =~ s/\n//g; 	
+	#Adicionar backslash
+	#if (! ($file =~ /\./m)){	 
+	if ($url_file =~ "directorios"){	 
+		$file = $file."/";
+	}
 
-my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
-my $status = $response->status_line;
-if($status !~ /404|500|302|301/m){	
-	my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
-	my $options = " ";
-	$options = $response2->{_headers}->{allow};	
-	$options =~ s/GET|HEAD|POST|OPTIONS//g; # delete safe methods	
-	$options =~ s/,,//g; # delete safe methods	
-    $result_table->add($url,$status,$options);	
-}
-
-}
-close MYINPUT;
-print $result_table;
+	my $url;
+	if ($ssl)
+		{$url = "https://".$rhost.":".$rport.$path.$file;}
+	else
+		{$url = "http://".$rhost.":".$rport.$path.$file;}   
+        
+	#print "getting $url \n";
+	##############  thread ##############
+	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
+	my $status = $response->status_line;
+	if($status !~ /404|500|302|301/m){		
+		my @status_array = split(" ",$status);	
+		my $current_status = $status_array[0];
+		my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
+		my $options = " ";
+		$options = $response2->{_headers}->{allow};	
+		$options =~ s/GET|HEAD|POST|OPTIONS//g; # delete safe methods	
+		$options =~ s/,,//g; # delete safe methods	
+		print "$current_status\t$url\t$options \n";
+		#$result_table->add($url,$status,$options);			
+	}
+	##############	
+   $pm->finish; # do the exit in the child process
+  }
+  $pm->wait_all_children;
 
 }
 
@@ -113,43 +131,70 @@ my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
 my $ssl = $self->ssl;
-
+my $threads = $self->threads;
 my ($url_file) = @_;
+
+# Max parallel processes  
+my $pm = new Parallel::ForkManager($threads); 
+my @links;
+
+########### file to array (url_file) #######
+open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
+while (my $url=<MYINPUT>)
+{ 
+$url =~ s/\n//g; 	
+push @links, $url;
+}
+close MYINPUT;
+#########################################
+
+
 my $lines = `wc -l $url_file | cut -d " " -f1`;
 $lines =~ s/\n//g;
 my $time = int($lines/600);
 
 print color('bold blue');
-print "######### Usando archivo: $url_file ##################### \n\n";
+print "######### Usando archivo: $url_file ##################### \n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
 
 my $result_table = Text::Table->new(
-        "URL", "  STATUS"
+        "STATUS", "  URL", "\t\t\t\t RISKY METHODS"
 );
     
+print $result_table;    
 
-open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
-while (my $file=<MYINPUT>)
-{ 
-$file =~ s/\n//g; 	
+foreach my $file (@links) {
+    $pm->start and next; # do the fork   
+    $file =~ s/\n//g; 	
+
+	my $url;
+	if ($ssl)
+		{$url = "https://".$rhost.":".$rport.$path."~".$file."/";}
+	else
+		{$url = "http://".$rhost.":".$rport.$path."~".$file."/";}  
+        
+	#print "getting $url \n";
+	##############  thread ##############
+	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
+	my $status = $response->status_line;
+	if($status !~ /404|500|302|301/m){		
+		my @status_array = split(" ",$status);	
+		my $current_status = $status_array[0];
+		my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
+		my $options = " ";
+		$options = $response2->{_headers}->{allow};	
+		$options =~ s/GET|HEAD|POST|OPTIONS//g; # delete safe methods	
+		$options =~ s/,,//g; # delete safe methods	
+		print "$current_status\t$url\t$options \n";
+		#$result_table->add($url,$status,$options);			
+	}
+	##############	
+   $pm->finish; # do the exit in the child process
+  }
+  $pm->wait_all_children;   
 
 
-my $url;
-if ($ssl)
-  {$url = "https://".$rhost.":".$rport.$path."~".$file;}
-else
-  {$url = "http://".$rhost.":".$rport.$path."~".$file;}
-
-my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
-my $status = $response->status_line;
-if($status !~ /404/m){	
-    $result_table->add($url,$status);	
-}
-
-}
-close MYINPUT;
-print $result_table;
 
 }
 
@@ -165,25 +210,40 @@ my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
 my $ssl = $self->ssl;
-
+my $threads = $self->threads;
 my ($url_file) = @_;
+
+# Max parallel processes  
+my $pm = new Parallel::ForkManager($threads); 
+my @links;
+
+########### file to array (url_file) #######
+open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
+while (my $url=<MYINPUT>)
+{ 
+$url =~ s/\n//g; 	
+push @links, $url;
+}
+close MYINPUT;
+#########################################
 
 my $lines = `wc -l $url_file | cut -d " " -f1`;
 $lines =~ s/\n//g;
-my $time = int($lines/600);
+my $time = int($lines/60);
 
 print color('bold blue');
-print "######### Usando archivo: $url_file ##################### \n\n";
-print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
+print "######### Usando archivo: $url_file ##################### \n";
+print "Tiempo estimado en probar $lines arhivos de backup : $time minutos\n\n";
 print color('reset');
 
-my $result_table = Text::Table->new(
-        "URL", "  STATUS"
-);
     
+my $result_table = Text::Table->new(
+        "STATUS", "  URL", "\t\t\t\t RISKY METHODS"
+);
 
-open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
-while (my $file=<MYINPUT>)
+print $result_table;
+
+foreach my $file (@links) 
 {
 	my @backups = ("FILE","FILE.bak","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)",".FILE.swp");
 	$file =~ s/\n//g; 	
@@ -198,18 +258,21 @@ while (my $file=<MYINPUT>)
 		else
 			{$url = "http://".$rhost.":".$rport.$path.$backup_file;}
 				    
-
+		$pm->start and next; # do the fork 
+		#print  "$url \n"; 
 		my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 		my $status = $response->status_line;
+		my @status_array = split(" ",$status);	
+		my $current_status = $status_array[0];
+		
 		if($status !~ /404/m){			
-			$result_table->add($url,$status);	
-		}   
-  
-	}# end foreach
-} # end while
-close MYINPUT;
-print $result_table;
-
+			#$result_table->add($url,$status);	
+			print "$current_status\t$url\n";
+		}		
+		$pm->finish; # do the exit in the child process		   
+	}# end foreach backupname
+	$pm->wait_all_children; 
+} # end foreach file
 }
 
 

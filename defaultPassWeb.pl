@@ -32,3 +32,18 @@ my $webHacks = webHacks->new( rhost => $target,
 					    debug => 0);
 
 $webHacks->defaultPassword($software)
+
+
+
+  # Max 30 processes for parallel download
+  #my $pm = new Parallel::ForkManager(3); 
+
+  #foreach my $url (@links) {
+    #$pm->start and next; # do the fork
+    #print "getting .. \n";
+	#get($url);
+    #$pm->finish; # do the exit in the child process
+#  }
+  #$pm->wait_all_children;
+
+
