@@ -81,7 +81,7 @@ my $result_table = Text::Table->new(
         "STATUS", "  URL", "\t\t\t\t RISKY METHODS"
 );
     
-
+print $result_table;
 
 foreach my $file (@links) {
     $pm->start and next; # do the fork   
@@ -102,7 +102,7 @@ foreach my $file (@links) {
 	##############  thread ##############
 	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 	my $status = $response->status_line;
-	if($status !~ /404|500|302|301/m){		
+	if($status !~ /404|500|302|301|503/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
 		my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
@@ -178,7 +178,7 @@ foreach my $file (@links) {
 	##############  thread ##############
 	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 	my $status = $response->status_line;
-	if($status !~ /404|500|302|301/m){		
+	if($status !~ /404|500|302|301|503/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
 		my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
@@ -233,7 +233,7 @@ my $time = int($lines/60);
 
 print color('bold blue');
 print "######### Usando archivo: $url_file ##################### \n";
-print "Tiempo estimado en probar $lines arhivos de backup : $time minutos\n\n";
+print "Tiempo estimado en probar $lines archivos de backup : $time minutos\n\n";
 print color('reset');
 
     
@@ -265,7 +265,7 @@ foreach my $file (@links)
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
 		
-		if($status !~ /404/m){			
+		if($status !~ /404|503/m){			
 			#$result_table->add($url,$status);	
 			print "$current_status\t$url\n";
 		}		
