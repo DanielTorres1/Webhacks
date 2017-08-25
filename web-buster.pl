@@ -5,14 +5,20 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('s:p:a:m:t:q:h', \%opts);
+getopts('s:p:a:m:t:q:e:c:j:h', \%opts);
 
 my $site = $opts{'s'} if $opts{'s'};
 my $port = $opts{'p'} if $opts{'p'};
 my $path = $opts{'a'} if $opts{'a'};
+
+my $cookie = "";
+$cookie = $opts{'c'} if $opts{'c'};
+my $ajax = "0";
+$ajax = $opts{'j'} if $opts{'j'};
 my $mode = $opts{'m'} if $opts{'m'};
 my $threads = $opts{'t'} if $opts{'t'};
 my $quiet = $opts{'q'} if $opts{'q'};
+my $error404 = $opts{'e'} if $opts{'e'};
 # scan for comments
 
 #PATTERNS = {
@@ -48,7 +54,10 @@ sub usage {
   print "-s : IP o dominio del servidor web \n";
   print "-p : Puerto del servidor web \n";
   print "-a : Ruta donde empezara a probar directorios \n";
+  print "-j : Adicionar header ajax (xmlhttprequest) 1 para habilitar \n";
   print "-t : Numero de hilos (Conexiones en paralelo) \n";
+  print "-c : cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 \n";
+  print "-e : Busca este patron en la respuesta para determinar si es una pagina de error 404\n";
   print "-m : Modo. Puede ser: \n";
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
@@ -76,11 +85,30 @@ if ($quiet ne 1)
 {print $banner,"\n";}
 
 
-my $webHacks = webHacks->new( rhost => $site,
+my $webHacks ;
+if ($error404 eq '')
+{
+
+$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
-						threads => $threads,						
+						threads => $threads,								
+						cookie => $cookie,
+						ajax => $ajax,
 					    debug => 0);
+	
+}
+else
+{
+$webHacks = webHacks->new( rhost => $site,
+						rport => $port,
+						path => $path,
+						threads => $threads,
+						error404 => $error404,
+						cookie => $cookie,
+						ajax => $ajax,
+					    debug => 0);
+}
 
 # Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
