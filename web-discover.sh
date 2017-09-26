@@ -34,8 +34,8 @@ exit
 fi
 ######################
 
-mkdir web 
-cd web 
+mkdir web-discover 
+cd web-discover 
 
 echo "Testinf $DOMAIN$MYPATH "
 

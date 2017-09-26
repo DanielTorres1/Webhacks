@@ -71,3 +71,4 @@ ucgi
 viewcgi
 webcgi
 web-cgi
+cgi-bin/viewer/video.jpg

@@ -29,6 +29,7 @@ echo -e "$OKBLUE [+] Instalando WEB hacks $RESET"
 
 echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET" 
 
+sudo pip install M2Crypto
 sudo cp cpanm /usr/bin 
 sudo cp defaultPassWeb.pl /usr/bin/
 sudo cp web-buster.pl /usr/bin/
