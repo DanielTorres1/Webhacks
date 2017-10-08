@@ -140,6 +140,7 @@ foreach my $file (@links) {
 	}
 	##############	
    $pm->finish; # do the exit in the child process
+  
   }
   $pm->wait_all_children;
 
@@ -346,6 +347,7 @@ foreach my $file (@links)
 
 
 
+
 sub defaultPassword
 {
 my $self = shift;
@@ -355,11 +357,14 @@ my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $ssl = $self->ssl;
 
-my ($software) = @_;
+my %options = @_;
+my $software = $options{ software };
+my $passwords_file = $options{ passwords_file };
 
-print color('bold blue');
+
+print color('bold blue') if($debug);
 print "######### Testendo: $software ##################### \n\n" if($debug);
-print color('reset');
+print color('reset') if($debug);
 
 
 my $url;
@@ -370,25 +375,62 @@ else
 
 if ($software eq "ZKSoftware")
 {
-
-	my $hash_data = {'username' => 'administrator', 
-				'userpwd' => '123456'
+		
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+		$password =~ s/\n//g; 	
+		my $hash_data = {'username' => 'administrator', 
+				'userpwd' => $password
 				};	
 	
-	my $post_data = convert_hash($hash_data);
+		my $post_data = convert_hash($hash_data);
 		
-	my $response = $self->dispatch(url => $url."/csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
-	my $decoded_response = $response->decoded_content;
-	if($decoded_response =~ /Error/m)
-	{	
-		print "No default password \n" if ($debug);
+		my $response = $self->dispatch(url => $url."/csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
+		my $decoded_response = $response->decoded_content;
+		my $status = $response->status_line;
+		
+		if ($status =~ /200/m)
+		{
+			if (! ($decoded_response =~ /Error/m)){	 
+			print "ZKSoftware: Password found! (administrator:$password)\n";
+			last;
+			}							
+		}	
+		
 	}
-	else
-	{	
-		print "ZKSoftware: Default password (administrator:123456)\n";
-	}
+	close MYINPUT;	
 
 }#ZKSoftware
+}
+
+
+
+
+sub getTitle
+{
+my $self = shift;
+my $headers = $self->headers;
+my $debug = $self->debug;
+my $rhost = $self->rhost;
+my $rport = $self->rport;
+my $ssl = $self->ssl;
+
+
+my $url;
+if ($ssl)
+  {$url = "https://".$rhost.":".$rport;}
+else
+  {$url = "http://".$rhost.":".$rport;}
+
+
+my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
+my $decoded_response = $response->decoded_content;
+$decoded_response =~ /<title>(.*?)<\/title>/;
+my $title = $1; 
+
+return $title 
+		
 }
 
 
