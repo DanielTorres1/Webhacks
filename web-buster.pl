@@ -62,6 +62,7 @@ sub usage {
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
+  print "	  webdav: Directorios webdav \n";
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
   print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";
@@ -95,6 +96,7 @@ $webHacks = webHacks->new( rhost => $site,
 						threads => $threads,								
 						cookie => $cookie,
 						ajax => $ajax,
+						max_redirect => 0,
 					    debug => 0);
 	
 }
@@ -107,6 +109,7 @@ $webHacks = webHacks->new( rhost => $site,
 						error404 => $error404,
 						cookie => $cookie,
 						ajax => $ajax,
+						max_redirect => 0,
 					    debug => 0);
 }
 
@@ -148,3 +151,10 @@ if ($mode eq "username" or $mode eq "completo"){
 	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/nombres.txt");	
 	print "\n";
 }
+
+# fuzz with webdav
+if ($mode eq "webdav" or $mode eq "completo"){	
+	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/webdav.txt");	
+	print "\n";
+}
+

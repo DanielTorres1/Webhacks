@@ -18,6 +18,8 @@ Service01.asmx
 access.1
 access_log.1
 access-log.1
+login.aspx
+login.asp
 admin.cgi
 admin.php
 admin.pl
@@ -139,3 +141,5 @@ espia3/Account/fLogin.aspx
 espia2/Account/fLogin.aspx
 espia1/Account/fLogin.aspx
 espia/Account/fLogin.aspx
+Account/fLogin.aspx
+configconn.xml

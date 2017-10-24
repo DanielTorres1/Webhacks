@@ -14,6 +14,9 @@ use HTTP::Response;
 use Parallel::ForkManager;
 use Net::SSL (); # From Crypt-SSLeay
 use Term::ANSIColor;
+use utf8;
+use Text::Unidecode;
+binmode STDOUT, ":encoding(UTF-8)";
 
 
 no warnings 'uninitialized';
@@ -24,7 +27,8 @@ $Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL for proxy co
 has 'rhost', is => 'rw', isa => 'Str',default => '';	
 has 'rport', is => 'rw', isa => 'Str',default => '80';	
 has 'path', is => 'rw', isa => 'Str',default => '/';	
-has 'ssl', is => 'rw', isa => 'Int',default => 0;	
+has 'ssl', is => 'rw', isa => 'Str',default => '';	
+has 'max_redirect', is => 'rw', isa => 'Int',default => 0;	
 
 has user_agent      => ( isa => 'Str', is => 'rw', default => '' );
 has proxy_host      => ( isa => 'Str', is => 'rw', default => '' );
@@ -407,7 +411,7 @@ if ($software eq "ZKSoftware")
 
 
 
-sub getTitle
+sub getData
 {
 my $self = shift;
 my $headers = $self->headers;
@@ -426,10 +430,141 @@ else
 
 my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
-$decoded_response =~ /<title>(.*?)<\/title>/;
-my $title = $1; 
 
-return $title 
+#<meta http-equiv="Refresh" content="0; URL=/page.cgi?page=status">
+$decoded_response =~ /meta http-equiv="Refresh" content="0; URL=(.*?)"/i;
+my $redirect_url = $1; 
+
+if ($redirect_url eq '')
+{
+	#<META http-equiv="Refresh" content="0;url=http://www.infocred.com.bo/BICWebSite"> 
+	
+	$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
+	$redirect_url = $1; 
+}
+
+
+if ($redirect_url eq '')
+{
+	#window.location="http://www.cadeco.org/cam";</script>
+	$decoded_response =~ /window.location="(.*?)"/i;
+	$redirect_url = $1; 
+}
+
+
+$redirect_url =~ s/\'//g;  
+print "redirect_url $redirect_url \n" if ($debug);
+
+if($redirect_url =~ /http/m ){	 
+	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
+	$decoded_response = $response->decoded_content; 	 
+ }  
+elsif ($redirect_url ne '' )
+{	
+	my $final_url = $url.$redirect_url;
+	print "final_url $final_url \n";
+	$response = $self->dispatch(url => $final_url, method => 'GET', headers => $headers);
+	$decoded_response = $response->decoded_content; 	 
+}
+
+
+my $response_headers = $response->headers_as_string;
+$decoded_response = $response_headers."\n".$decoded_response;
+
+$decoded_response =~ s/<title>\n/<title>/g; 
+$decoded_response =~ s/<title>\r\n/<title>/g; 
+
+open (SALIDA,">response.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+print SALIDA $decoded_response;
+close (SALIDA);
+
+
+my ($poweredBy) = ($decoded_response =~ /X-Powered-By:(.*?)\n/i);
+if ($poweredBy eq '')
+	{	
+	if($decoded_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
+	}
+
+print "poweredBy $poweredBy \n" if ($debug);
+
+# ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
+my ($title) = ($decoded_response =~ /<title(.*?)<\/title>/i);
+
+if ($title eq '')
+	{($title) = ($decoded_response =~ /<title(.*?)\n/i);}
+
+if ($title eq '')
+	{($title) = ($decoded_response =~ /Title:(.*?)\n/i);}
+
+$title =~ s/>//g; 
+$title = only_ascii($title);
+
+
+#WWW-Authenticate: Basic realm="Broadband Router"
+my ($Authenticate) = ($decoded_response =~ /WWW-Authenticate:(.*?)"/i);
+print "Authenticate $Authenticate \n" if ($debug);
+
+#<meta name="geo.placename" content="Quillacollo" />
+my ($geo) = ($decoded_response =~ /name="geo.placename" content="(.*?)"/i);
+print "geo $geo \n" if ($debug);
+
+#<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
+my ($Generator) = ($decoded_response =~ /name="Generator" content="(.*?)"/i);
+print "Generator $Generator \n" if ($debug);
+
+#<meta name="Version" content="10_1_7-52331">
+my ($Version) = ($decoded_response =~ /name="Version" content="(.*?)"/i);
+print "Version $Version \n" if ($debug);
+$Generator = $Generator." ".$Version;
+
+my ($description) = ($decoded_response =~ /name="description" content="(.*?)"/i);
+if ($description eq '')
+	{($description) = ($decoded_response =~ /X-Meta-Description:(.*?)\n/i);}
+$description = only_ascii($description);	
+print "description $description \n" if ($debug);
+
+
+#<meta name="author" content="Instituto Nacional de Estadística - Centro de Desarrollo de Redatam">
+my ($author) = ($decoded_response =~ /name="author" content="(.*?)"/i);
+if ($author eq '')
+	{($author) = ($decoded_response =~ /X-Meta-Author:(.*?)\n/i);}
+$author = only_ascii($author);
+print "author $author \n" if ($debug);
+
+
+my ($langVersion) = ($decoded_response =~ /X-AspNet-Version:(.*?)\n/i);
+print "langVersion $langVersion \n" if ($debug);
+
+my ($proxy) = ($response_headers =~ /Via:(.*?)\n/i);
+print "proxy $proxy \n" if ($debug);
+
+my ($server) = ($response_headers =~ /Server:(.*?)\n/i);
+print "server $server \n" if ($debug);
+
+
+my $type;
+if($decoded_response =~ /GASOLINERA/m)
+	{$type="GASOLINERA";} 		
+
+
+ my %data = (
+            "poweredBy" => $poweredBy,
+            "title" => $title,
+            "Authenticate" => $Authenticate,
+            "geo" => $geo,
+            "Generator" => $Generator,
+            "description" => $description,
+            "langVersion" => $langVersion,
+            "redirect_url" => $redirect_url,
+            "author" => $author,
+            "proxy" => $proxy,
+            "type" => $type,
+            "server" => $server,
+            
+        );
+        
+        
+return %data;
 		
 }
 
@@ -467,6 +602,29 @@ return $headers;
 
 
 ###################################### internal functions ###################
+
+# remve acents and ñ
+sub only_ascii
+{
+ my ($text) = @_;
+ 
+$text =~ s/á/a/g; 
+$text =~ s/é/e/g; 
+$text =~ s/í/i/g; 
+$text =~ s/ó/o/g; 
+$text =~ s/ú/u/g;
+$text =~ s/ñ/n/g; 
+
+$text =~ s/Á/A/g; 
+$text =~ s/É/E/g; 
+$text =~ s/Í/I/g; 
+$text =~ s/Ó/O/g; 
+$text =~ s/Ú/U/g;
+$text =~ s/Ñ/N/g;
+
+return $text;
+}
+
 
 #Convert a hash in a string format used to send POST request
 sub convert_hash
@@ -547,6 +705,7 @@ sub _build_browser {
 my $self = shift;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
+my $ssl = $self->ssl;
 
 my $debug = $self->debug;
 my $proxy_host = $self->proxy_host;
@@ -554,21 +713,29 @@ my $proxy_port = $self->proxy_port;
 my $proxy_user = $self->proxy_user;
 my $proxy_pass = $self->proxy_pass;
 my $proxy_env = $self->proxy_env;
+
+my $max_redirect = $self->max_redirect;
+
 print "building browser \n" if ($debug);
 
 
 my $browser = LWP::UserAgent->new;
 
-$browser->timeout(10);
+$browser->timeout(13);
 $browser->cookie_jar(HTTP::Cookies->new());
 $browser->show_progress(1) if ($debug);
-$browser->max_redirect(0);
+$browser->max_redirect($max_redirect);
 
-my $ssl_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
-if($ssl_output =~ /CN/m)
-	{$self->ssl(1);print "SSL detected \n" if ($debug);}
-else
-	{$self->ssl(0); print "NO SSL detected \n" if ($debug);}
+
+if ($ssl eq '')
+{
+	print "Detecting SSL \n" if ($debug);
+	my $ssl_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
+	if($ssl_output =~ /CN/m)
+		{$self->ssl(1);print "SSL detected \n" if ($debug);}
+	else
+		{$self->ssl(0); print "NO SSL detected \n" if ($debug);}
+}
 
 print "proxy_env $proxy_env \n" if ($debug);
 
