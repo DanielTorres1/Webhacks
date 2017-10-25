@@ -11,6 +11,7 @@ use HTTP::Cookies;
 use URI::Escape;
 use HTTP::Request;
 use HTTP::Response;
+use HTML::Scrubber;
 use Parallel::ForkManager;
 use Net::SSL (); # From Crypt-SSLeay
 use Term::ANSIColor;
@@ -29,6 +30,8 @@ has 'rport', is => 'rw', isa => 'Str',default => '80';
 has 'path', is => 'rw', isa => 'Str',default => '/';	
 has 'ssl', is => 'rw', isa => 'Str',default => '';	
 has 'max_redirect', is => 'rw', isa => 'Int',default => 0;	
+has 'html', is => 'rw', isa => 'Str',default => '';	
+has 'final_url', is => 'rw', isa => 'URI';	
 
 has user_agent      => ( isa => 'Str', is => 'rw', default => '' );
 has proxy_host      => ( isa => 'Str', is => 'rw', default => '' );
@@ -469,6 +472,10 @@ elsif ($redirect_url ne '' )
 
 
 my $response_headers = $response->headers_as_string;
+my $final_url = $response->request->uri;
+print "final_url $final_url \n";
+$self->final_url($final_url);
+
 $decoded_response = $response_headers."\n".$decoded_response;
 
 $decoded_response =~ s/<title>\n/<title>/g; 
@@ -563,12 +570,116 @@ if($decoded_response =~ /GASOLINERA/m)
             
         );
         
+
+
+my $scrubber = HTML::Scrubber->new( allow => [ qw[ form input] ] ); 	
+	$scrubber->rules(        
+         input => {			 
+            name => 1,                       
+        },  
+        form => {
+			 action => 1 ,                        
+        },    
+    );
+
+my $final_content = $scrubber->scrub($decoded_response);
+#print $final_content;
         
+$self->html($final_content);
 return %data;
 		
 }
 
 
+
+sub sqli_test
+{
+print "Tessting SQLi\n";
+my $self = shift;
+my $headers = $self->headers;
+my $rhost = $self->rhost;
+my $rport = $self->rport;
+my $debug = $self->debug;
+my $ssl = $self->ssl;
+my $html = $self->html;
+my $url = $self->final_url;
+#print "html  $html  \n" ;	
+my ($inyection)=@_;
+
+my @sqlerrors = ( 'error in your SQL syntax',
+ 'mysql_fetch',
+ 'sqlsrv_fetch_object',
+ "Unclosed quotation mark after the character",
+ 'num_rows',
+ "syntax error at or near",
+ "SQL command not properly ended",
+ 'ORA-01756',
+ "quoted string not properly terminated",
+ 'Error Executing Database Query',
+ "Failed to open SQL Connection",
+ 'SQLServer JDBC Driver',
+ 'Microsoft OLE DB Provider for SQL Server',
+ 'Unclosed quotation mark',
+ 'ODBC Microsoft Access Driver',
+ 'Microsoft JET Database',
+ 'Error Occurred While Processing Request',
+ 'Server Error',
+ 'Microsoft OLE DB Provider for ODBC Drivers error',
+ 'Invalid Querystring',
+ 'OLE DB Provider for ODBC',
+ 'VBScript Runtime',
+ 'ADODB.Field',
+ 'BOF or EOF',
+ 'ADODB.Command',
+ 'JET Database',
+ 'mysql_fetch_array()',
+ 'Syntax error',
+ 'mysql_numrows()',
+ 'GetArray()',
+ 'FetchRow()');
+ 
+my $error_response;
+my $pwned;
+ 
+$html =~ /<form action="(.*?)"/;			
+my $action = $1; 
+print "action $action \n" if ($debug );
+
+my $post_data = "";
+while($html =~ /<input name="(.*?)"/g) 
+{    
+    $post_data = $post_data.$1."=XXX&";
+}
+chop($post_data); # delete last character (&)
+
+print "post_data  $post_data  \n";
+$post_data =~ s/XXX/$inyection/g; 
+print "post_data  $post_data  \n";
+		
+my $final_url = $url.$action;	
+print "final_url  $final_url  \n" ;	
+my $response = $self->dispatch(url => $final_url, method => 'POST',post_data =>$post_data, headers => $headers);
+my $decoded_response = $response->decoded_content;
+
+open (SALIDA,">sqli.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+print SALIDA $decoded_response;
+close (SALIDA);   
+
+###### chech error in response #####
+	foreach (@sqlerrors)
+	{	
+		 if($decoded_response =~ /$_/i)
+		 {
+			$error_response = $_;			
+			$pwned=1;		
+			last;
+		  }
+		else
+			{$error_response = ""}
+	}
+
+return($error_response);
+}
 
 ################################### build objects ########################
 
@@ -595,13 +706,16 @@ print "user_agent $user_agent \n" if ($debug);
 $headers->header('User-Agent' => $user_agent); 
 $headers->header('Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'); 
 $headers->header('Connection' => 'keep-alive'); 
+$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
 $headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
+
 
 return $headers; 
 }
 
 
 ###################################### internal functions ###################
+
 
 # remve acents and ñ
 sub only_ascii

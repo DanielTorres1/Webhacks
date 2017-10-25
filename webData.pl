@@ -38,7 +38,7 @@ if ($ssl eq '')
 
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,	
-						max_redirect => 3,																	
+						max_redirect => 4,																	
 					    debug => 0);	
 	# Need to make a request to discover if SSL is in use
 	$webHacks->dispatch(url => "http://$target:$port",method => 'GET');
@@ -51,7 +51,7 @@ else
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,		
 						ssl => $ssl,
-						max_redirect => 3,
+						max_redirect => 4,
 					    debug => 0);	
 }
 	   				   
@@ -106,4 +106,8 @@ else
 }
  
 
+my $error_response = $webHacks->sqli_test("'");
+
+if ($error_response ne '')
+	{print "PWAN ! $error_response \n";}
 
