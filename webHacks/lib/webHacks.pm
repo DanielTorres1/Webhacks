@@ -145,6 +145,18 @@ foreach my $file (@links) {
 		print "$current_status\t$url\t$options \n";
 		#$result_table->add($url,$status,$options);			
 	}
+	
+	#if($status =~ /302|301/m){		
+		
+		#my $response_headers = $response->headers_as_string;
+		#my ($location) = ($response_headers =~ /Location:(.*?)\n/i);
+		#print "location $location \n" if ($debug);
+
+		#if ( length($location) > 10 )
+			#{print "$status\t$url;$location\n";}		
+		
+		#$result_table->add($url,$status,$options);			
+	#}
 	##############	
    $pm->finish; # do the exit in the child process
   
@@ -507,10 +519,6 @@ $title =~ s/>//g;
 $title = only_ascii($title);
 
 
-#WWW-Authenticate: Basic realm="Broadband Router"
-my ($Authenticate) = ($decoded_response =~ /WWW-Authenticate:(.*?)"/i);
-print "Authenticate $Authenticate \n" if ($debug);
-
 #<meta name="geo.placename" content="Quillacollo" />
 my ($geo) = ($decoded_response =~ /name="geo.placename" content="(.*?)"/i);
 print "geo $geo \n" if ($debug);
@@ -547,6 +555,10 @@ print "proxy $proxy \n" if ($debug);
 
 my ($server) = ($response_headers =~ /Server:(.*?)\n/i);
 print "server $server \n" if ($debug);
+
+#WWW-Authenticate: Basic realm="Broadband Router"
+my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);
+print "Authenticate $Authenticate \n" if ($debug);
 
 
 my $type;
