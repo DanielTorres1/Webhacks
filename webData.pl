@@ -75,12 +75,6 @@ my $server = %data{'server'};
 
 
 
-if (! ($redirect_url =~ /http/m)){	 
-	$redirect_url="";
- }
-
-
-
 
 if ($extract ne 'all')
 {
