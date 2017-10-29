@@ -31,7 +31,8 @@ echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET"
 
 sudo pip install M2Crypto
 sudo cp cpanm /usr/bin 
-sudo cp defaultPassWeb.pl /usr/bin/
+
+sudo cp webData.pl /usr/bin/
 sudo cp web-buster.pl /usr/bin/
 sudo cp get_ssl_cert.py /usr/bin/
 
@@ -39,7 +40,7 @@ mkdir /usr/share/webhacks 2>/dev/null
 sudo cp -R wordlist /usr/share/webhacks
 
 sudo chmod a+x /usr/bin/cpanm
-sudo chmod a+x /usr/bin/defaultPassWeb.pl
+sudo chmod a+x /usr/bin/webData.pl
 sudo chmod a+x /usr/bin/web-buster.pl
 sudo chmod a+x /usr/bin/get_ssl_cert.py
 
