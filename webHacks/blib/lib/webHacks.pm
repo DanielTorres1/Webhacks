@@ -671,6 +671,7 @@ if ($post_data ne '')
 {
 	my $final_url = $url.$action;	
 	print "final_url  $final_url  \n" if ($debug );
+	$headers->header("Content-Type" => 'application/x-www-form-urlencoded');	
 	my $response = $self->dispatch(url => $final_url, method => 'POST',post_data =>$post_data, headers => $headers);
 	my $decoded_response = $response->decoded_content;
 	
