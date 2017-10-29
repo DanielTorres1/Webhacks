@@ -20,12 +20,10 @@ access_log.1
 access-log.1
 login.aspx
 login.asp
-admin.cgi
 admin.php
 admin.pl
 akeeba.backend.log
 application.wadl
-AT-admin.cgi
 phpmyadmin/scripts/setup.php
 typo3/phpmyadmin/scripts/setup.php
 xampp/phpmyadmin/scripts/setup.php
@@ -34,7 +32,6 @@ awstats.conf
 .bashrc
 ~bin
 .cache
-cachemgr.cgi
 catalog.wci
 changelog
 ChangeLog

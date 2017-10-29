@@ -465,7 +465,7 @@ if($redirect_url =~ /http/m ){
 elsif ($redirect_url ne '' )
 {	
 	my $final_url = $url.$redirect_url;
-	print "final_url $final_url \n";
+	print "final_url $final_url \n" if ($debug);
 	$response = $self->dispatch(url => $final_url, method => 'GET', headers => $headers);
 	$decoded_response = $response->decoded_content; 	 
 }
@@ -473,7 +473,7 @@ elsif ($redirect_url ne '' )
 
 my $response_headers = $response->headers_as_string;
 my $final_url = $response->request->uri;
-print "final_url $final_url \n";
+print "final_url $final_url \n" if ($debug);
 $self->final_url($final_url);
 
 $decoded_response = $response_headers."\n".$decoded_response;
@@ -481,9 +481,9 @@ $decoded_response = $response_headers."\n".$decoded_response;
 $decoded_response =~ s/<title>\n/<title>/g; 
 $decoded_response =~ s/<title>\r\n/<title>/g; 
 
-open (SALIDA,">response.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-print SALIDA $decoded_response;
-close (SALIDA);
+#open (SALIDA,">response.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+#print SALIDA $decoded_response;
+#close (SALIDA);
 
 
 my ($poweredBy) = ($decoded_response =~ /X-Powered-By:(.*?)\n/i);
@@ -594,7 +594,6 @@ return %data;
 
 sub sqli_test
 {
-print "Tessting SQLi\n";
 my $self = shift;
 my $headers = $self->headers;
 my $rhost = $self->rhost;
@@ -604,6 +603,7 @@ my $ssl = $self->ssl;
 my $html = $self->html;
 my $url = $self->final_url;
 #print "html  $html  \n" ;	
+print "Tessting SQLi\n" if ($debug );
 my ($inyection)=@_;
 
 my @sqlerrors = ( 'error in your SQL syntax',
@@ -638,7 +638,7 @@ my @sqlerrors = ( 'error in your SQL syntax',
  'GetArray()',
  'FetchRow()');
  
-my $error_response;
+my $error_response="";
 my $pwned;
  
 $html =~ /<form action="(.*?)"/;			
@@ -652,20 +652,21 @@ while($html =~ /<input name="(.*?)"/g)
 }
 chop($post_data); # delete last character (&)
 
-print "post_data  $post_data  \n";
 $post_data =~ s/XXX/$inyection/g; 
-print "post_data  $post_data  \n";
-		
-my $final_url = $url.$action;	
-print "final_url  $final_url  \n" ;	
-my $response = $self->dispatch(url => $final_url, method => 'POST',post_data =>$post_data, headers => $headers);
-my $decoded_response = $response->decoded_content;
+print "post_data  $post_data  \n" if ($debug );
 
-open (SALIDA,">sqli.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-print SALIDA $decoded_response;
-close (SALIDA);   
+if ($post_data ne '')
+{
+	my $final_url = $url.$action;	
+	print "final_url  $final_url  \n" if ($debug );
+	my $response = $self->dispatch(url => $final_url, method => 'POST',post_data =>$post_data, headers => $headers);
+	my $decoded_response = $response->decoded_content;
+	
+	#open (SALIDA,">sqli.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+	#print SALIDA $decoded_response;
+	#close (SALIDA);   
 
-###### chech error in response #####
+	###### chech error in response #####
 	foreach (@sqlerrors)
 	{	
 		 if($decoded_response =~ /$_/i)
@@ -676,7 +677,9 @@ close (SALIDA);
 		  }
 		else
 			{$error_response = ""}
-	}
+	}	
+}
+		
 
 return($error_response);
 }

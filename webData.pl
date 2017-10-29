@@ -22,7 +22,7 @@ sub usage {
   
   print "Uso:  \n";
   print "Autor: Daniel Torres Sandi \n";
-  print "	Ejemplo 1:  webTitle.pl -t 192.168.0.2 -p 80 -s [1/2] -e {title/all} \n"; 
+  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -s [1/2] -e {small/all} \n"; 
   print "		-s 1 = SSL \n";
   print "		-s 2 = NO SSL \n";	
 }	
@@ -75,12 +75,16 @@ my $server = %data{'server'};
 
 
 
+if (! ($redirect_url =~ /http/m)){	 
+	$redirect_url="";
+ }
+
 
 
 
 if ($extract ne 'all')
 {
-	print "Title: $title \n";
+	print "Title: $title \n" if ($title ne '' && $title ne ' ');
 	print "poweredBy $poweredBy \n" if ($poweredBy ne '' && $poweredBy ne ' ');
 	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
 	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
@@ -91,23 +95,12 @@ if ($extract ne 'all')
 }
 else
 {
-	print "Title: $title \n";
-	print "poweredBy $poweredBy \n";
-	print "Authenticate $Authenticate \n";
-	print "geo $geo \n";
-	print "Generator $Generator \n";
-	print "description $description \n";
-	print "langVersion $langVersion \n";
-	print "redirect_url $redirect_url \n";	
-	print "author $author \n";	
-	print "Proxy $proxy \n";
-	print "type $type \n";
-	print "server $server \n";
+	print "$title;$poweredBy;$Authenticate;$geo;$Generator;$description;$langVersion;$redirect_url;$author;$proxy;$type;$server;";
 }
  
 
 my $error_response = $webHacks->sqli_test("'");
 
-if ($error_response ne '')
-	{print "PWAN ! $error_response \n";}
+if ($error_response ne '' && $error_response ne ' ')
+	{print "PWAN SQLi! error: $error_response \n";}
 

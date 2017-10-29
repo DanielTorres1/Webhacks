@@ -186,7 +186,6 @@ adminarea
 admin_area
 admin_banner
 admin_c
-admin.cgi
 admin-console
 admincontrol
 admincp
@@ -421,7 +420,6 @@ assetmanagement
 assets
 _assets
 at
-AT-admin.cgi
 atom
 attach
 attachment
@@ -684,7 +682,6 @@ cache
 _cache
 .cache
 cachemgr
-cachemgr.cgi
 caching
 cad
 cadmins
@@ -790,27 +787,6 @@ cfg
 cfide
 cfm
 cfusion
-cgi
-cgibin
-cgi_bin
-cgi-bin
-cgi-bin/
-cgi-bin2
-cgi-bin/bin
-cgi-data
-cgi-exe
-cgi-home
-cgi-image
-cgi-local
-cgi-perl
-cgi-pub
-cgis
-cgi-script
-cgi-shl
-cgi-sys
-cgi-web
-cgi-win
-cgiwrap
 cgm-web
 ch
 chan
@@ -1293,7 +1269,6 @@ deutsch
 dev
 _dev
 dev2
-dev60cgi
 devel
 develop
 developement
@@ -1681,8 +1656,6 @@ fb
 fbook
 fc
 fcategory
-fcgi
-fcgi-bin
 fck
 fckeditor
 FCKeditor
@@ -2878,7 +2851,6 @@ my-account
 myadmin
 myblog
 mycalendar
-mycgi
 my-components
 myfaces
 _mygallery
@@ -3238,7 +3210,6 @@ phpBB2
 phpbb3
 phpBB3
 php-bin
-php-cgi
 phpEventCalendar
 phpinfo
 phpinfo.php
@@ -3863,7 +3834,6 @@ sc
 scan
 scanned
 scans
-scgi-bin
 sched
 schedule
 scheduled
@@ -4445,7 +4415,6 @@ test123
 test1234
 test2
 test3
-test-cgi
 test_db
 teste
 test-env
@@ -4870,7 +4839,6 @@ webcam
 webcart
 webcast
 webcasts
-webcgi
 webcharts
 webchat
 web.config
