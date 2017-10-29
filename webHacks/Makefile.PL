@@ -27,6 +27,7 @@ WriteMakefile(
         'HTTP::Request' => 0,
         'HTML::Scrubber' => 0,        
         'HTTP::Response' => 0,
+        'Text::Unidecode' => 0,        
         'Getopt::Std' => 0,
         'Parallel::ForkManager' => 0,        
         'Term::ANSIColor' => 0,   
