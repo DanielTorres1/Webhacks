@@ -122,6 +122,12 @@ if ($mode eq "archivos" or $mode eq "completo"){
 	print "\n";
 }
 
+# fuzz with admin
+if ($mode eq "admin" or $mode eq "completo"){	
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
+	print "\n";
+}
+
 # fuzz with common directory names
 if ($mode eq "directorios" or $mode eq "completo" ){	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
