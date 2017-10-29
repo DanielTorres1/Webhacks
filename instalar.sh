@@ -32,6 +32,7 @@ echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET"
 sudo pip install M2Crypto
 sudo cp cpanm /usr/bin 
 
+
 sudo cp webData.pl /usr/bin/
 sudo cp web-buster.pl /usr/bin/
 sudo cp get_ssl_cert.py /usr/bin/
@@ -43,6 +44,9 @@ sudo chmod a+x /usr/bin/cpanm
 sudo chmod a+x /usr/bin/webData.pl
 sudo chmod a+x /usr/bin/web-buster.pl
 sudo chmod a+x /usr/bin/get_ssl_cert.py
+
+cpanm http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
+cpanm http://search.cpan.org/CPAN/authors/id/X/XA/XAOC/ExtUtils-Depends-0.405.tar.gz
 
 cd webHacks/ 
 sudo cpanm .
