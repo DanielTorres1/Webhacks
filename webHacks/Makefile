@@ -19,7 +19,7 @@
 #     MIN_PERL_VERSION => q[5.006]
 #     NAME => q[webHacks]
 #     PL_FILES => {  }
-#     PREREQ_PM => { Getopt::Std=>q[0], HTTP::Cookies=>q[0], HTTP::Request=>q[0], HTTP::Response=>q[0], LWP::UserAgent=>q[0], Moose=>q[0], Net::SSL=>q[0], Parallel::ForkManager=>q[0], Term::ANSIColor=>q[0], Test::More=>q[0], Text::Table=>q[0], URI::Escape=>q[0] }
+#     PREREQ_PM => { Getopt::Std=>q[0], HTML::Scrubber=>q[0], HTTP::Cookies=>q[0], HTTP::Request=>q[0], HTTP::Response=>q[0], LWP::UserAgent=>q[0], Moose=>q[0], Net::SSL=>q[0], Parallel::ForkManager=>q[0], Term::ANSIColor=>q[0], Test::More=>q[0], Text::Table=>q[0], Text::Unidecode=>q[0], URI::Escape=>q[0] }
 #     TEST_REQUIRES => {  }
 #     VERSION_FROM => q[lib/webHacks.pm]
 #     clean => { FILES=>q[webHacks-*] }
@@ -476,7 +476,7 @@ realclean_subdirs :
 # Delete temporary files (via clean) and also delete dist files
 realclean purge ::  clean realclean_subdirs
 	- $(RM_F) \
-	  $(MAKEFILE_OLD) $(FIRST_MAKEFILE) 
+	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) 
 	- $(RM_RF) \
 	  $(DISTVNAME) 
 
@@ -505,6 +505,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '    - inc' >> META_new.yml
 	$(NOECHO) $(ECHO) 'requires:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  Getopt::Std: '\''0'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) '  HTML::Scrubber: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  HTTP::Cookies: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  HTTP::Request: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  HTTP::Response: '\''0'\''' >> META_new.yml
@@ -514,6 +515,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '  Parallel::ForkManager: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  Term::ANSIColor: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  Text::Table: '\''0'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) '  Text::Unidecode: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  URI::Escape: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  perl: '\''5.006'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'version: '\''1.0'\''' >> META_new.yml
@@ -555,6 +557,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '      "runtime" : {' >> META_new.json
 	$(NOECHO) $(ECHO) '         "requires" : {' >> META_new.json
 	$(NOECHO) $(ECHO) '            "Getopt::Std" : "0",' >> META_new.json
+	$(NOECHO) $(ECHO) '            "HTML::Scrubber" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "HTTP::Cookies" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "HTTP::Request" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "HTTP::Response" : "0",' >> META_new.json
@@ -564,6 +567,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '            "Parallel::ForkManager" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "Term::ANSIColor" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "Text::Table" : "0",' >> META_new.json
+	$(NOECHO) $(ECHO) '            "Text::Unidecode" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "URI::Escape" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "perl" : "5.006"' >> META_new.json
 	$(NOECHO) $(ECHO) '         }' >> META_new.json
@@ -854,6 +858,7 @@ ppd :
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <PERLCORE VERSION="5,006,0,0" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Getopt::Std" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTML::Scrubber" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Cookies" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Request" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Response" />' >> $(DISTNAME).ppd
@@ -863,6 +868,7 @@ ppd :
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Parallel::ForkManager" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Term::ANSIColor" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Table" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Unidecode" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="URI::Escape" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.24" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> $(DISTNAME).ppd

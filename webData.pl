@@ -95,7 +95,7 @@ if ($extract ne 'all')
 }
 else
 {
-	print "$title;$poweredBy;$Authenticate;$geo;$Generator;$description;$langVersion;$redirect_url;$author;$proxy;$type;$server;";
+	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~";
 }
  
 

@@ -19,6 +19,7 @@ no_index:
     - inc
 requires:
   Getopt::Std: '0'
+  HTML::Scrubber: '0'
   HTTP::Cookies: '0'
   HTTP::Request: '0'
   HTTP::Response: '0'
@@ -28,6 +29,7 @@ requires:
   Parallel::ForkManager: '0'
   Term::ANSIColor: '0'
   Text::Table: '0'
+  Text::Unidecode: '0'
   URI::Escape: '0'
   perl: '5.006'
 version: '1.0'

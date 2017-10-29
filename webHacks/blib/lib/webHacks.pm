@@ -698,19 +698,18 @@ my @user_agents=("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, lik
 			  "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36",
 			  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20100101 Firefox/23.0",
 			  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31",
-			  "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:22.0) Gecko/20100101 Firefox/22.0",
-			  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36",
-			  "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
-			  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36");			   
+			  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36");			   
 			  
 my $user_agent = @user_agents[rand($#user_agents+1)];    
 print "user_agent $user_agent \n" if ($debug);
 
-$headers->header('User-Agent' => $user_agent); 
+$headers->header('User-Agent' => "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"); 
 $headers->header('Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'); 
-$headers->header('Connection' => 'keep-alive'); 
-$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
-$headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
+$headers->header('Connection' => 'close'); 
+$headers->header('Cache-Control' => 'max-age=0'); 
+$headers->header('DNT' => '1'); 
+#$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
+#$headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
 
 
 return $headers; 
