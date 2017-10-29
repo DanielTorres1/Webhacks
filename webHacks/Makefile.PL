@@ -25,6 +25,7 @@ WriteMakefile(
         'URI::Escape' => 0,
         'HTTP::Cookies' => 0,
         'HTTP::Request' => 0,
+        'HTML::Scrubber' => 0,        
         'HTTP::Response' => 0,
         'Getopt::Std' => 0,
         'Parallel::ForkManager' => 0,        
