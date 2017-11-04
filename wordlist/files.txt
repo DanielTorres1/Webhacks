@@ -24,9 +24,6 @@ admin.php
 admin.pl
 akeeba.backend.log
 application.wadl
-phpmyadmin/scripts/setup.php
-typo3/phpmyadmin/scripts/setup.php
-xampp/phpmyadmin/scripts/setup.php
 awstats.conf
 .bash_history
 .bashrc
@@ -112,16 +109,9 @@ spamlog.log
 suspended.page
 .svn
 .svn/entries
-.swf
-swfobject.js
-tar.bz2
-tar.gz
 thumbs.db
 Thumbs.db
 upgrade.readme
-_vti_bin/shtml.dll
-_vti_bin/_vti_adm/admin.dll
-_vti_bin/_vti_aut/author.dll
 .web
 web.config
 web.xml
@@ -140,3 +130,7 @@ espia1/Account/fLogin.aspx
 espia/Account/fLogin.aspx
 Account/fLogin.aspx
 configconn.xml
+nb600/
+nb500/
+nb700/
+netbank/

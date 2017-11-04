@@ -17,6 +17,9 @@ cgi-bin/search.cgi
 admin.cgi
 cachemgr.cgi
 cgi/
+cgi-bin/test-cgi
+test/cgi/test.html
+cgi-bin/test-cgi.pl
 cgi-app/
 cgi-auth/
 cgibin/
