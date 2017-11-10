@@ -94,21 +94,9 @@ if ($quiet ne 1)
 			    
 					    
 my $webHacks ;
-if ($error404 eq '' && $ssl eq '' )
-{
 
-$webHacks = webHacks->new( rhost => $site,
-						rport => $port,
-						path => $path,
-						threads => $threads,								
-						cookie => $cookie,
-						ajax => $ajax,
-						max_redirect => 0,
-					    debug => 0);
-	
-}
-elsif ($error404 ne "")
-{
+
+
 $webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
@@ -116,26 +104,9 @@ $webHacks = webHacks->new( rhost => $site,
 						error404 => $error404,
 						cookie => $cookie,
 						ajax => $ajax,
+						ssl => $ssl,
 						max_redirect => 0,
 					    debug => 0);
-}
-
-elsif ($ssl ne "")
-{
-	if ($ssl == 2) 
-		{$ssl = 0} # we need to fix as SSL can not be passed as 0 (parameter)
-		$webHacks = webHacks->new( rhost => $site,
-						rport => $port,
-						path => $path,
-						threads => $threads,								
-						cookie => $cookie,
-						ssl => $ssl,
-						ajax => $ajax,
-						max_redirect => 0,
-					    debug => 0);	
-}
-
-
 
 # Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
