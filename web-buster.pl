@@ -5,7 +5,7 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('s:p:a:m:t:q:e:c:j:h', \%opts);
+getopts('s:p:a:m:t:q:e:c:l:j:h', \%opts);
 
 my $site = $opts{'s'} if $opts{'s'};
 my $port = $opts{'p'} if $opts{'p'};
@@ -13,6 +13,7 @@ my $path = $opts{'a'} if $opts{'a'};
 
 my $cookie = "";
 $cookie = $opts{'c'} if $opts{'c'};
+my $ssl = $opts{'l'} if $opts{'l'};
 my $ajax = "0";
 $ajax = $opts{'j'} if $opts{'j'};
 my $mode = $opts{'m'} if $opts{'m'};
@@ -58,6 +59,9 @@ sub usage {
   print "-t : Numero de hilos (Conexiones en paralelo) \n";
   print "-c : cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 \n";
   print "-e : Busca este patron en la respuesta para determinar si es una pagina de error 404\n";
+  print "-l : SSL (opcional) \n";
+  print "		-l 1 = SSL \n";
+  print "		-l 2 = NO SSL \n";	
   print "-m : Modo. Puede ser: \n";
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
@@ -72,7 +76,7 @@ sub usage {
   print "	  web-buster.pl -s 192.168.0.2 -p 80 -a / -m archivos -t 10 \n";
   print "\n";
   print "Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  \n";
-  print "	  web-buster.pl -s 192.168.0.2 -p 443 -a /wordpress/ -m backup -t 30\n";
+  print "	  web-buster.pl -s 192.168.0.2 -p 443 -a /wordpress/ -m backup -t 30\n";  
   print "\n";  
 }	
 
@@ -86,8 +90,11 @@ if ($quiet ne 1)
 {print $banner,"\n";}
 
 
+
+			    
+					    
 my $webHacks ;
-if ($error404 eq '')
+if ($error404 eq '' && $ssl eq '' )
 {
 
 $webHacks = webHacks->new( rhost => $site,
@@ -100,7 +107,7 @@ $webHacks = webHacks->new( rhost => $site,
 					    debug => 0);
 	
 }
-else
+elsif ($error404 ne "")
 {
 $webHacks = webHacks->new( rhost => $site,
 						rport => $port,
@@ -112,6 +119,23 @@ $webHacks = webHacks->new( rhost => $site,
 						max_redirect => 0,
 					    debug => 0);
 }
+
+elsif ($ssl ne "")
+{
+	if ($ssl == 2) 
+		{$ssl = 0} # we need to fix as SSL can not be passed as 0 (parameter)
+		$webHacks = webHacks->new( rhost => $site,
+						rport => $port,
+						path => $path,
+						threads => $threads,								
+						cookie => $cookie,
+						ssl => $ssl,
+						ajax => $ajax,
+						max_redirect => 0,
+					    debug => 0);	
+}
+
+
 
 # Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
