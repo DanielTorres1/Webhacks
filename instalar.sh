@@ -30,9 +30,6 @@ echo -e "$OKBLUE [+] Instalando WEB hacks $RESET"
 echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET" 
 
 sudo pip install M2Crypto pyopenssl
-sudo cp cpanm /usr/bin 
-
-
 
 sudo cp webData.pl /usr/bin/
 sudo cp passWeb.pl /usr/bin/
@@ -48,8 +45,8 @@ sudo chmod a+x /usr/bin/webData.pl
 sudo chmod a+x /usr/bin/web-buster.pl
 sudo chmod a+x /usr/bin/get_ssl_cert.py
 
-cpanm http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
-cpanm http://search.cpan.org/CPAN/authors/id/X/XA/XAOC/ExtUtils-Depends-0.405.tar.gz
+cpan http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
+cpan http://search.cpan.org/CPAN/authors/id/X/XA/XAOC/ExtUtils-Depends-0.405.tar.gz
 
 cd webHacks/ 
-sudo cpanm .
+sudo cpan .
