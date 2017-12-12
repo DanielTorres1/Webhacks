@@ -38,6 +38,7 @@
             "HTTP::Request" : "0",
             "HTTP::Response" : "0",
             "LWP::UserAgent" : "0",
+            "Math::Round" : "0",
             "Moose" : "0",
             "Net::SSL" : "0",
             "Parallel::ForkManager" : "0",

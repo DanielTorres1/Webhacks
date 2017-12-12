@@ -1,4 +1,6 @@
 admin/
+admin.php
+admin.pl
 admin123/
 Admin/
 ADMIN/

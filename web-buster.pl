@@ -5,7 +5,7 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('s:p:a:m:t:q:e:c:l:j:h', \%opts);
+getopts('s:p:a:m:t:q:e:c:l:j:d:h', \%opts);
 
 my $site = $opts{'s'} if $opts{'s'};
 my $port = $opts{'p'} if $opts{'p'};
@@ -20,6 +20,8 @@ my $mode = $opts{'m'} if $opts{'m'};
 my $threads = $opts{'t'} if $opts{'t'};
 my $quiet = $opts{'q'} if $opts{'q'};
 my $error404 = $opts{'e'} if $opts{'e'};
+#my $debug = $opts{'d'} if $opts{'d'};
+my $debug=0;
 # scan for comments
 
 #PATTERNS = {
@@ -67,6 +69,8 @@ sub usage {
   print "	  archivos: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
   print "	  webdav: Directorios webdav \n";
+  print "	  webservices: Directorios webservices \n";
+  print "	  sharepoint: Directorios sharepoint \n";
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
   print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";
@@ -95,18 +99,63 @@ if ($quiet ne 1)
 					    
 my $webHacks ;
 
+if($error404 eq '' and $ssl eq '')
+{
 
+	$webHacks = webHacks->new( rhost => $site,
+						rport => $port,
+						path => $path,
+						threads => $threads,						
+						cookie => $cookie,
+						ajax => $ajax,						
+						max_redirect => 0,
+					    debug => $debug);	
+}
 
-$webHacks = webHacks->new( rhost => $site,
+if($ssl eq '' and $error404 ne '' )
+{
+	
+	$webHacks = webHacks->new( rhost => $site,
+						rport => $port,
+						path => $path,
+						threads => $threads,
+						error404 => $error404,						
+						cookie => $cookie,
+						ajax => $ajax,						
+						max_redirect => 0,
+					    debug => $debug);	
+}
+
+if($ssl ne '' and $error404 eq '' )
+{
+	if ($ssl == 2)
+		{$ssl = 0;}
+	$webHacks = webHacks->new( rhost => $site,
+						rport => $port,
+						path => $path,
+						threads => $threads,
+						ssl => $ssl,
+						cookie => $cookie,
+						ajax => $ajax,						
+						max_redirect => 0,
+					    debug => $debug);	
+}
+
+if ($error404 ne ''  and $ssl ne '' )
+{
+	if ($ssl == 2)
+		{$ssl = 0;}
+	$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
 						threads => $threads,
 						error404 => $error404,
-						cookie => $cookie,
-						ajax => $ajax,
 						ssl => $ssl,
+						cookie => $cookie,
+						ajax => $ajax,						
 						max_redirect => 0,
-					    debug => 0);
+					    debug => $debug);	
+}
 
 # Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
@@ -118,7 +167,7 @@ if ($mode eq "archivos" or $mode eq "completo"){
 }
 
 # fuzz with admin
-if ($mode eq "admin" or $mode eq "completo"){	
+if ($mode eq "admin"){	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
 	print "\n";
 }
@@ -156,6 +205,18 @@ if ($mode eq "username" or $mode eq "completo"){
 # fuzz with webdav
 if ($mode eq "webdav" or $mode eq "completo"){	
 	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/webdav.txt");	
+	print "\n";
+}
+
+# fuzz with webservices
+if ($mode eq "webservices" or $mode eq "completo"){	
+	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/webservices.txt");	
+	print "\n";
+}
+
+# fuzz with sharepoint
+if ($mode eq "sharepoint" or $mode eq "completo"){	
+	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/sharepoint.txt");	
 	print "\n";
 }
 

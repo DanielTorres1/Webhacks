@@ -13,7 +13,7 @@ use HTTP::Request;
 use HTTP::Response;
 use HTML::Scrubber;
 use Parallel::ForkManager;
-use Net::SSL (); # From Crypt-SSLeay
+#use Net::SSL (); # From Crypt-SSLeay
 use Term::ANSIColor;
 use utf8;
 use Text::Unidecode;
@@ -22,7 +22,7 @@ binmode STDOUT, ":encoding(UTF-8)";
 
 no warnings 'uninitialized';
 
-$Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL for proxy compatibility
+#$Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL for proxy compatibility
 
 {
 has 'rhost', is => 'rw', isa => 'Str',default => '';	
@@ -411,7 +411,7 @@ if ($software eq "ZKSoftware")
 		
 		if ($status =~ /200/m)
 		{
-			if (! ($decoded_response =~ /Error/m)){	 
+			if  ($decoded_response =~ /Department/m){	 
 			print "ZKSoftware: Password found! (administrator:$password)\n";
 			last;
 			}							
@@ -435,6 +435,8 @@ my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $ssl = $self->ssl;
 
+my %options = @_;
+my $log_file = $options{ log_file };
 
 my $url;
 if ($ssl)
@@ -446,9 +448,22 @@ else
 my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
 
-#<meta http-equiv="Refresh" content="0; URL=/page.cgi?page=status">
-$decoded_response =~ /meta http-equiv="Refresh" content="0; URL=(.*?)"/i;
+REDIRECT:
+$decoded_response =~ s/; url=/;url=/gi; 
+#$decoded_response =~ s/^.*?\/noscript//s;  #delete everything before xxxxxxxxx
+$decoded_response =~ s/<noscript[^\/noscript>]*\/noscript>//g;
+
+#<meta http-equiv="Refresh" content="0;URL=/page.cgi?page=status">
+$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
 my $redirect_url = $1; 
+
+if ($redirect_url eq '')
+{
+	                    #<meta http-equiv="Refresh" content="1;url=http://facturas.tigomoney.com.bo/tigoMoney/">	
+	$decoded_response =~ /meta http-equiv="Refresh" content="1;URL=(.*?)"/i;
+	$redirect_url = $1; 
+}
+
 
 if ($redirect_url eq '')
 {
@@ -461,10 +476,44 @@ if ($redirect_url eq '')
 
 if ($redirect_url eq '')
 {
-	#window.location="http://www.cadeco.org/cam";</script>
+	#window.location="http://www.cadeco.org/cam";</script>	
+
 	$decoded_response =~ /window.location="(.*?)"/i;
 	$redirect_url = $1; 
 }
+
+if ($redirect_url eq '')
+{
+	#window.location.href="login.html?ver="+fileVer;	
+	$decoded_response =~ /window.location.href="(.*?)"/i;
+	$redirect_url = $1; 
+}
+
+if ($redirect_url eq '')
+{
+	#window.location.href = "/doc/page/login.asp?_" 	
+	$decoded_response =~ /window.location.href = "(.*?)"/i;
+	$redirect_url = $1; 
+}
+
+
+if ($redirect_url eq '')
+{
+	#window.location = "http://backupagenda.vivagsm.com/pdm-login-web-nuevatel-bolivia/signin/"
+
+	$decoded_response =~ /window.location = "(.*?)"/i;
+	$redirect_url = $1; 
+}
+
+if ($redirect_url eq '')
+{
+	#top.location="/login";
+
+	$decoded_response =~ /top.location="(.*?)"/i;
+	$redirect_url = $1; 
+}
+
+
 
 
 $redirect_url =~ s/\'//g;  
@@ -476,12 +525,30 @@ if($redirect_url =~ /http/m ){
  }  
 elsif ($redirect_url ne '' )
 {	
-	my $final_url = $url.$redirect_url;
+
+	my $final_url;
+	my $firstChar = substr($redirect_url, 0, 1);
+	if ($firstChar eq "/")
+		{$final_url = $url.$redirect_url;}
+	else
+		{$final_url = $url."/".$redirect_url;}
+
+	
 	print "final_url $final_url \n" if ($debug);
 	$response = $self->dispatch(url => $final_url, method => 'GET', headers => $headers);
-	$decoded_response = $response->decoded_content; 	 
+	$decoded_response = $response->decoded_content; 	
+	
+	 if($decoded_response =~ /meta http-equiv="refresh"/m){	 
+		 $url = $final_url;
+		 $url =~ s/index.php|index.asp//g;  
+		 goto REDIRECT;
+	 }
+		
+	 
 }
 
+
+	
 
 my $response_headers = $response->headers_as_string;
 my $final_url = $response->request->uri;
@@ -493,9 +560,9 @@ $decoded_response = $response_headers."\n".$decoded_response;
 $decoded_response =~ s/<title>\n/<title>/g; 
 $decoded_response =~ s/<title>\r\n/<title>/g; 
 
-#open (SALIDA,">response.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-#print SALIDA $decoded_response;
-#close (SALIDA);
+open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
+print SALIDA $decoded_response;
+close (SALIDA);
 
 
 my ($poweredBy) = ($decoded_response =~ /X-Powered-By:(.*?)\n/i);
@@ -561,9 +628,22 @@ my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);
 print "Authenticate $Authenticate \n" if ($debug);
 
 
+
 my $type;
 if($decoded_response =~ /GASOLINERA/m)
 	{$type="GASOLINERA";} 		
+	
+if($decoded_response =~ /login/m)
+	{$type="login";} 			
+	
+if($decoded_response =~ /Cisco Systems/i)
+	{$type="cisco";} 		
+
+if($decoded_response =~ /X-OWA-Version/i)
+	{$type="owa";} 	
+
+if($decoded_response =~ /FortiGate/i)
+	{$type="FortiGate";} 	
 
 
  my %data = (
@@ -706,8 +786,7 @@ my $debug = $self->debug;
 my $headers = HTTP::Headers->new;
 
 
-my @user_agents=("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/28.0.1500.71 Chrome/28.0.1500.71 Safari/537.36",
-			  "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36",
+my @user_agents=( "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36",
 			  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20100101 Firefox/23.0",
 			  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.63 Safari/537.31",
 			  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.62 Safari/537.36");			   
@@ -779,6 +858,8 @@ my $method = $options{ method };
 my $headers = $options{ headers };
 my $response;
 
+#print Dumper $headers;
+
 if ($method eq 'POST_OLD')
   {     
    my $post_data = $options{ post_data };        
@@ -847,9 +928,9 @@ my $max_redirect = $self->max_redirect;
 print "building browser \n" if ($debug);
 
 
-my $browser = LWP::UserAgent->new;
+my $browser = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });        
 
-$browser->timeout(13);
+$browser->timeout(15);
 $browser->cookie_jar(HTTP::Cookies->new());
 $browser->show_progress(1) if ($debug);
 $browser->max_redirect($max_redirect);

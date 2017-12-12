@@ -7,24 +7,28 @@ use utf8;
 use Text::Unidecode;
 binmode STDOUT, ":encoding(UTF-8)";
 
-$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+#$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 my %opts;
-getopts('t:p:s:e:h', \%opts);
+getopts('t:p:s:e:i:l:h', \%opts);
 
 
 my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $ssl = $opts{'s'} if $opts{'s'};
+my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
+my $log_file = $opts{'l'} if $opts{'l'};
 
 sub usage { 
   
   print "Uso:  \n";
   print "Autor: Daniel Torres Sandi \n";
-  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -s [1/2] -e {small/all} \n"; 
+  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -s [1/2] -e {small/all} -i {0/1} -l log_file \n"; 
   print "		-s 1 = SSL \n";
-  print "		-s 2 = NO SSL \n";	
+  print "		-s 2 = NO SSL \n\n";	  
+  print "		-i 1 = SQLi \n";
+  print "		-i 0 = NO SQLi \n";	
 }	
 # Print help message if required
 if ($opts{'h'} || !(%opts)) {
@@ -38,7 +42,7 @@ if ($ssl eq '')
 
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,	
-						max_redirect => 4,																	
+						max_redirect => 4,						
 					    debug => 0);	
 	# Need to make a request to discover if SSL is in use
 	$webHacks->dispatch(url => "http://$target:$port",method => 'GET');
@@ -50,7 +54,7 @@ else
 	{$ssl = 0} # we need to fix as SSL can not be passed as 0 (parameter)
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,		
-						ssl => $ssl,
+						ssl => $ssl,						
 						max_redirect => 4,
 					    debug => 0);	
 }
@@ -58,7 +62,7 @@ else
 
 
 
-my %data = $webHacks->getData();
+my %data = $webHacks->getData(log_file => $log_file);
 
 my $title = %data{'title'};
 my $poweredBy = %data{'poweredBy'};
@@ -83,6 +87,7 @@ if ($extract ne 'all')
 	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
 	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
 	print "Proxy $proxy \n" if ($proxy ne '' && $proxy ne ' ');
+#	print "redirect_url $server \n" if ($redirect_url ne '' && $redirect_url ne ' ');
 	print "server $server \n" if ($server ne '' && $server ne ' ');
 	
 	
@@ -93,8 +98,11 @@ else
 }
  
 
-my $error_response = $webHacks->sqli_test("'");
+if ($sqli)
+{
+	my $error_response = $webHacks->sqli_test("'");
 
-if ($error_response ne '' && $error_response ne ' ')
-	{print "PWAN SQLi! error: $error_response \n";}
+	if ($error_response ne '' && $error_response ne ' ')
+		{print "PWAN SQLi! error: $error_response \n";}
 
+}

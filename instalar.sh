@@ -47,6 +47,7 @@ sudo chmod a+x /usr/bin/get_ssl_cert.py
 
 cpan http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
 cpan http://search.cpan.org/CPAN/authors/id/X/XA/XAOC/ExtUtils-Depends-0.405.tar.gz
+cpan https://cpan.metacpan.org/authors/id/O/OA/OALDERS/LWP-Protocol-https-6.07.tar.gz
 
 cd webHacks/ 
 sudo cpan .

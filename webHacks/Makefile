@@ -19,7 +19,7 @@
 #     MIN_PERL_VERSION => q[5.006]
 #     NAME => q[webHacks]
 #     PL_FILES => {  }
-#     PREREQ_PM => { Getopt::Std=>q[0], HTML::Scrubber=>q[0], HTTP::Cookies=>q[0], HTTP::Request=>q[0], HTTP::Response=>q[0], LWP::UserAgent=>q[0], Moose=>q[0], Net::SSL=>q[0], Parallel::ForkManager=>q[0], Term::ANSIColor=>q[0], Test::More=>q[0], Text::Table=>q[0], Text::Unidecode=>q[0], URI::Escape=>q[0] }
+#     PREREQ_PM => { Getopt::Std=>q[0], HTML::Scrubber=>q[0], HTTP::Cookies=>q[0], HTTP::Request=>q[0], HTTP::Response=>q[0], LWP::UserAgent=>q[0], Math::Round=>q[0], Moose=>q[0], Net::SSL=>q[0], Parallel::ForkManager=>q[0], Term::ANSIColor=>q[0], Test::More=>q[0], Text::Table=>q[0], Text::Unidecode=>q[0], URI::Escape=>q[0] }
 #     TEST_REQUIRES => {  }
 #     VERSION_FROM => q[lib/webHacks.pm]
 #     clean => { FILES=>q[webHacks-*] }
@@ -476,7 +476,7 @@ realclean_subdirs :
 # Delete temporary files (via clean) and also delete dist files
 realclean purge ::  clean realclean_subdirs
 	- $(RM_F) \
-	  $(MAKEFILE_OLD) $(FIRST_MAKEFILE) 
+	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) 
 	- $(RM_RF) \
 	  $(DISTVNAME) 
 
@@ -510,6 +510,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '  HTTP::Request: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  HTTP::Response: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  LWP::UserAgent: '\''0'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) '  Math::Round: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  Moose: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  Net::SSL: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) '  Parallel::ForkManager: '\''0'\''' >> META_new.yml
@@ -562,6 +563,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '            "HTTP::Request" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "HTTP::Response" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "LWP::UserAgent" : "0",' >> META_new.json
+	$(NOECHO) $(ECHO) '            "Math::Round" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "Moose" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "Net::SSL" : "0",' >> META_new.json
 	$(NOECHO) $(ECHO) '            "Parallel::ForkManager" : "0",' >> META_new.json
@@ -863,6 +865,7 @@ ppd :
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Request" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Response" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="LWP::UserAgent" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Math::Round" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Moose::" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Net::SSL" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Parallel::ForkManager" />' >> $(DISTNAME).ppd
