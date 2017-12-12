@@ -1,0 +1,17 @@
+services.wsdl
+medicareSupplier.wsdl
+DomainAPI.wsdl
+eds.wsdl
+framework.wsdl
+content.wsdl
+javax.wsdl
+Hello.wsdl
+soapresponder.wsdl
+media.wsdl
+wsfe.wsdl
+li.wsdl
+ServiceSOAP.wsdl
+basic.wsdl
+admsync.asmx
+Servicios.asmx
+Service01.asmx
