@@ -5,19 +5,19 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('s:p:a:m:t:q:e:c:l:j:d:h', \%opts);
+getopts('t:p:d:j:h:c:e:s:m:q', \%opts);
 
-my $site = $opts{'s'} if $opts{'s'};
+my $site = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
-my $path = $opts{'a'} if $opts{'a'};
+my $path = $opts{'d'} if $opts{'d'};
 
 my $cookie = "";
 $cookie = $opts{'c'} if $opts{'c'};
-my $ssl = $opts{'l'} if $opts{'l'};
+my $ssl = $opts{'s'};
 my $ajax = "0";
 $ajax = $opts{'j'} if $opts{'j'};
 my $mode = $opts{'m'} if $opts{'m'};
-my $threads = $opts{'t'} if $opts{'t'};
+my $threads = $opts{'h'} if $opts{'h'};
 my $quiet = $opts{'q'} if $opts{'q'};
 my $error404 = $opts{'e'} if $opts{'e'};
 #my $debug = $opts{'d'} if $opts{'d'};
@@ -54,17 +54,18 @@ sub usage {
   
   print $banner;
   print "Uso:  \n";  
-  print "-s : IP o dominio del servidor web \n";
+  print "-t : IP o dominio del servidor web \n";
   print "-p : Puerto del servidor web \n";
-  print "-a : Ruta donde empezara a probar directorios \n";
+  print "-d : Ruta donde empezara a probar directorios \n";
   print "-j : Adicionar header ajax (xmlhttprequest) 1 para habilitar \n";
-  print "-t : Numero de hilos (Conexiones en paralelo) \n";
+  print "-h : Numero de hilos (Conexiones en paralelo) \n";
   print "-c : cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 \n";
   print "-e : Busca este patron en la respuesta para determinar si es una pagina de error 404\n";
-  print "-l : SSL (opcional) \n";
-  print "		-l 1 = SSL \n";
-  print "		-l 2 = NO SSL \n";	
+  print "-s : SSL (opcional) \n";
+  print "		-s 1 = SSL \n";
+  print "		-s 0 = NO SSL \n";	
   print "-m : Modo. Puede ser: \n";
+  print "	  completo: Probara Todos los módulos \n";
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
@@ -73,19 +74,18 @@ sub usage {
   print "	  sharepoint: Directorios sharepoint \n";
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
-  print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";
-  print "	  completo: Probara Todo lo anterior \n";
+  print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";  
   print "\n";
   print "Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos\n";
-  print "	  web-buster.pl -s 192.168.0.2 -p 80 -a / -m archivos -t 10 \n";
+  print "	  web-buster.pl -t 192.168.0.2 -p 80 -d / -m archivos -h 10 \n";
   print "\n";
   print "Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  \n";
-  print "	  web-buster.pl -s 192.168.0.2 -p 443 -a /wordpress/ -m backup -t 30\n";  
+  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s 1 -h 30\n";  
   print "\n";  
 }	
 
 # Print help message if required
-if ($opts{'h'} || !(%opts)) {
+if (!(%opts)) {
 	usage();
 	exit 0;
 }
@@ -110,9 +110,12 @@ if($error404 eq '' and $ssl eq '')
 						ajax => $ajax,						
 						max_redirect => 0,
 					    debug => $debug);	
+
+# Need to make a request to discover if SSL is in use
+$webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
 }
 
-if($ssl eq '' and $error404 ne '' )
+if($error404 ne '' and $ssl eq '' )
 {
 	
 	$webHacks = webHacks->new( rhost => $site,
@@ -124,12 +127,14 @@ if($ssl eq '' and $error404 ne '' )
 						ajax => $ajax,						
 						max_redirect => 0,
 					    debug => $debug);	
+
+# Need to make a request to discover if SSL is in use
+$webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');					    
 }
 
 if($ssl ne '' and $error404 eq '' )
 {
-	if ($ssl == 2)
-		{$ssl = 0;}
+
 	$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
@@ -142,9 +147,7 @@ if($ssl ne '' and $error404 eq '' )
 }
 
 if ($error404 ne ''  and $ssl ne '' )
-{
-	if ($ssl == 2)
-		{$ssl = 0;}
+{	
 	$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
@@ -157,8 +160,6 @@ if ($error404 ne ''  and $ssl ne '' )
 					    debug => $debug);	
 }
 
-# Need to make a request to discover if SSL is in use
-$webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
 
 # fuzz with common files names
 if ($mode eq "archivos" or $mode eq "completo"){	

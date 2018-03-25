@@ -3,7 +3,7 @@ use Data::Dumper;
 require webHacks;
 use strict;
 use Getopt::Std;
-use utf8;
+#use utf8;
 use Text::Unidecode;
 binmode STDOUT, ":encoding(UTF-8)";
 
@@ -15,20 +15,28 @@ getopts('t:p:s:e:i:l:h', \%opts);
 
 my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
-my $ssl = $opts{'s'} if $opts{'s'};
+my $ssl = $opts{'s'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
 
 sub usage { 
   
-  print "Uso:  \n";
-  print "Autor: Daniel Torres Sandi \n";
-  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -s [1/2] -e {small/all} -i {0/1} -l log_file \n"; 
+  print "Uso:  \n";  
+  print "-t : IP o dominio del servidor web \n";
+  print "-p : Puerto del servidor web \n";
+  print "-d : Ruta donde empezara a probar directorios \n";
+  print "-l : Archivo donde escribira los logs \n";
+  print "-e : Extraer \n";
+  print "		-e parcial = titulo,metadatos,descripcion y banner \n";
+  print "		-e todo = titulo,metadatos,descripcion,banner, version del lenguaje/CMS/framework usado, etc\n";	
+  print "-s : SSL (opcional) \n";
   print "		-s 1 = SSL \n";
-  print "		-s 2 = NO SSL \n\n";	  
-  print "		-i 1 = SQLi \n";
-  print "		-i 0 = NO SQLi \n";	
+  print "		-s 0 = NO SSL \n";	
+  
+  print "Autor: Daniel Torres Sandi \n";
+  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -e todo -l log.txt \n"; 
+	  
 }	
 # Print help message if required
 if ($opts{'h'} || !(%opts)) {
@@ -49,9 +57,7 @@ if ($ssl eq '')
 }
 else
 {
-
-	if ($ssl == 2) 
-	{$ssl = 0} # we need to fix as SSL can not be passed as 0 (parameter)
+	
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,		
 						ssl => $ssl,						
@@ -80,7 +86,7 @@ my $server = %data{'server'};
 
 
 
-if ($extract ne 'all')
+if ($extract ne 'todo')
 {
 	print "Title: $title \n" if ($title ne '' && $title ne ' ');
 	print "poweredBy $poweredBy \n" if ($poweredBy ne '' && $poweredBy ne ' ');
@@ -98,11 +104,11 @@ else
 }
  
 
-if ($sqli)
-{
-	my $error_response = $webHacks->sqli_test("'");
+#if ($sqli)
+#{
+	#my $error_response = $webHacks->sqli_test("'");
 
-	if ($error_response ne '' && $error_response ne ' ')
-		{print "PWAN SQLi! error: $error_response \n";}
+	#if ($error_response ne '' && $error_response ne ' ')
+		#{print "PWAN SQLi! error: $error_response \n";}
 
-}
+#}

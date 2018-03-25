@@ -1,12 +1,12 @@
 # This Makefile is for the webHacks extension to perl.
 #
 # It was generated automatically by MakeMaker version
-# 7.1002 (Revision: 71002) from the contents of
+# 7.24 (Revision: 72400) from the contents of
 # Makefile.PL. Don't edit this file, edit Makefile.PL instead.
 #
 #       ANY CHANGES MADE HERE WILL BE LOST!
 #
-#   MakeMaker ARGV: ()
+#   MakeMaker ARGV: (q[INSTALLDIRS=site])
 #
 
 #   MakeMaker Parameters:
@@ -30,7 +30,7 @@
 
 # --- MakeMaker const_config section:
 
-# These definitions are from config.sh (via /usr/lib/x86_64-linux-gnu/perl/5.24/Config.pm).
+# These definitions are from config.sh (via /usr/lib/x86_64-linux-gnu/perl/5.26/Config.pm).
 # They may have been overridden via Makefile.PL or on the command line.
 AR = ar
 CC = x86_64-linux-gnu-gcc
@@ -43,16 +43,16 @@ FULL_AR = /usr/bin/ar
 LD = x86_64-linux-gnu-gcc
 LDDLFLAGS = -shared -L/usr/local/lib -fstack-protector-strong
 LDFLAGS =  -fstack-protector-strong -L/usr/local/lib
-LIBC = libc-2.24.so
+LIBC = libc-2.26.so
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = linux
-OSVERS = 3.16.0
+OSVERS = 4.9.0
 RANLIB = :
-SITELIBEXP = /usr/local/share/perl/5.24.1
-SITEARCHEXP = /usr/local/lib/x86_64-linux-gnu/perl/5.24.1
+SITELIBEXP = /usr/local/share/perl/5.26.1
+SITEARCHEXP = /usr/local/lib/x86_64-linux-gnu/perl/5.26.1
 SO = so
-VENDORARCHEXP = /usr/lib/x86_64-linux-gnu/perl5/5.24
+VENDORARCHEXP = /usr/lib/x86_64-linux-gnu/perl5/5.26
 VENDORLIBEXP = /usr/share/perl5
 
 
@@ -83,17 +83,17 @@ PREFIX = $(SITEPREFIX)
 PERLPREFIX = /usr
 SITEPREFIX = /usr/local
 VENDORPREFIX = /usr
-INSTALLPRIVLIB = /usr/share/perl/5.24
+INSTALLPRIVLIB = /usr/share/perl/5.26
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = /usr/local/share/perl/5.24.1
+INSTALLSITELIB = /usr/local/share/perl/5.26.1
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
 INSTALLVENDORLIB = /usr/share/perl5
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.24
+INSTALLARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.26
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = /usr/local/lib/x86_64-linux-gnu/perl/5.24.1
+INSTALLSITEARCH = /usr/local/lib/x86_64-linux-gnu/perl/5.26.1
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
-INSTALLVENDORARCH = /usr/lib/x86_64-linux-gnu/perl5/5.24
+INSTALLVENDORARCH = /usr/lib/x86_64-linux-gnu/perl5/5.26
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
 INSTALLBIN = /usr/bin
 DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
@@ -119,16 +119,16 @@ INSTALLSITEMAN3DIR = /usr/local/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
 INSTALLVENDORMAN3DIR = /usr/share/man/man3
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = /usr/share/perl/5.24
-PERL_ARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.24
-PERL_ARCHLIBDEP = /usr/lib/x86_64-linux-gnu/perl/5.24
+PERL_LIB = /usr/share/perl/5.26
+PERL_ARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.26
+PERL_ARCHLIBDEP = /usr/lib/x86_64-linux-gnu/perl/5.26
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = Makefile.old
 MAKE_APERL_FILE = Makefile.aperl
 PERLMAINCC = $(CC)
-PERL_INC = /usr/lib/x86_64-linux-gnu/perl/5.24/CORE
-PERL_INCDEP = /usr/lib/x86_64-linux-gnu/perl/5.24/CORE
+PERL_INC = /usr/lib/x86_64-linux-gnu/perl/5.26/CORE
+PERL_INCDEP = /usr/lib/x86_64-linux-gnu/perl/5.26/CORE
 PERL = "/usr/bin/perl"
 FULLPERL = "/usr/bin/perl"
 ABSPERL = $(PERL)
@@ -143,9 +143,9 @@ PERM_DIR = 755
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = /usr/share/perl/5.24/ExtUtils/MakeMaker.pm
-MM_VERSION  = 7.1002
-MM_REVISION = 71002
+MAKEMAKER   = /usr/share/perl/5.26/ExtUtils/MakeMaker.pm
+MM_VERSION  = 7.24
+MM_REVISION = 72400
 
 # FULLEXT = Pathname for extension directory (eg Foo/Bar/Oracle).
 # BASEEXT = Basename part of FULLEXT. May be just equal FULLEXT. (eg Oracle)
@@ -191,14 +191,11 @@ PERL_ARCHIVEDEP    =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/webHacks.pm
-
-PM_TO_BLIB = lib/webHacks.pm \
-	blib/lib/webHacks.pm
+TO_INST_PM = 
 
 
 # --- MakeMaker platform_constants section:
-MM_Unix_VERSION = 7.1002
+MM_Unix_VERSION = 7.24
 PERL_MALLOC_DEF = -DPERL_EXTMALLOC_DEF -Dmalloc=Perl_malloc -Dfree=Perl_mfree -Drealloc=Perl_realloc -Dcalloc=Perl_calloc
 
 
@@ -290,13 +287,15 @@ DISTVNAME = webHacks-1.0
 PASTHRU = LIBPERL_A="$(LIBPERL_A)"\
 	LINKTYPE="$(LINKTYPE)"\
 	LD="$(LD)"\
-	PREFIX="$(PREFIX)"
+	PREFIX="$(PREFIX)"\
+	PASTHRU_DEFINE='$(DEFINE) $(PASTHRU_DEFINE)'\
+	PASTHRU_INC='$(INC) $(PASTHRU_INC)'
 
 
 # --- MakeMaker special_targets section:
 .SUFFIXES : .xs .c .C .cpp .i .s .cxx .cc $(OBJ_EXT)
 
-.PHONY: all config static dynamic test linkext manifest blibdirs clean realclean disttest distdir
+.PHONY: all config static dynamic test linkext manifest blibdirs clean realclean disttest distdir pure_all subdirs clean_subdirs makemakerdflt manifypods realclean_subdirs subdirs_dynamic subdirs_pure_nolink subdirs_static subdirs-test_dynamic subdirs-test_static test_dynamic test_static
 
 
 
@@ -313,8 +312,9 @@ PASTHRU = LIBPERL_A="$(LIBPERL_A)"\
 all :: pure_all manifypods
 	$(NOECHO) $(NOOP)
 
-
 pure_all :: config pm_to_blib subdirs linkext
+	$(NOECHO) $(NOOP)
+
 	$(NOECHO) $(NOOP)
 
 subdirs :: $(MYEXTLIB)
@@ -379,7 +379,7 @@ $(INST_MAN3DIR)$(DFSEP).exists :: Makefile.PL
 
 # --- MakeMaker linkext section:
 
-linkext :: $(LINKTYPE)
+linkext :: dynamic
 	$(NOECHO) $(NOOP)
 
 
@@ -393,7 +393,7 @@ BOOTSTRAP =
 
 # --- MakeMaker dynamic section:
 
-dynamic :: $(FIRST_MAKEFILE) $(BOOTSTRAP) $(INST_DYNAMIC)
+dynamic :: $(FIRST_MAKEFILE) config $(INST_BOOT) $(INST_DYNAMIC)
 	$(NOECHO) $(NOOP)
 
 
@@ -417,7 +417,7 @@ POD2MAN_EXE = $(PERLRUN) "-MExtUtils::Command::MM" -e pod2man "--"
 POD2MAN = $(POD2MAN_EXE)
 
 
-manifypods : pure_all 
+manifypods : pure_all config 
 	$(NOECHO) $(NOOP)
 
 
@@ -431,11 +431,17 @@ manifypods : pure_all
 
 # --- MakeMaker subdirs section:
 
-# none
+# The default clean, realclean and test targets in this Makefile
+# have automatically been given entries for each subdir.
+
+
+subdirs ::
+	$(NOECHO) cd lib && $(MAKE) $(USEMAKEFILE) $(FIRST_MAKEFILE) all $(PASTHRU)
+
 
 # --- MakeMaker clean_subdirs section:
 clean_subdirs :
-	$(NOECHO) $(NOOP)
+	$(ABSPERLRUN)  -e 'exit 0 unless chdir '\''lib'\'';  system '\''$(MAKE) clean'\'' if -f '\''$(FIRST_MAKEFILE)'\'';' --
 
 
 # --- MakeMaker clean section:
@@ -468,13 +474,15 @@ clean :: clean_subdirs
 
 
 # --- MakeMaker realclean_subdirs section:
-realclean_subdirs :
-	$(NOECHO) $(NOOP)
+# so clean is forced to complete before realclean_subdirs runs
+realclean_subdirs : clean
+	- $(ABSPERLRUN)  -e 'chdir '\''lib'\'';  system '\''$(MAKE) $(USEMAKEFILE) $(MAKEFILE_OLD) realclean'\'' if -f '\''$(MAKEFILE_OLD)'\'';' --
+	- $(ABSPERLRUN)  -e 'chdir '\''lib'\'';  system '\''$(MAKE) $(USEMAKEFILE) $(FIRST_MAKEFILE) realclean'\'' if -f '\''$(FIRST_MAKEFILE)'\'';' --
 
 
 # --- MakeMaker realclean section:
 # Delete temporary files (via clean) and also delete dist files
-realclean purge ::  clean realclean_subdirs
+realclean purge :: realclean_subdirs
 	- $(RM_F) \
 	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) 
 	- $(RM_RF) \
@@ -493,7 +501,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) 'configure_requires:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  ExtUtils::MakeMaker: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'dynamic_config: 1' >> META_new.yml
-	$(NOECHO) $(ECHO) 'generated_by: '\''ExtUtils::MakeMaker version 7.1002, CPAN::Meta::Converter version 2.150005'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) 'generated_by: '\''ExtUtils::MakeMaker version 7.24, CPAN::Meta::Converter version 2.150010'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'license: artistic_2' >> META_new.yml
 	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  url: http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
@@ -529,7 +537,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '      "Daniel Torres <daniel.torres@owasp.org>"' >> META_new.json
 	$(NOECHO) $(ECHO) '   ],' >> META_new.json
 	$(NOECHO) $(ECHO) '   "dynamic_config" : 1,' >> META_new.json
-	$(NOECHO) $(ECHO) '   "generated_by" : "ExtUtils::MakeMaker version 7.1002, CPAN::Meta::Converter version 2.150005",' >> META_new.json
+	$(NOECHO) $(ECHO) '   "generated_by" : "ExtUtils::MakeMaker version 7.24, CPAN::Meta::Converter version 2.150010",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "license" : [' >> META_new.json
 	$(NOECHO) $(ECHO) '      "artistic_2"' >> META_new.json
 	$(NOECHO) $(ECHO) '   ],' >> META_new.json
@@ -577,7 +585,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '   },' >> META_new.json
 	$(NOECHO) $(ECHO) '   "release_status" : "stable",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "version" : "1.0",' >> META_new.json
-	$(NOECHO) $(ECHO) '   "x_serialization_backend" : "JSON::PP version 2.27300_01"' >> META_new.json
+	$(NOECHO) $(ECHO) '   "x_serialization_backend" : "JSON::PP version 2.27400_02"' >> META_new.json
 	$(NOECHO) $(ECHO) '}' >> META_new.json
 	-$(NOECHO) $(MV) META_new.json $(DISTVNAME)/META.json
 
@@ -658,7 +666,7 @@ distdir : create_distdir distmeta
 
 # --- MakeMaker dist_test section:
 disttest : distdir
-	cd $(DISTVNAME) && $(ABSPERLRUN) Makefile.PL 
+	cd $(DISTVNAME) && $(ABSPERLRUN) Makefile.PL "INSTALLDIRS=site"
 	cd $(DISTVNAME) && $(MAKE) $(PASTHRU)
 	cd $(DISTVNAME) && $(MAKE) test $(PASTHRU)
 
@@ -677,17 +685,17 @@ ci :
 distmeta : create_distdir metafile
 	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'exit unless -e q{META.yml};' \
 	  -e 'eval { maniadd({q{META.yml} => q{Module YAML meta-data (added by MakeMaker)}}) }' \
-	  -e '    or print "Could not add META.yml to MANIFEST: $$$${'\''@'\''}\n"' --
+	  -e '    or die "Could not add META.yml to MANIFEST: $${'\''@'\''}"' --
 	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'exit unless -f q{META.json};' \
 	  -e 'eval { maniadd({q{META.json} => q{Module JSON meta-data (added by MakeMaker)}}) }' \
-	  -e '    or print "Could not add META.json to MANIFEST: $$$${'\''@'\''}\n"' --
+	  -e '    or die "Could not add META.json to MANIFEST: $${'\''@'\''}"' --
 
 
 
 # --- MakeMaker distsignature section:
 distsignature : distmeta
 	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{SIGNATURE} => q{Public-key signature (added by MakeMaker)}}) }' \
-	  -e '    or print "Could not add SIGNATURE to MANIFEST: $$$${'\''@'\''}\n"' --
+	  -e '    or die "Could not add SIGNATURE to MANIFEST: $${'\''@'\''}"' --
 	$(NOECHO) cd $(DISTVNAME) && $(TOUCH) SIGNATURE
 	cd $(DISTVNAME) && cpansign -s
 
@@ -761,7 +769,7 @@ doc_site_install :: all
 	-$(NOECHO) umask 02; $(MKPATH) "$(DESTINSTALLSITEARCH)"
 	-$(NOECHO) umask 02; $(DOC_INSTALL) \
 		"Module" "$(NAME)" \
-		"installed into" $(INSTALLSITELIB) \
+		"installed into" "$(INSTALLSITELIB)" \
 		LINKTYPE "$(LINKTYPE)" \
 		VERSION "$(VERSION)" \
 		EXE_FILES "$(EXE_FILES)" \
@@ -799,7 +807,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 	-$(NOECHO) $(RM_F) $(MAKEFILE_OLD)
 	-$(NOECHO) $(MV)   $(FIRST_MAKEFILE) $(MAKEFILE_OLD)
 	- $(MAKE) $(USEMAKEFILE) $(MAKEFILE_OLD) clean $(DEV_NULL)
-	$(PERLRUN) Makefile.PL 
+	$(PERLRUN) Makefile.PL "INSTALLDIRS=site"
 	$(NOECHO) $(ECHO) "==> Your Makefile has been rebuilt. <=="
 	$(NOECHO) $(ECHO) "==> Please rerun the $(MAKE) command.  <=="
 	$(FALSE)
@@ -811,20 +819,21 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 # --- MakeMaker makeaperl section ---
 MAP_TARGET    = perl
 FULLPERL      = "/usr/bin/perl"
+MAP_PERLINC   = "-Iblib/arch" "-Iblib/lib" "-I/usr/lib/x86_64-linux-gnu/perl/5.26" "-I/usr/share/perl/5.26"
 
-$(MAP_TARGET) :: static $(MAKE_APERL_FILE)
+$(MAP_TARGET) :: $(MAKE_APERL_FILE)
 	$(MAKE) $(USEMAKEFILE) $(MAKE_APERL_FILE) $@
 
-$(MAKE_APERL_FILE) : $(FIRST_MAKEFILE) pm_to_blib
+$(MAKE_APERL_FILE) : static $(FIRST_MAKEFILE) pm_to_blib
 	$(NOECHO) $(ECHO) Writing \"$(MAKE_APERL_FILE)\" for this $(MAP_TARGET)
 	$(NOECHO) $(PERLRUNINST) \
-		Makefile.PL DIR="" \
+		Makefile.PL DIR="lib" \
 		MAKEFILE=$(MAKE_APERL_FILE) LINKTYPE=static \
-		MAKEAPERL=1 NORECURS=1 CCCDLFLAGS=
+		MAKEAPERL=1 NORECURS=1 CCCDLFLAGS= \
+		INSTALLDIRS=site
 
 
 # --- MakeMaker test section:
-
 TEST_VERBOSE=0
 TEST_TYPE=test_$(LINKTYPE)
 TEST_FILE = test.pl
@@ -832,62 +841,82 @@ TEST_FILES = t/*.t
 TESTDB_SW = -d
 
 testdb :: testdb_$(LINKTYPE)
-
-test :: $(TEST_TYPE) subdirs-test
-
-subdirs-test ::
 	$(NOECHO) $(NOOP)
 
+test :: $(TEST_TYPE)
+	$(NOECHO) $(NOOP)
 
-test_dynamic :: pure_all
-	PERL_DL_NONLAZY=1 PERL_USE_UNSAFE_INC=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
-
-testdb_dynamic :: pure_all
-	PERL_DL_NONLAZY=1 PERL_USE_UNSAFE_INC=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
-
+# Occasionally we may face this degenerate target:
 test_ : test_dynamic
+	$(NOECHO) $(NOOP)
 
-test_static :: test_dynamic
-testdb_static :: testdb_dynamic
+subdirs-test_dynamic :: dynamic pure_all
+	$(NOECHO) cd lib && $(MAKE) test_dynamic $(PASTHRU)
+
+test_dynamic :: subdirs-test_dynamic
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+
+testdb_dynamic :: dynamic pure_all
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
+
+subdirs-test_static :: static pure_all
+	$(NOECHO) cd lib && $(MAKE) test_static $(PASTHRU)
+
+test_static :: subdirs-test_static
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+
+testdb_static :: static pure_all
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
+
 
 
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd :
-	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="$(VERSION)">' > $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    <AUTHOR>Daniel Torres &lt;daniel.torres@owasp.org&gt;</AUTHOR>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <PERLCORE VERSION="5,006,0,0" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Getopt::Std" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTML::Scrubber" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Cookies" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Request" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Response" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="LWP::UserAgent" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Math::Round" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Moose::" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Net::SSL" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Parallel::ForkManager" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Term::ANSIColor" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Table" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Unidecode" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <REQUIRE NAME="URI::Escape" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.24" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '</SOFTPKG>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="webHacks" VERSION="1.0">' > webHacks.ppd
+	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '    <AUTHOR>Daniel Torres &lt;daniel.torres@owasp.org&gt;</AUTHOR>' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <PERLCORE VERSION="5,006,0,0" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Getopt::Std" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTML::Scrubber" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Cookies" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Request" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="HTTP::Response" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="LWP::UserAgent" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Math::Round" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Moose::" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Net::SSL" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Parallel::ForkManager" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Term::ANSIColor" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Table" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Unidecode" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="URI::Escape" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.26" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '</SOFTPKG>' >> webHacks.ppd
 
 
 # --- MakeMaker pm_to_blib section:
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
-	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  lib/webHacks.pm blib/lib/webHacks.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 
 # --- MakeMaker selfdocument section:
+
+# here so even if top_targets is overridden, these will still be defined
+# gmake will silently still work if any are .PHONY-ed but nmake won't
+
+static ::
+	$(NOECHO) $(NOOP)
+
+dynamic ::
+	$(NOECHO) $(NOOP)
+
+config ::
+	$(NOECHO) $(NOOP)
 
 
 # --- MakeMaker postamble section:

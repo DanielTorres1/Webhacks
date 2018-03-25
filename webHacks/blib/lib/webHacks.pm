@@ -12,6 +12,7 @@ use URI::Escape;
 use HTTP::Request;
 use HTTP::Response;
 use HTML::Scrubber;
+#use Encode;
 use Parallel::ForkManager;
 #use Net::SSL (); # From Crypt-SSLeay
 use Term::ANSIColor;
@@ -561,6 +562,7 @@ $decoded_response =~ s/<title>\n/<title>/g;
 $decoded_response =~ s/<title>\r\n/<title>/g; 
 
 open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
+#$decoded_response = decode_utf8( $decoded_response );
 print SALIDA $decoded_response;
 close (SALIDA);
 
