@@ -1,11 +1,11 @@
 
 # Web Hacks
 
-Herrmientas web utiles para la fase de reconocimientos:
+Herrmientas web útiles para la fase de reconocimientos:
 
-- web-buster.pl : Navegacion forzada de directorios comunes, archivos de configuracion, cgi, webdav, webservices, sharepoint, webserver y backup
+- web-buster.pl : Navegación forzada de directorios comunes, archivos de configuración, cgi, webdav, webservices, sharepoint, webserver y backup
     	  
-- webData.pl: Extraer titulo y metadatos de sitios web.
+- webData.pl: Extraer título y metadatos de sitios web.
 
 
 
@@ -19,15 +19,15 @@ Testeado en Kali :
 
 
 ## ¿COMO USAR?
-WEB-BUSTER:
+web-buster.pl
 
     Uso:  
     -t : IP o dominio del servidor web 
     -p : Puerto del servidor web 
     -d : Ruta donde empezara a probar directorios 
     -j : Adicionar header ajax (xmlhttprequest) 1 para habilitar 
-    -h : Numero de hilos (Conexiones en paralelo) 
-    -c : cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 
+    -h : Número de hilos (Conexiones en paralelo) 
+    -c : Cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 
     -e : Busca este patron en la respuesta para determinar si es una pagina de error 404
     -s : SSL (opcional) 
     		-s 1 = SSL 
@@ -41,7 +41,7 @@ WEB-BUSTER:
     Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  
     	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s 1 -h 30
 
-WebDATA:
+webData.pl
 
     Uso:  
     -t : IP o dominio del servidor web 
