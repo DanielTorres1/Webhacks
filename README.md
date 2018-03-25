@@ -3,8 +3,9 @@
 
 Herrmientas web utiles para la fase de reconocimientos:
 
-- web-buster.pl : Navegacion forzada de directorios
-- webData.pl: Extraer titulo y metadatos.
+- web-buster.pl : Navegacion forzada de directorios comunes, archivos de configuracion, cgi, webdav, webservices, sharepoint, webserver y backup
+    	  
+- webData.pl: Extraer titulo y metadatos de sitios web.
 
 
 
@@ -18,8 +19,7 @@ Testeado en Kali :
 
 
 ## ¿COMO USAR?
-
-Parametros:
+WEB-BUSTER:
 
     Uso:  
     -t : IP o dominio del servidor web 
@@ -34,20 +34,27 @@ Parametros:
     		-s 0 = NO SSL 
     -m : Modo. Puede ser: 
     	  completo: Probara Todos los módulos 
-    	  directorios: Probar si existen directorios comunes 
-    	  archivos: Probar si existen directorios comunes 
-    	  cgi: 	Probar si existen archivos cgi 
-    	  webdav: Directorios webdav 
-    	  webservices: Directorios webservices 
-    	  sharepoint: Directorios sharepoint 
-    	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) 
-    	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) 
-    	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel 
-    
+    	      
     Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos
     	  web-buster.pl -t 192.168.0.2 -p 80 -d / -m archivos -h 10 
     
     Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  
     	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s 1 -h 30
+
+WebDATA:
+
+    Uso:  
+    -t : IP o dominio del servidor web 
+    -p : Puerto del servidor web 
+    -d : Ruta donde empezara a probar directorios 
+    -l : Archivo donde escribira los logs 
+    -e : Extraer 
+    		-e parcial = titulo,metadatos,descripcion y banner 
+    		-e todo = titulo,metadatos,descripcion,banner, version del lenguaje/CMS/framework usado, etc
+    -s : SSL (opcional) 
+    		-s 1 = SSL 
+    		-s 0 = NO SSL 
+    Autor: Daniel Torres Sandi 
+    	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -e todo -l log.txt
 
 
