@@ -2,7 +2,7 @@
 
 # Web Hacks
 
-Herrmientas web útiles para la fase de reconocimientos:
+Herrmientas web útiles para la fase de reconocimiento:
 
 - web-buster.pl : Navegación forzada de directorios comunes, archivos de configuración, cgi, webdav, webservices, sharepoint, webserver y backup
     	  
