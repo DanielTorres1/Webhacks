@@ -50,3 +50,5 @@ cpan O/OA/OALDERS/LWP-Protocol-https-6.07.tar.gz
 
 cd webHacks/ 
 sudo cpan .
+
+echo -e "$OKRED [+] INSTALACION COMPLETA - (Abre otra consola para que el sistema reconozca los nuevos comandos ) $RESET" 
