@@ -27,7 +27,7 @@ Testeado en Kali :
     -p : Puerto del servidor web 
     -d : Ruta donde empezara a probar directorios 
     -j : Adicionar header ajax (xmlhttprequest) 1 para habilitar 
-    -h : Número de hilos (Conexiones en paralelo) 
+    -h : Número de hilos (Conexiones en paralelo. Recomendado entre 10-25) 
     -c : Cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 
     -e : Busca este patron en la respuesta para determinar si es una pagina de error 404
     -s : SSL (opcional) 
@@ -36,11 +36,11 @@ Testeado en Kali :
     -m : Modo. Puede ser: 
     	  completo: Probara Todos los módulos 
     	      
-    Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos
+    Ejemplo 1:  Buscar todos los tipos de arcchivo en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos
     	  web-buster.pl -t 192.168.0.2 -p 80 -d / -m completo -h 10 
     
-    Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  
-    	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s 1 -h 30
+    Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host www.ejemplo.com en el puerto 443 (SSL)  
+    	  web-buster.pl -t www.ejemplo.com -p 443 -d /wordpress/ -m backup -s 1 -h 30
 
 **webData.pl**
 
