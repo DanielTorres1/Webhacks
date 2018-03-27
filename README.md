@@ -40,7 +40,10 @@ Testeado en Kali :
     	  web-buster.pl -t 192.168.0.2 -p 80 -d / -m completo -h 10 
     
     Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host www.ejemplo.com en el puerto 443 (SSL)  
-    	  web-buster.pl -t www.ejemplo.com -p 443 -d /wordpress/ -m completo -s 1 -h 30
+    	  web-buster.pl -t www.ejemplo.com -p 443 -d /wordpress/ -m backup -s 1 -h 20
+
+    Ejemplo 3:  Buscar archivos comunes en el directorio /wordpress/ del host www.ejemplo.com en el puerto 443 
+    	  web-buster.pl -t www.ejemplo.com -p 443 -d /wordpress/ -m archivos -h 20
 
 **webData.pl**
 
