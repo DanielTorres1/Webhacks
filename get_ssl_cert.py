@@ -20,16 +20,16 @@ pktflags=0;
  
 
 # Sync scan
-srcport = RandShort() # Generate Port Number
-conf.verb = 0 # Hide output
-SYNACKpkt = sr1(IP(dst = ip)/TCP(sport = srcport, dport = port, flags = "S"),timeout=5) 
-try:
-	pktflags = SYNACKpkt.getlayer(TCP).flags # Extract flags of recived packet
-except:
-	print ""
+#srcport = RandShort() # Generate Port Number
+#conf.verb = 0 # Hide output
+#SYNACKpkt = sr1(IP(dst = ip)/TCP(sport = srcport, dport = port, flags = "S"),timeout=5) 
+#try:
+	#pktflags = SYNACKpkt.getlayer(TCP).flags # Extract flags of recived packet
+#except:
+#	print ""
 	
-if pktflags == SYNACK: # Cross reference Flags
+#if pktflags == SYNACK: # Cross reference Flags
 	# M2Crypto	
-	cert = ssl.get_server_certificate((ip, port))
-	x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
-	print x509.get_subject().get_components()
+cert = ssl.get_server_certificate((ip, port))
+x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+print x509.get_subject().get_components()
