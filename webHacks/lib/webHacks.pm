@@ -441,14 +441,26 @@ my $log_file = $options{ log_file };
 
 my $url;
 if ($ssl)
-  {$url = "https://".$rhost.":".$rport;}
+  {
+	  if ($rport eq '443')
+		{$url = "https://".$rhost;}
+	  else
+		{$url = "https://".$rhost.":".$rport;}
+	  
+  }
 else
-  {$url = "http://".$rhost.":".$rport;}
+  {
+	if ($rport eq '80')
+	  {$url = "http://".$rhost;}
+	else
+	  {$url = "http://".$rhost.":".$rport;}
+  }
 
 
 my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
-
+$decoded_response =~ s/'/"/g; 
+### get redirect url ###
 REDIRECT:
 $decoded_response =~ s/; url=/;url=/gi; 
 #$decoded_response =~ s/^.*?\/noscript//s;  #delete everything before xxxxxxxxx
@@ -514,10 +526,14 @@ if ($redirect_url eq '')
 	$redirect_url = $1; 
 }
 
+ 
+if (! ($redirect_url =~ /$rhost/m)){	 
+	$redirect_url="";
+ }
+ 
 
-
-
-$redirect_url =~ s/\'//g;  
+##### GO TO REDIRECT URL ####
+$redirect_url =~ s/\"//g;  
 print "redirect_url $redirect_url \n" if ($debug);
 
 if($redirect_url =~ /http/m ){	 
@@ -526,7 +542,6 @@ if($redirect_url =~ /http/m ){
  }  
 elsif ($redirect_url ne '' )
 {	
-
 	my $final_url;
 	my $firstChar = substr($redirect_url, 0, 1);
 	if ($firstChar eq "/")
@@ -543,11 +558,10 @@ elsif ($redirect_url ne '' )
 		 $url = $final_url;
 		 $url =~ s/index.php|index.asp//g;  
 		 goto REDIRECT;
-	 }
-		
+	 }	
 	 
 }
-
+############################
 
 	
 
@@ -557,9 +571,9 @@ print "final_url $final_url \n" if ($debug);
 $self->final_url($final_url);
 
 $decoded_response = $response_headers."\n".$decoded_response;
-
 $decoded_response =~ s/<title>\n/<title>/g; 
 $decoded_response =~ s/<title>\r\n/<title>/g; 
+$decoded_response =~ s/'/"/g; 
 
 open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
 #$decoded_response = decode_utf8( $decoded_response );
@@ -593,6 +607,7 @@ my ($geo) = ($decoded_response =~ /name="geo.placename" content="(.*?)"/i);
 print "geo $geo \n" if ($debug);
 
 #<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
+ #meta name="Generator" content="Pandora 5.0" />
 my ($Generator) = ($decoded_response =~ /name="Generator" content="(.*?)"/i);
 print "Generator $Generator \n" if ($debug);
 
@@ -629,23 +644,59 @@ print "server $server \n" if ($debug);
 my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);
 print "Authenticate $Authenticate \n" if ($debug);
 
+#jquery.js?ver=1.12.4
+my $jquery1;
+my $jquery2;
+($jquery1) = ($decoded_response =~ /jquery.js\?ver=(.*?)"/i);
+
+									
+if ($jquery1 eq '')								 #jquery/1.9.1/
+	{($jquery1,$jquery2) = ($decoded_response =~ /jquery\/(\d+).(\d+)./i);}
+
+if ($jquery1 eq '')								  #jquery-1.9.1.min	
+	{($jquery1,$jquery2) = ($decoded_response =~ /jquery-(\d+).(\d+)./i);}
 
 
-my $type;
-if($decoded_response =~ /GASOLINERA/m)
-	{$type="GASOLINERA";} 		
+print "jquery $jquery1 \n" if ($debug);	
+
+if ($jquery1 ne '')
+	{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}
 	
-if($decoded_response =~ /login/m)
-	{$type="login";} 			
+
+
+my $type="";
+if($decoded_response =~ /GASOLINERA/m)
+	{$type=$type."|"."GASOLINERA";} 		
 	
 if($decoded_response =~ /Cisco Systems/i)
-	{$type="cisco";} 		
+	{$type=$type."|"."cisco";} 		
 
 if($decoded_response =~ /X-OWA-Version/i)
-	{$type="owa";} 	
+	{$type=$type."|"."owa";} 	
 
 if($decoded_response =~ /FortiGate/i)
-	{$type="FortiGate";} 	
+	{$type=$type."|"."FortiGate";} 	
+
+if($decoded_response =~ /drupal/i)
+	{$type=$type."|"."drupal";} 	
+	
+if($decoded_response =~ /wp-content/i)
+	{$type=$type."|"."wordpress";} 		
+		
+
+if($decoded_response =~ /csrfmiddlewaretoken/i)
+	{$type=$type."|"."Django";} 	
+
+if($decoded_response =~ /X-Amz-/i)
+	{$type=$type."|"."amazon";} 	
+
+if($decoded_response =~ /X-Planisys-/i)
+	{$type=$type."|"."Planisys";} 		
+		
+
+if($type eq '' && $decoded_response =~ /login/m)
+	{$type="login";} 			
+	
 
 
  my %data = (

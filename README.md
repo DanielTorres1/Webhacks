@@ -1,10 +1,8 @@
-
-
 # Web Hacks
 
 Herrmientas web útiles para la fase de reconocimiento:
 
-- web-buster.pl : Navegación forzada de directorios comunes, archivos de configuración, cgi, webdav, webservices, sharepoint, webserver y backup
+- web-buster.pl : Navegación forzada de directorios comunes, archivos de configuración, cgi, webdav, webservices, sharepoint, webserver y backup. Soporta hilos (Conexiones en paralelo)
     	  
 - webData.pl: Extraer título y metadatos de sitios web.
 
@@ -12,7 +10,7 @@ Herrmientas web útiles para la fase de reconocimiento:
 
 ## ¿COMO INSTALAR?
 
-Testeado en Kali :
+Testeado en Kali 2:
 
     git clone https://github.com/DanielTorres1/Webhacks
     cd Webhacks

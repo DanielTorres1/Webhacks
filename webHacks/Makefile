@@ -191,7 +191,7 @@ PERL_ARCHIVEDEP    =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = 
+TO_INST_PM = lib/webHacks.pm
 
 
 # --- MakeMaker platform_constants section:
@@ -431,17 +431,11 @@ manifypods : pure_all config
 
 # --- MakeMaker subdirs section:
 
-# The default clean, realclean and test targets in this Makefile
-# have automatically been given entries for each subdir.
-
-
-subdirs ::
-	$(NOECHO) cd lib && $(MAKE) $(USEMAKEFILE) $(FIRST_MAKEFILE) all $(PASTHRU)
-
+# none
 
 # --- MakeMaker clean_subdirs section:
 clean_subdirs :
-	$(ABSPERLRUN)  -e 'exit 0 unless chdir '\''lib'\'';  system '\''$(MAKE) clean'\'' if -f '\''$(FIRST_MAKEFILE)'\'';' --
+	$(NOECHO) $(NOOP)
 
 
 # --- MakeMaker clean section:
@@ -476,8 +470,7 @@ clean :: clean_subdirs
 # --- MakeMaker realclean_subdirs section:
 # so clean is forced to complete before realclean_subdirs runs
 realclean_subdirs : clean
-	- $(ABSPERLRUN)  -e 'chdir '\''lib'\'';  system '\''$(MAKE) $(USEMAKEFILE) $(MAKEFILE_OLD) realclean'\'' if -f '\''$(MAKEFILE_OLD)'\'';' --
-	- $(ABSPERLRUN)  -e 'chdir '\''lib'\'';  system '\''$(MAKE) $(USEMAKEFILE) $(FIRST_MAKEFILE) realclean'\'' if -f '\''$(FIRST_MAKEFILE)'\'';' --
+	$(NOECHO) $(NOOP)
 
 
 # --- MakeMaker realclean section:
@@ -827,7 +820,7 @@ $(MAP_TARGET) :: $(MAKE_APERL_FILE)
 $(MAKE_APERL_FILE) : static $(FIRST_MAKEFILE) pm_to_blib
 	$(NOECHO) $(ECHO) Writing \"$(MAKE_APERL_FILE)\" for this $(MAP_TARGET)
 	$(NOECHO) $(PERLRUNINST) \
-		Makefile.PL DIR="lib" \
+		Makefile.PL DIR="" \
 		MAKEFILE=$(MAKE_APERL_FILE) LINKTYPE=static \
 		MAKEAPERL=1 NORECURS=1 CCCDLFLAGS= \
 		INSTALLDIRS=site
@@ -851,7 +844,6 @@ test_ : test_dynamic
 	$(NOECHO) $(NOOP)
 
 subdirs-test_dynamic :: dynamic pure_all
-	$(NOECHO) cd lib && $(MAKE) test_dynamic $(PASTHRU)
 
 test_dynamic :: subdirs-test_dynamic
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
@@ -860,7 +852,6 @@ testdb_dynamic :: dynamic pure_all
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
 
 subdirs-test_static :: static pure_all
-	$(NOECHO) cd lib && $(MAKE) test_static $(PASTHRU)
 
 test_static :: subdirs-test_static
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
@@ -901,6 +892,8 @@ ppd :
 # --- MakeMaker pm_to_blib section:
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
+	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
+	  'lib/webHacks.pm' 'blib/lib/webHacks.pm' 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 
