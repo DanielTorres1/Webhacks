@@ -3,7 +3,7 @@ use Data::Dumper;
 require webHacks;
 use strict;
 use Getopt::Std;
-#use utf8;
+use utf8;
 use Text::Unidecode;
 binmode STDOUT, ":encoding(UTF-8)";
 

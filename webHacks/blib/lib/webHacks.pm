@@ -571,8 +571,10 @@ print "final_url $final_url \n" if ($debug);
 $self->final_url($final_url);
 
 $decoded_response = $response_headers."\n".$decoded_response;
-$decoded_response =~ s/<title>\n/<title>/g; 
-$decoded_response =~ s/<title>\r\n/<title>/g; 
+#delete 
+#<title>\r\n  \r\n
+#$decoded_response =~ s/<title>\n/<title>/g; 
+#$decoded_response =~ s/<title>\r\n/<title>/g; 
 $decoded_response =~ s/'/"/g; 
 
 open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
@@ -590,15 +592,19 @@ if ($poweredBy eq '')
 print "poweredBy $poweredBy \n" if ($debug);
 
 # ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
-my ($title) = ($decoded_response =~ /<title(.*?)<\/title>/i);
 
+#my $title;#) =~ /<title>(.+)<\/title>/s;
+
+$decoded_response =~ /<title>(.+)<\/title>/s ;
+my $title =$1; 
+$title =~ s/>|\n|\t|\r//g; 
 if ($title eq '')
 	{($title) = ($decoded_response =~ /<title(.*?)\n/i);}
 
 if ($title eq '')
 	{($title) = ($decoded_response =~ /Title:(.*?)\n/i);}
 
-$title =~ s/>//g; 
+
 $title = only_ascii($title);
 
 
@@ -698,10 +704,9 @@ if($type eq '' && $decoded_response =~ /login/m)
 	{$type="login";} 			
 	
 
-
- my %data = (
-            "poweredBy" => $poweredBy,
+ my %data = (            
             "title" => $title,
+            "poweredBy" => $poweredBy,
             "Authenticate" => $Authenticate,
             "geo" => $geo,
             "Generator" => $Generator,

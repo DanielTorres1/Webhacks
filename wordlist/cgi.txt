@@ -63,3 +63,4 @@ test-cgi/
 viewcgi/
 webcgi/
 web-cgi/
+cgi-bin/shellshock.sh
