@@ -1,9 +1,12 @@
 config
+backup
 config.php
+config.ini
+global.asa
+global.asax
+web.config
 configuration.php
 LocalSettings.php
-mediawiki/LocalSettings.php
-mt-config.cgi
-mt-static/mt-config.cgi
 settings.php
 .htaccess
+backup.sql

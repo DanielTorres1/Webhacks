@@ -12,6 +12,7 @@ use URI::Escape;
 use HTTP::Request;
 use HTTP::Response;
 use HTML::Scrubber;
+use Switch;
 #use Encode;
 use Parallel::ForkManager;
 #use Net::SSL (); # From Crypt-SSLeay
@@ -60,7 +61,7 @@ my $path = $self->path;
 my $error404 = $self->error404;
 my $threads = $self->threads;
 my $ssl = $self->ssl;
-my ($url_file) = @_;
+my ($url_file,$extension) = @_;
 
 my $cookie = $self->cookie;
 
@@ -94,7 +95,13 @@ $lines =~ s/\n//g;
 my $time = int($lines/600);
 
 print color('bold blue');
-print "######### Usando archivo: $url_file ##################### \n";
+print "######### Usando archivo: $url_file ";
+
+if ($extension ne "")
+	{print "con extension: $extension ##################### \n";}
+else
+	{print "##################### \n";}
+
 print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
@@ -113,6 +120,17 @@ foreach my $file (@links) {
 	if ($url_file =~ "directorios"){	 
 		$file = $file."/";
 	}
+	
+	switch ($extension) {
+	case "php"	{ $file =~ s/EXT/php/g;  }	
+	case "html"	{ $file =~ s/EXT/html/g;  }
+	case "asp"	{ $file =~ s/EXT/asp/g;  }
+	case "aspx"	{ $file =~ s/EXT/aspx/g;  }
+	case "htm"	{ $file =~ s/EXT/htm/g;  }
+	case "jsp"	{ $file =~ s/EXT/jsp/g;  }
+    }
+	
+
 
 	my $url;
 	if ($ssl)
@@ -325,7 +343,8 @@ print $result_table;
 
 foreach my $file (@links) 
 {
-	my @backups = ("FILE","FILE.bak","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)",".FILE.swp");
+	
+	my @backups = ("FILE",".FILE.EXT.swp","FILE.inc","FILE~","FILE.bak","FILE.txt","FILE.tmp","FILE.temp","FILE.old","FILE.bakup","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)","FILE::\$DATA");
 	$file =~ s/\n//g; 	
 	#print "file $file \n";
 	my $url;

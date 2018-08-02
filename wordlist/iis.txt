@@ -1,3 +1,7 @@
+iisadmin
+iisadmpwd
+iishelp
+iissamples
 _catalogs/
 _catalogs/masterpage/Forms/AllItems.aspx
 _catalogs/wp/Forms/AllItems.aspx
@@ -90,3 +94,19 @@ _vti_cnf/
 _vti_log/
 _vti_pvt/
 _vti_txt/
+_layouts/viewlsts.aspx
+_vti_bin/spdisco.aspx
+_layouts/userdisp.aspx?ID=1
+login.aspx
+login.asp
+espia6/Account/fLogin.aspx
+espia5/Account/fLogin.aspx
+espia4/Account/fLogin.aspx
+espia3/Account/fLogin.aspx
+espia2/Account/fLogin.aspx
+espia1/Account/fLogin.aspx
+espia/Account/fLogin.aspx
+Account/fLogin.aspx
+asp
+aspnet_client
+asps

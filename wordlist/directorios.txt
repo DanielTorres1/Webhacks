@@ -1,3 +1,4 @@
+appserv
 0
 movil
 portalmovil
@@ -7,11 +8,61 @@ portalmovil
 03
 04
 05
+encuesta
+SitUtil
 06
+acceso
+acciones
+ayuda
+banca
+banco
+blog
+caja
+cliente
+clientes
+compra
+compras
+conf
+config
+correo
+cuenta
+cuentas
+datos
+download
+downloads
+ejemplo
+ejemplos
+email
+error
+errores
+general
+htdocs
+htm
+html
+iissamples
+impreso
+ingresa
+internet
+invitado
+log
+mail
+manual
+mysql
+oracle
+privado
+proxy
+prueba
+pruebas
+server
+servicios
+software
+temporal
+usuario
+usuarios
+webaccess
 07
 08
 09
-0admin
 0manager
 1
 10
@@ -56,6 +107,10 @@ portalmovil
 2012
 2013
 2014
+2015
+2016
+2017
+2018
 21
 22
 2257
@@ -90,7 +145,6 @@ a
 A
 aa
 aaa
-aadmin
 abajo
 abc
 abc123
@@ -213,78 +267,6 @@ admentor
 admentorredir
 admicion
 admidpack
-admin
-~admin
-_admin
-admin_
-Admin
-ADMIN
-admin1
-admin2
-admin3
-admin4
-admin4_account
-admin4_colon
-admin5
-admin-admin
-adminarea
-admin_area
-admin_banner
-admin_c
-admin-console
-admincontrol
-admincp
-admin_gtpointup
-adminguide
-adminhelp
-admin_images
-admin_index
-admin_interface
-admin-interface
-administer
-administr
-administr8
-administracion
-administracion de aplicacion
-administracion de cuentas
-administrador
-administrador de correos
-administrador de sistemas
-administradores
--administradores de marcadores
-administrar
-administrat
-administratie
-administration
-Administration
--administrativa
-administrativo
-administrator
-~administrator
-administratoraccounts
-administratorlogin
-administrators
-administrivia
-Administrivialidades
-adminitem
-adminitems
-adminlogin
-admin_login
-admin-login
-adminLogin
-adminlogon
-admin_logon
-adminpanel
-adminpro
-admins
-AdminService
-adminsessions
-adminsite
-adminsitradores
-adminsql
-admintips
-admintools
-AdminTools
 admision
 admisiones
 admissions
@@ -530,7 +512,6 @@ asociaciones
 asociados
 asociar
 asp
-aspadmin
 aspdnsfcommon
 aspdnsfencrypt
 aspdnsfgateways
@@ -565,7 +546,6 @@ audits
 autenticacion
 autenticar
 auth
-authadmin
 authenticate
 authentication
 author
@@ -604,8 +584,6 @@ awmdata
 awstats
 axis
 axis2
-axis2-admin
-axis-admin
 axs
 ayuda
 az
@@ -650,7 +628,6 @@ banks
 banned
 banner
 banner2
-banneradmin
 bannerads
 banner_element
 banners
@@ -668,8 +645,6 @@ bat
 batch
 baz
 bb
-bbadmin
-bb-admin
 bbclone
 bbdd
 bb-hist
@@ -693,7 +668,6 @@ beta
 bfc
 bg
 big
-bigadmin
 bigip
 bilder
 bill
@@ -888,7 +862,6 @@ _cache
 cachemgr
 caching
 cad
-cadmins
 caja
 cajon
 cal
@@ -962,7 +935,6 @@ cb
 cc
 ccbill
 ccount
-ccp14admin
 ccs
 cd
 cdrom
@@ -1024,7 +996,6 @@ charts
 chat
 chats
 check
-checkadmin
 checking
 checklogin
 checkout
@@ -1110,7 +1081,6 @@ cmd
 cmpi_popup
 cms
 CMS
-cmsadmin
 cn
 cnf
 cnstats
@@ -1408,7 +1378,6 @@ courses
 cover
 covers
 cp
-cpadmin
 CPAN
 cpanel
 cPanel
@@ -1501,8 +1470,6 @@ data
 _data
 database
 _database
-database_administration
-Database_Administration
 databases
 datafiles
 datas
@@ -1517,7 +1484,6 @@ day
 db
 DB
 dba
-dbadmin
 dbase
 _db_backups
 dbboon
@@ -1625,7 +1591,6 @@ devs
 devtools
 df
 dh_
-dh_phpmyadmin
 di
 diag
 diagnostico
@@ -1649,7 +1614,6 @@ dir
 dirb
 dirbmark
 direct
-directadmin
 directions
 directories
 directorio
@@ -1756,7 +1720,6 @@ dyop_delete
 dyop_quan
 e
 E
-e107_admin
 e107_files
 e107_handlers
 e2fs
@@ -2013,7 +1976,6 @@ Extranet
 extras
 ez
 ezshopper
-ezsqliteadmin
 f
 F
 fa
@@ -2063,7 +2025,6 @@ ficheros
 field
 fields
 file
-fileadmin
 filelist
 filemanager
 files
@@ -2283,7 +2244,6 @@ global
 Global
 globalnav
 globals
-globes_admin
 globo
 glossary
 go
@@ -2422,7 +2382,6 @@ house
 how
 howto
 hp
-hpwebjetadmin
 hr
 ht
 hta
@@ -2516,7 +2475,6 @@ ig
 ignore
 ignoring
 iis
-iisadmin
 iisadmpwd
 iissamples
 im
@@ -2623,7 +2581,6 @@ Indexa
 indexabout
 indexacion
 index_adm
-index_admin
 indexado
 indexador
 index_alt
@@ -2741,8 +2698,6 @@ indice
 Indice
 industries
 industry
-indy_admin
-Indy_admin
 inetpub
 inetsrv
 inf
@@ -2793,7 +2748,6 @@ inquiry
 insert
 inserta
 insertar
-instadmin
 instala
 instalacion
 instalaciones
@@ -2803,7 +2757,6 @@ instaladores
 instalar
 install
 _install
-INSTALL_admin
 installation
 installer
 installfest
@@ -2866,10 +2819,7 @@ ips_kernel
 ir
 iraq
 irc
-irc-macadmin
-irectadmin
 is
-isadmin
 isapi
 is-bin
 iso
@@ -3078,7 +3028,6 @@ lisence
 lisense
 list
 lista
-listadmin
 listar
 list-create
 list-edit
@@ -3096,7 +3045,6 @@ live
 livechat
 livehelp
 livesupport
-LiveUser_Admin
 livezilla
 llamada
 llamadas
@@ -3136,9 +3084,6 @@ Login
 login1
 login1asp
 login1php
-loginadmin
-login_admin
-login_adminphp
 loginasp
 login_db
 loginerror
@@ -3159,7 +3104,6 @@ logo
 logoff
 logon
 logos
-logo_sysadmin
 logout
 logoutphp
 logs
@@ -3170,7 +3114,6 @@ loja
 lost
 lost+found
 lostpassword
-Lotus_Domino_Admin
 love
 low
 lp
@@ -3193,7 +3136,6 @@ m6_pay
 m7
 ma
 mac
-macadmin
 macromedia
 maestro
 magazin
@@ -3296,7 +3238,6 @@ mein-merkzettel
 mem
 member
 member2
-memberadmin
 memberlist
 members
 Members
@@ -3445,7 +3386,6 @@ mx
 my
 myaccount
 my-account
-myadmin
 myblog
 mycalendar
 my-components
@@ -3475,8 +3415,6 @@ names
 national
 nav
 navigation
-navsiteadmin
-navSiteAdmin
 nc
 ne
 nessus
@@ -3637,7 +3575,6 @@ netstat_x
 netstorage
 netstumbler
 netsys
-netsystemsmgmtvsolutions
 nettech
 netterr
 nettest
@@ -3699,7 +3636,6 @@ network-scanners
 networksecurity
 network_security
 network-security
-networksecurityarticlesandhackingpreventionresources
 network-servers
 network_services
 network-sniffers
@@ -3714,13 +3650,11 @@ network_utilities
 networkworld
 net-xwhois
 new
-newadmin
 newattachment
 newposts
 newreply
 news
 News
-newsadmin
 news_insert
 newsite
 newsletter
@@ -3909,7 +3843,6 @@ opentopic
 openurl
 openvms
 openvpn
-openvpnadmin
 openwall
 openwave
 openwebmail
@@ -3978,6 +3911,7 @@ _overlay
 oversikt
 overview
 owa
+OWA
 owl
 owners
 ows
@@ -4015,7 +3949,6 @@ paiement
 palabra
 pam
 panel
-panel-administracion
 panelc
 paneldecontrol
 pantalla
@@ -4041,10 +3974,23 @@ passwd
 passwor
 password
 passwords
+Passwords
 past
 patch
 patches
 patents
+passwd
+.passwd
+passwd
+passwd.adjunct
+passwd.bak
+Passwd_Files
+password
+.password
+Password
+passwordlist
+passwordlists
+.passwords
 path
 pay
 payment
@@ -4092,7 +4038,6 @@ personals
 pestana
 pfx
 pg
-pgadmin
 pgp
 pgsql
 phf
@@ -4109,7 +4054,6 @@ php
 PHP
 php168
 php3
-phpadmin
 phpads
 phpadsnew
 phpbb
@@ -4122,21 +4066,14 @@ php-bin
 phpEventCalendar
 phpinfo
 phpinfos
-phpldapadmin
 phplist
 phplive
 phpmailer
 phpmanual
 phpmv2
-phpmyadmin
-phpMyAdmin
-phpmyadmin2
-phpMyAdmin2
 phpnuke
-phppgadmin
 phps
 phpsitemapng
-phpSQLiteAdmin
 phpthumb
 php_uploads
 phtml
@@ -4378,7 +4315,6 @@ programming
 programs
 progress
 project
-project-admins
 projects
 Projects
 promo
@@ -4446,7 +4382,6 @@ pumakatari
 purchase
 purchases
 purchasing
-pureadmin
 push
 put
 putty
@@ -4484,8 +4419,6 @@ R
 r57
 radcontrols
 radio
-radmind
-radmind-1
 rail
 rails
 raiz
@@ -4643,7 +4576,6 @@ reservar
 reservation
 reservations
 resin
-resin-admin
 resize
 resolution
 resolve
@@ -4855,9 +4787,6 @@ serv
 serve
 server
 Server
-serveradministrator
-ServerAdministrator
-server_admin_small
 server_appliances
 serverblades
 server_clustering
@@ -4874,12 +4803,10 @@ serverload
 serveronly
 servers
 servers-desktops
-serversdesktopvsolutions
 serversecurity
 server_security
 server_side
 servers_storage
-serversstoragenetworkingemc
 server_stats
 serverstatus
 server_status
@@ -4932,7 +4859,6 @@ shipquote
 shit
 shockwave
 shop
-shopadmin
 shop_closed
 shop_content
 shopper
@@ -4999,7 +4925,6 @@ Sistema
 sistema de archivos
 sistemas
 site
-siteadmin
 sitebuilder
 sitecore
 sitefiles
@@ -5109,7 +5034,6 @@ software-testing
 softwaretopics
 softwareupdates
 softwear
-sohoadmin
 solaris
 sold
 solicitado
@@ -5171,8 +5095,6 @@ spyware
 sq
 sql
 SQL
-sqladmin
-sql-admin
 sqlite
 SQLiteManager
 sqlmanager
@@ -5192,7 +5114,6 @@ srv
 ss
 ssfm
 ssh
-sshadmin
 ssi
 ssl
 ssl-acceleration
@@ -5215,7 +5136,6 @@ ssl_yes
 ssn
 sso
 ssp_director
-ss_vms_admin_sm
 st
 stackdump
 staff
@@ -5228,7 +5148,6 @@ standalone
 standard
 standards
 star
-staradmin
 start
 starter
 startpage
@@ -5318,7 +5237,6 @@ SUNWmc
 super
 super1
 super1asp
-Super-Admin
 superasp
 super_index
 super_login
@@ -5364,19 +5282,8 @@ sys
 ~sys
 sysadm
 ~sysadm
-sysadmin
-~sysadmin
-sys-admin
-SysAdmin
-sysadmin2
-SysAdmin2
-sysadmins
 sysmanager
 system
-system_admin
-system-admin
-system_administration
-system-administration
 systems
 system_web
 sysuser
@@ -5540,7 +5447,6 @@ tooltip
 top
 top1
 topic
-topicadmin
 topics
 toplist
 toplists
@@ -5700,7 +5606,6 @@ upload_file
 uploadfiles
 upload_files
 uploads
-ur-admin
 urchin
 url
 urlrewriter
@@ -5716,7 +5621,6 @@ user
 _user
 user_
 useraccounts
-useradmin
 useragent
 useragreement
 user_agreement
@@ -5830,7 +5734,6 @@ v2
 v3
 v4
 vacio
-vadmind
 validar
 validation
 validatior
@@ -5897,7 +5800,6 @@ visitor
 visitormessage
 vista
 vm
-vmailadmin
 void
 voip
 VoIP
@@ -5919,7 +5821,6 @@ vp
 vpg
 vpn
 vs
-vsadmin
 _vti_aut
 _vti_bin
 _vti_cnf
@@ -5951,7 +5852,6 @@ warez
 warn
 way-board
 wbboard
-wbsadmin
 wc
 wcs
 wdav
@@ -5963,8 +5863,6 @@ web3
 webaccess
 webad
 webadm
-webadmin
-WebAdmin
 webagent
 webalizer
 web_analytics
@@ -6336,7 +6234,6 @@ wishlist
 with
 wiz
 wizard
-wizmysqladmin
 wml
 wolthuis
 word
@@ -6354,7 +6251,6 @@ worldpayreturn
 worldwide
 wow
 wp
-wp-admin
 wp-app
 wp-atom
 wpau-backup
@@ -6483,27 +6379,9 @@ zoom
 zope
 zorum
 _post
-2phpmyadmin/
-_phpmyadmin
-_phpmyadmin/
-admin/phpmyadmin/
-administrator/phpmyadmin/
-database/phpmyadmin/
-database/phpmyadmin2/
-db/phpmyadmin/
-db/phpmyadmin2/
-phpmyadmin
-phpmyadmin!!
-phpmyadmin-old
-phpmyadmin/
-phpmyadmin0/
-phpmyadmin1/
-phpmyadmin2
-phpmyadmin2/
-phpmyadmin3
-phpmyadmin3/
-sql/phpmyadmin2/
-typo3/phpmyadmin/
-xampp/phpmyadmin/
 wsCPservice
 tmovil
+nb600
+nb500
+nb700
+netbank
