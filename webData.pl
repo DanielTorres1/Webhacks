@@ -10,12 +10,13 @@ binmode STDOUT, ":encoding(UTF-8)";
 #$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 my %opts;
-getopts('t:p:s:e:i:l:h', \%opts);
+getopts('t:p:s:e:i:d:l:h', \%opts);
 
 
 my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $ssl = $opts{'s'};
+my $path = $opts{'d'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
@@ -36,6 +37,7 @@ sub usage {
   
   print "Autor: Daniel Torres Sandi \n";
   print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -e todo -l log.txt \n"; 
+  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -d /phpmyadmin/ -e todo -l log.txt \n"; 
 	  
 }	
 # Print help message if required
@@ -50,6 +52,7 @@ if ($ssl eq '')
 
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,	
+						path => $path,	
 						max_redirect => 4,						
 					    debug => 0);	
 	# Need to make a request to discover if SSL is in use
@@ -59,7 +62,8 @@ else
 {
 	
 	$webHacks = webHacks->new( rhost => $target,
-						rport => $port,		
+						rport => $port,	
+						path => $path,		
 						ssl => $ssl,						
 						max_redirect => 4,
 					    debug => 0);	

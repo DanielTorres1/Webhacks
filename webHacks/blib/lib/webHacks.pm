@@ -387,7 +387,7 @@ foreach my $file (@links)
 
 
 
-sub defaultPassword
+sub passwordTest
 {
 my $self = shift;
 my $headers = $self->headers;
@@ -397,50 +397,102 @@ my $rport = $self->rport;
 my $ssl = $self->ssl;
 
 my %options = @_;
-my $software = $options{ software };
+my $module = $options{ module };
 my $passwords_file = $options{ passwords_file };
+my $user = $options{ user };
+my $path = $options{ path };
+
+
 
 
 print color('bold blue') if($debug);
-print "######### Testendo: $software ##################### \n\n" if($debug);
+print "######### Testendo: $module ##################### \n\n" if($debug);
 print color('reset') if($debug);
 
 
 my $url;
 if ($ssl)
-  {$url = "https://".$rhost.":".$rport;}
+  {$url = "https://".$rhost.":".$rport.$path;}
 else
-  {$url = "http://".$rhost.":".$rport;}
+  {$url = "http://".$rhost.":".$rport.$path;}
 
-if ($software eq "ZKSoftware")
+if ($module eq "ZKSoftware")
 {
 		
 	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
 	while (my $password=<MYINPUT>)
 	{ 
 		$password =~ s/\n//g; 	
-		my $hash_data = {'username' => 'administrator', 
+		my $hash_data = {'username' => $user, 
 				'userpwd' => $password
 				};	
 	
 		my $post_data = convert_hash($hash_data);
 		
-		my $response = $self->dispatch(url => $url."/csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
+		my $response = $self->dispatch(url => $url."csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
 		my $decoded_response = $response->decoded_content;
 		my $status = $response->status_line;
 		
 		if ($status =~ /200/m)
 		{
-			if  ($decoded_response =~ /Department/m){	 
-			print "ZKSoftware: Password found! (administrator:$password)\n";
+			if  ($decoded_response =~ /Department|Departamento/m){	 
+			print "ZKSoftware: Password found! ($user:$password)\n";
 			last;
 			}							
 		}	
 		
 	}
 	close MYINPUT;	
-
 }#ZKSoftware
+
+
+if ($module eq "phpmyadmin")
+{
+		
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+		
+		$password =~ s/\n//g; 	
+		my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+		my $decoded_response = $response->decoded_content;
+		#name="token" value="3e011556a591f8b68267fada258b6d5a"
+		$decoded_response =~ /name="token" value="(.*?)"/;
+		my $token = $1; 
+
+		
+		#pma_username=dgdf&pma_password=vhhg&server=1&target=index.php&token=918ab63463cf3b565d0073973b84f21c
+		my $hash_data = {'pma_username' => $user, 
+				'pma_password' => $password,
+				'token' => $token,
+				'target' => "index.php",
+				'server' => "1",
+				};	
+	
+		my $post_data = convert_hash($hash_data);
+				
+		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+		$response = $self->dispatch(url => $url."index.php",method => 'POST',post_data =>$post_data, headers => $headers);
+		$decoded_response = $response->decoded_content;	
+		my $response_headers = $response->headers_as_string;
+			
+	    #Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
+		$response_headers =~ /Location:(.*?)\n/;
+		my $new_url = $1; 		
+		$response = $self->dispatch(url => $new_url, method => 'GET');
+		$decoded_response = $response->decoded_content;				
+				
+		if (! ($decoded_response =~ /pma_username/m))
+		{			
+			print "PhpMyadmin: Password found! ($user:$password)\n";
+			last;									
+		}	
+		
+	}
+	close MYINPUT;	
+
+}#phpmyadmin
+
 }
 
 
@@ -454,6 +506,7 @@ my $debug = $self->debug;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $ssl = $self->ssl;
+my $path = $self->path;
 
 my %options = @_;
 my $log_file = $options{ log_file };
@@ -462,17 +515,17 @@ my $url;
 if ($ssl)
   {
 	  if ($rport eq '443')
-		{$url = "https://".$rhost;}
+		{$url = "https://".$rhost.$path;}
 	  else
-		{$url = "https://".$rhost.":".$rport;}
+		{$url = "https://".$rhost.":".$rport.$path;}
 	  
   }
 else
   {
 	if ($rport eq '80')
-	  {$url = "http://".$rhost;}
+	  {$url = "http://".$rhost.$path;}
 	else
-	  {$url = "http://".$rhost.":".$rport;}
+	  {$url = "http://".$rhost.":".$rport.$path;}
   }
 
 
@@ -717,6 +770,9 @@ if($decoded_response =~ /X-Amz-/i)
 
 if($decoded_response =~ /X-Planisys-/i)
 	{$type=$type."|"."Planisys";} 		
+
+if($decoded_response =~ /phpmyadmin/i)
+	{$type=$type."|"."phpmyadmin";} 		
 		
 
 if($type eq '' && $decoded_response =~ /login/m)
