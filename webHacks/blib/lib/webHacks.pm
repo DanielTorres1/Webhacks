@@ -474,14 +474,24 @@ if ($module eq "phpmyadmin")
 		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
 		$response = $self->dispatch(url => $url."index.php",method => 'POST',post_data =>$post_data, headers => $headers);
 		$decoded_response = $response->decoded_content;	
+		my $status = $response->status_line;	
 		my $response_headers = $response->headers_as_string;
-			
-	    #Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
-		$response_headers =~ /Location:(.*?)\n/;
-		my $new_url = $1; 		
-		$response = $self->dispatch(url => $new_url, method => 'GET');
-		$decoded_response = $response->decoded_content;				
-				
+		if ($status =~ /30/m)
+		{
+			#Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
+			$response_headers =~ /Location:(.*?)\n/;
+			my $new_url = $1; 		
+			#print "new_url $new_url \n";
+		
+			$response = $self->dispatch(url => $new_url, method => 'GET');
+			$decoded_response = $response->decoded_content;								
+		}
+		
+	    
+		#open (SALIDA,">phpmyadminn.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+		#print SALIDA $decoded_response;
+		#close (SALIDA);
+					
 		if (! ($decoded_response =~ /pma_username/m))
 		{			
 			print "PhpMyadmin: Password found! ($user:$password)\n";

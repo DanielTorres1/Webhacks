@@ -64,3 +64,4 @@ viewcgi/
 webcgi/
 web-cgi/
 cgi-bin/shellshock.sh
+bWAPP/cgi-bin/shellshock.sh

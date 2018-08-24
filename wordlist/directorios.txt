@@ -1,4 +1,5 @@
 appserv
+vacaciones
 0
 movil
 portalmovil
@@ -13,6 +14,7 @@ SitUtil
 06
 acceso
 acciones
+gasto
 ayuda
 banca
 banco
