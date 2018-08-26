@@ -429,14 +429,15 @@ if ($module eq "ZKSoftware")
 	
 		my $post_data = convert_hash($hash_data);
 		
-		my $response = $self->dispatch(url => $url."csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
+		my $response = $self->dispatch(url => $url."/csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
 		my $decoded_response = $response->decoded_content;
 		my $status = $response->status_line;
 		
+		print "[+] user:$user password:$password status:$status\n";
 		if ($status =~ /200/m)
 		{
 			if  ($decoded_response =~ /Department|Departamento/m){	 
-			print "ZKSoftware: Password found! ($user:$password)\n";
+			print "ZKSoftware: Password encontrado! ($user:$password)\n";
 			last;
 			}							
 		}	
@@ -487,6 +488,7 @@ if ($module eq "phpmyadmin")
 			$decoded_response = $response->decoded_content;								
 		}
 		
+		print "[+] user:$user password:$password status:$status\n";
 	    
 		#open (SALIDA,">phpmyadminn.html") || die "ERROR: No puedo abrir el fichero google.html\n";
 		#print SALIDA $decoded_response;
@@ -494,14 +496,14 @@ if ($module eq "phpmyadmin")
 					
 		if (! ($decoded_response =~ /pma_username/m))
 		{			
-			print "PhpMyadmin: Password found! ($user:$password)\n";
+			print "[!] PhpMyadmin: Password encontrado! ($user:$password)\n";
 			last;									
 		}	
 		
 	}
 	close MYINPUT;	
-
 }#phpmyadmin
+
 
 }
 
@@ -588,7 +590,7 @@ if ($redirect_url eq '')
 {
 	#window.location.href = "/doc/page/login.asp?_" 	
 	$decoded_response =~ /window.location.href = "(.*?)"/i;
-	$redirect_url = $1; 
+	$redirect_url = $1; 	
 }
 
 
@@ -608,16 +610,26 @@ if ($redirect_url eq '')
 	$redirect_url = $1; 
 }
 
- 
-if (! ($redirect_url =~ /$rhost/m)){	 
-	$redirect_url="";
- }
- 
+if ($redirect_url eq '')
+{	
+  #<html><script>document.location.replace("/+CSCOE+/logon.html")</script></html>
+
+	$decoded_response =~ /location.replace\("(.*?)"/;
+	$redirect_url = $1;	
+}
+
+# Si la redireccion no tiene la IP
+#if (! ($redirect_url =~ /$rhost/m)){	 
+	#$redirect_url="";
+ #}
+
+
 
 ##### GO TO REDIRECT URL ####
 $redirect_url =~ s/\"//g;  
 print "redirect_url $redirect_url \n" if ($debug);
 
+# ruta completa
 if($redirect_url =~ /http/m ){	 
 	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
 	$decoded_response = $response->decoded_content; 	 
@@ -626,6 +638,9 @@ elsif ($redirect_url ne '' )
 {	
 	my $final_url;
 	my $firstChar = substr($redirect_url, 0, 1);
+	print "firstChar $firstChar \n" if ($debug);
+	chop($url); #delete / char
+	print "url $url \n" if ($debug);
 	if ($firstChar eq "/")
 		{$final_url = $url.$redirect_url;}
 	else
@@ -653,14 +668,9 @@ print "final_url $final_url \n" if ($debug);
 $self->final_url($final_url);
 
 $decoded_response = $response_headers."\n".$decoded_response;
-#delete 
-#<title>\r\n  \r\n
-#$decoded_response =~ s/<title>\n/<title>/g; 
-#$decoded_response =~ s/<title>\r\n/<title>/g; 
 $decoded_response =~ s/'/"/g; 
 
 open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
-#$decoded_response = decode_utf8( $decoded_response );
 print SALIDA $decoded_response;
 close (SALIDA);
 
@@ -783,6 +793,9 @@ if($decoded_response =~ /X-Planisys-/i)
 
 if($decoded_response =~ /phpmyadmin/i)
 	{$type=$type."|"."phpmyadmin";} 		
+	
+if($decoded_response =~ /Set-Cookie: webvpn/i)
+	{$type=$type."|"."ciscoASA";} 		
 		
 
 if($type eq '' && $decoded_response =~ /login/m)
