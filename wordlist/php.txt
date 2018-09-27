@@ -65,6 +65,7 @@ php.ini.sample
 app/phpunit.xml
 phpunit.xml
 phpunit.xml.dist
+xampp/phpinfo.php
 tests/phpunit_report.xml
 phpinfo.php
 phpinfo.php3
@@ -72,3 +73,5 @@ phpinfo.php4
 phpinfo.php5
 phpinfos.php
 dashboard/phpinfo.php
+?=PHPB8B5F2A0-3C92-11d3-A3A9-4C7B08C10000
+?=PHPE9568F36-D428-11d2-A769-00AA001ACF42

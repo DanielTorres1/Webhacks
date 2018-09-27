@@ -37,7 +37,7 @@ fi
 mkdir web-discover 
 cd web-discover 
 
-echo "Testinf $DOMAIN$MYPATH "
+echo "Testing $DOMAIN$MYPATH "
 
 echo -e "$OKBLUE [+] Lanzando whatweb ... $RESET"
 whatweb $DOMAIN$MYPATH > whatweb.txt

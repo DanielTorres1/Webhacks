@@ -629,6 +629,10 @@ if ($redirect_url eq '')
 $redirect_url =~ s/\"//g;  
 print "redirect_url $redirect_url \n" if ($debug);
 
+# mikrotik (no usar redireccion)
+if($redirect_url =~ /webfig/m ){
+	$redirect_url="";
+}
 # ruta completa
 if($redirect_url =~ /http/m ){	 
 	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);

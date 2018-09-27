@@ -5,6 +5,8 @@ config.ini
 global.asa
 global.asax
 web.config
+inicio.php
+index.php
 configuration.php
 LocalSettings.php
 settings.php
