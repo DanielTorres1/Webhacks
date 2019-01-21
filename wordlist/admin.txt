@@ -5,6 +5,7 @@ manager/html/
 911admin/
 aadmin/
 abstractsadmin/
+moadmin.php
 acceso/
 acs-admin/
 actions_admin/
@@ -987,6 +988,7 @@ webaccess/
 webadmin/
 webAdmin/
 Webadmin/
+webdav/
 WebAdmin/
 webphpMyAdmin/
 wizmysqladmin/

@@ -110,3 +110,5 @@ Account/fLogin.aspx
 asp
 aspnet_client
 asps
+trace.axd
+Elmah.axd

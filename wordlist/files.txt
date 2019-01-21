@@ -37,7 +37,6 @@ global.asax
 .htaccess
 .htpasswd
 id_rsa.pub
-index.htm
 install.mysql
 install.pgsql
 .listing
@@ -65,6 +64,7 @@ read-more.txt
 readmore.txt
 .rhosts
 robots
+apis.json
 robots.txt
 .sh_history
 sitemap.gz

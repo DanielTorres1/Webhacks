@@ -63,3 +63,18 @@ echo -e "$OKBLUE [+] Lanzando web-buster ... $RESET"
 web-buster.pl -s $DOMAIN  -p $PORT -a $MYPATH  -t 25 -m completo > web-buster.txt
 echo ""
 
+find . -type f -iname '*.pdf' -exec cp {} ../../../coop-sanjoaquin.com/archivos \;
+
+cd ../../../coop-sanjoaquin.com/archivos
+for f in *; do mv "$f" `echo $f | tr '%20' '-'`; done
+
+
+
+
+
+
+
+
+
+
+

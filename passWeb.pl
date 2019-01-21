@@ -22,7 +22,9 @@ sub usage {
   print "Uso:  \n";
   print "Autor: Daniel Torres Sandi \n";
   print "	Ejemplo 1:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m ZKSoftware -u administrator -f passwords.txt \n"; 
-  print "	Ejemplo 1:  passWeb.pl -t 192.168.0.2 -p 443 -d /admin/ -m phpmyadmin -u root -f passwords.txt \n"; 
+  print "	Ejemplo 2:  passWeb.pl -t 192.168.0.2 -p 443 -d /admin/ -m phpmyadmin -u root -f passwords.txt \n"; 
+  print "	Ejemplo 3:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m PRTG -u prtgadmin -f passwords.txt  \n"; 
+  
 }	
 # Print help message if required
 if ($opts{'h'} || !(%opts)) {

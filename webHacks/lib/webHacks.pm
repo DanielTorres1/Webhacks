@@ -446,6 +446,41 @@ if ($module eq "ZKSoftware")
 	close MYINPUT;	
 }#ZKSoftware
 
+
+if ($module eq "zimbra")
+{
+		
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+		$password =~ s/\n//g; 	
+		my $hash_data = {"loginOp" => "login",
+						 "client" => "preferred",
+						'username' => $user, 
+						'password' => $password
+				};	
+	
+		my $post_data = convert_hash($hash_data);
+		
+		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");		
+		
+		my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+		my $decoded_response = $response->decoded_content;
+		my $status = $response->status_line;
+		
+		print "[+] user:$user password:$password status:$status\n";
+		if ($status =~ /302/m)
+		{				 
+			print "Zimbra: Password encontrado! ($user:$password)\n";
+			last;
+										
+		}	
+		
+	}
+	close MYINPUT;	
+}#zimbra
+
 if ($module eq "PRTG")
 {
 
@@ -576,6 +611,11 @@ else
 my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
 $decoded_response =~ s/'/"/g; 
+
+my $type="";
+if($decoded_response =~ /Directory of|Index of|Parent directory/i)
+	{$type=$type."Listado directorio activo";} 	
+	
 ### get redirect url ###
 REDIRECT:
 $decoded_response =~ s/; url=/;url=/gi; 
@@ -798,7 +838,6 @@ if ($jquery1 ne '')
 	
 
 
-my $type="";
 if($decoded_response =~ /GASOLINERA/m)
 	{$type=$type."|"."GASOLINERA";} 		
 	
@@ -831,7 +870,7 @@ if($decoded_response =~ /phpmyadmin/i)
 	{$type=$type."|"."phpmyadmin";} 		
 	
 if($decoded_response =~ /Set-Cookie: webvpn/i)
-	{$type=$type."|"."ciscoASA";} 		
+	{$type=$type."|"."ciscoASA";} 			
 
 if($decoded_response =~ /FreeNAS/i)
 	{$title="FreeNAS";} 			
