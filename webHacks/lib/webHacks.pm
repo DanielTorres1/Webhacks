@@ -538,12 +538,15 @@ if ($module eq "phpmyadmin")
 				};	
 	
 		my $post_data = convert_hash($hash_data);
-				
+		GET:		
 		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
 		$response = $self->dispatch(url => $url."index.php",method => 'POST',post_data =>$post_data, headers => $headers);
 		$decoded_response = $response->decoded_content;	
 		my $status = $response->status_line;	
 		my $response_headers = $response->headers_as_string;
+		if ($status =~ /500/m)
+			{goto GET;}
+			
 		if ($status =~ /30/m)
 		{
 			#Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
