@@ -1261,6 +1261,7 @@ contralor
 contramedidas
 contras
 contrasena
+contr
 contrasenas
 contrib
 contribucion
@@ -2195,6 +2196,7 @@ giftreg_manage
 giftregs
 gifts
 git
+.git
 gitweb
 gl
 glance_config
@@ -4980,6 +4982,7 @@ SOAT
 social
 Sofia
 sofia-sip
+sip
 soflanews
 soft
 softblue
@@ -5265,6 +5268,7 @@ suupgrade
 sv
 svc
 svn
+.svn
 svn-base
 svr
 sw
