@@ -12,3 +12,4 @@ LocalSettings.php
 settings.php
 .htaccess
 backup.sql
+/level/15/exec/

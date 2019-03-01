@@ -220,6 +220,7 @@ administator/
 administer/
 administr/
 administr8/
+phpMyAdmin.php
 administra/
 administracao/
 administrace/

@@ -437,7 +437,7 @@ if ($module eq "ZKSoftware")
 		if ($status =~ /200/m)
 		{
 			if  ($decoded_response =~ /Department|Departamento/m){	 
-			print "ZKSoftware: Password encontrado! ($user:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password)\n";
 			last;
 			}							
 		}	
@@ -472,7 +472,7 @@ if ($module eq "zimbra")
 		print "[+] user:$user password:$password status:$status\n";
 		if ($status =~ /302/m)
 		{				 
-			print "Zimbra: Password encontrado! ($user:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password)\n";
 			last;
 										
 		}	
@@ -505,7 +505,7 @@ if ($module eq "PRTG")
 		
 		
 		if (! ($response_headers =~ /error/m)){	 
-			print "\nPRTG: Password encontrado! ($user:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password)\n";
 			last;
 		}
 		
@@ -544,14 +544,23 @@ if ($module eq "phpmyadmin")
 		$decoded_response = $response->decoded_content;	
 		my $status = $response->status_line;	
 		my $response_headers = $response->headers_as_string;
+		
+		#Refresh: 0; http://181.188.172.2/phpmyadmin/index.php?token=dd92af52b6eeefd014f7254ca02b0c25
+		 
+		
 		if ($status =~ /500/m)
 			{goto GET;}
 			
-		if ($status =~ /30/m)
+		if ($status =~/30/m || $response_headers =~/Refresh: /m)
 		{
 			#Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
 			$response_headers =~ /Location:(.*?)\n/;
-			my $new_url = $1; 		
+			my $new_url = $1; 	
+			if ($new_url eq ''){
+				$response_headers =~ /Refresh: 0; (.*?)\n/;
+				$new_url = $1;
+			}
+			
 			#print "new_url $new_url \n";
 		
 			$response = $self->dispatch(url => $new_url, method => 'GET');
@@ -566,7 +575,7 @@ if ($module eq "phpmyadmin")
 					
 		if (! ($decoded_response =~ /pma_username/m))
 		{			
-			print "[!] PhpMyadmin: Password encontrado! ($user:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password)\n";
 			last;									
 		}	
 		
@@ -853,7 +862,7 @@ if($decoded_response =~ /X-OWA-Version/i)
 if($decoded_response =~ /FortiGate/i)
 	{$type=$type."|"."FortiGate";} 	
 
-if($decoded_response =~ /drupal/i)
+if($decoded_response =~ /www.drupal.org/i)
 	{$type=$type."|"."drupal";} 	
 	
 if($decoded_response =~ /wp-content/i)
@@ -869,7 +878,7 @@ if($decoded_response =~ /X-Amz-/i)
 if($decoded_response =~ /X-Planisys-/i)
 	{$type=$type."|"."Planisys";} 		
 
-if($decoded_response =~ /phpmyadmin/i)
+if($decoded_response =~ /phpmyadmin.css/i)
 	{$type=$type."|"."phpmyadmin";} 		
 	
 if($decoded_response =~ /Set-Cookie: webvpn/i)

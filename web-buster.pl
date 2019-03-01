@@ -70,6 +70,8 @@ sub usage {
   print "	  cgi: 	Probar si existen archivos cgi \n";
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
+  print "	  dangerous: dangerous files \n";  
+  print "	  phpinfo: php info files \n";  
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
   print "	  \n\tCombinaciones:\n";
@@ -187,6 +189,12 @@ if ($mode eq "admin" or $mode eq "completo" or $mode eq "apache" or $mode eq "to
 	print "\n";
 }
 
+# fuzz with dangerous files
+if ($mode eq "dangerous" or $mode eq "completo" 	){		
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/dangerous.txt");	
+	print "\n";
+}
+
 # fuzz with common directory names
 if ($mode eq "directorios" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){		
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
@@ -219,7 +227,7 @@ if ($mode eq "webservices" or $mode eq "completo" or $mode eq "apache" or $mode 
 
 
 # fuzz with files (with extension)
-if ($mode eq "apache"  or $mode eq "php"  or $mode eq "completo"){	
+if ($mode eq "apache" or $mode eq "completo"){	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/php.txt");	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","htm");	
@@ -244,9 +252,17 @@ if ($mode eq "tomcat"  or $mode eq "jsp"  or $mode eq "completo"){
 	print "\n";
 }
 
+# php 
+if ($mode eq "phpinfo" or $mode eq "completo"){	
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/phpinfo.txt");	
+	print "\n";
+}
+
 # fuzz with user names 
 if ($mode eq "username" or $mode eq "completo"){	
 	my $status = $webHacks->userbuster("/usr/share/webhacks/wordlist/nombres.txt");	
 	print "\n";
 }
+
+
 

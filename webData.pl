@@ -10,13 +10,14 @@ binmode STDOUT, ":encoding(UTF-8)";
 #$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 my %opts;
-getopts('t:p:s:e:i:d:l:h', \%opts);
+getopts('t:p:s:e:i:d:l:r:h', \%opts);
 
 
 my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $ssl = $opts{'s'};
 my $path = $opts{'d'};
+my $redirect = $opts{'r'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
@@ -28,6 +29,7 @@ sub usage {
   print "-p : Puerto del servidor web \n";
   print "-d : Ruta donde empezara a probar directorios \n";
   print "-l : Archivo donde escribira los logs \n";
+  print "-r : Cuantas redirecciones seguir\n";
   print "-e : Extraer \n";
   print "		-e parcial = titulo,metadatos,descripcion y banner \n";
   print "		-e todo = titulo,metadatos,descripcion,banner, version del lenguaje/CMS/framework usado, etc\n";	
@@ -36,8 +38,8 @@ sub usage {
   print "		-s 0 = NO SSL \n";	
   
   print "Autor: Daniel Torres Sandi \n";
-  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -e todo -l log.txt \n"; 
-  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -d /phpmyadmin/ -e todo -l log.txt \n"; 
+  print "	Ejemplo 1:  webData.pl -t ejemplo.com -p 80 -d / -e todo -l log.txt -r 0 \n"; 
+  print "	Ejemplo 1:  webData.pl -t 192.168.0.2 -p 80 -d /phpmyadmin/ -e todo -l log.txt -r 4 \n"; 
 	  
 }	
 # Print help message if required
@@ -53,7 +55,7 @@ if ($ssl eq '')
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,	
 						path => $path,	
-						max_redirect => 4,						
+						max_redirect => $redirect,						
 					    debug => 0);	
 	# Need to make a request to discover if SSL is in use
 	$webHacks->dispatch(url => "http://$target:$port",method => 'GET');
@@ -65,7 +67,7 @@ else
 						rport => $port,	
 						path => $path,		
 						ssl => $ssl,						
-						max_redirect => 4,
+						max_redirect => $redirect,
 					    debug => 0);	
 }
 	   				   
