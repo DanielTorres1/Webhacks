@@ -21,13 +21,7 @@ sub usage {
   
   print "Uso:  \n";
   print "Autor: Daniel Torres Sandi \n";
-  print "	Ejemplo 1:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m ZKSoftware -u administrator -f passwords.txt \n"; 
-  print "	Ejemplo 2:  passWeb.pl -t 192.168.0.2 -p 443 -d /admin/ -m phpmyadmin -u root -f passwords.txt \n"; 
-  print "	Ejemplo 3:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m PRTG -u prtgadmin -f passwords.txt  \n"; 
-  print "	Ejemplo 4:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m zimbra -u juan.perez -f passwords.txt  \n"; 
-  print "	Ejemplo 5:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m zte -u user -f passwords.txt  \n"; 
- 
-  
+  print "	Ejemplo 1:  hacktWeb.pl -t 192.168.0.2 -p 80 -m zte \n"; 
 }	
 # Print help message if required
 if ($opts{'h'} || !(%opts)) {
@@ -35,14 +29,20 @@ if ($opts{'h'} || !(%opts)) {
 	exit 0;
 }
 
+my $ssl = 1;
+if ($module eq "zte")
+{
+	$ssl = 0;
+}
 	   				   
 my $webHacks = webHacks->new( rhost => $target,
 						rport => $port,
 						max_redirect => 1,
+						ssl => $ssl,
 					    debug => 0);
 					    
 
 # Need to make a request to discover if SSL is in use
-$webHacks->dispatch(url => "http://$target:$port".$path,method => 'GET');
+#$webHacks->dispatch(url => "http://$target:$port".$path,method => 'GET');
 
-$webHacks->passwordTest( module => $module, path => $path, user => $user, passwords_file => $passwords_file)
+$webHacks->exploit( module => $module, path => $path);

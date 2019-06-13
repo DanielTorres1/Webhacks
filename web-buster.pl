@@ -178,13 +178,13 @@ if ($error404 ne ''  and $ssl ne '' )
 
 
 # fuzz with common files names
-if ($mode eq "archivos" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){	
+if ($mode eq "archivos" or $mode eq "completo"){	
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");	
 	print "\n";
 }
 
 # fuzz with admin
-if ($mode eq "admin" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){		
+if ($mode eq "admin" or $mode eq "completo"){		
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
 	print "\n";
 }
@@ -196,32 +196,39 @@ if ($mode eq "dangerous" or $mode eq "completo" 	){
 }
 
 # fuzz with common directory names
-if ($mode eq "directorios" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){		
+if ($mode eq "directorios" or $mode eq "completo"){		
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
 	print "\n";
 }
 
 # fuzz with common cgi files names
-if ($mode eq "cgi" or $mode eq "completo" or $mode eq "apache" ){		
+if ($mode eq "cgi" or $mode eq "completo" ){		
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/cgi.txt");	
 	print "\n";
 }
 
 # fuzz with common server files names
-if ($mode eq "webserver" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){			
+if ($mode eq "webserver" or $mode eq "completo"){			
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/webserver.txt");	
 	print "\n";
 }
 
 # fuzz with backup names (add .bak, .swp, etc)
-if ($mode eq "backup" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){			
+if ($mode eq "backup" or $mode eq "completo" ){			
 	my $status = $webHacks->backupbuster("/usr/share/webhacks/wordlist/configFiles.txt");	
 	print "\n";
 }
 
 # fuzz with webservices
-if ($mode eq "webservices" or $mode eq "completo" or $mode eq "apache" or $mode eq "tomcat" or $mode eq "iis"){		
+if ($mode eq "webservices" or $mode eq "completo" ){		
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/webservices.txt");	
+	print "\n";
+}
+
+
+# fuzz with backdoors
+if ($mode eq "backdoors" or $mode eq "completo" or $mode eq "apache"){		
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/backdoors.txt");	
 	print "\n";
 }
 
@@ -245,8 +252,14 @@ if ($mode eq "iis"  or $mode eq "asp"  or $mode eq "completo"){
 }
 
 # fuzz with tomcat
-if ($mode eq "tomcat"  or $mode eq "jsp"  or $mode eq "completo"){			
-	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/tomcat.txt");	
+if ($mode eq "tomcat" or $mode eq "completo"){			
+	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/tomcat.txt");		
+	print "\n";
+}
+
+
+# fuzz with jsp
+if ($mode eq "jsp"  or $mode eq "completo" ){				
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","jsp");		
 	my $status = $webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");	
 	print "\n";

@@ -1126,8 +1126,6 @@ getior
 .gfclient/pass
 gfx
 .git
-.git/
-.git2/
 .gitattributes
 .git/branches/
 .git/COMMIT_EDITMSG

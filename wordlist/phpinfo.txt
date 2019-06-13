@@ -1,6 +1,7 @@
 linusadmin-phpinfo.php
 php-info.php
 phpinfo.php
+info.php
 ?phpinfo
 ?phpinfo=1
 phpinfo.php3

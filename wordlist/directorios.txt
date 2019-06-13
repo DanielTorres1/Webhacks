@@ -1,6 +1,7 @@
 0
 00
 01
+cur_doc
 02
 03
 04
@@ -1382,6 +1383,7 @@ culture
 cupon
 currency
 current
+curso
 cursos
 custom
 customavatars
@@ -2773,6 +2775,7 @@ ioncube
 ip
 ipc
 ipdata
+punku
 iphone
 ipn
 ipod

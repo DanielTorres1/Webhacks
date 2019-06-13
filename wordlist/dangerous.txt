@@ -1,9 +1,11 @@
 .git/
+.git2/
 .svn/
 sql/
 db/
 app/database/
 database/
+IoMgmt/Adapters/wifi0/WPS/Pin
 searchreplacedb2.php
 wp-content/themes/bridge/js/searchreplacedb2.php
 wp-content/plugins/contact-form-7/searchreplacedb2.php

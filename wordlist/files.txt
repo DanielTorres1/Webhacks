@@ -1,4 +1,6 @@
 access.1
+.git/config
+.git/configf
 access_log
 access_log.1
 access-log.1
