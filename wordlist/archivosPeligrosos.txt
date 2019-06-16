@@ -4,6 +4,8 @@
 sql/
 db/
 app/database/
+config.ini
+backup.sql
 database/
 IoMgmt/Adapters/wifi0/WPS/Pin
 searchreplacedb2.php

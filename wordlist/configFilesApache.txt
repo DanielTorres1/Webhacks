@@ -1,15 +1,10 @@
 config
 backup
 config.php
-config.ini
-global.asa
-global.asax
-web.config
 inicio.php
 index.php
 configuration.php
 LocalSettings.php
+conexion.php
 settings.php
 .htaccess
-backup.sql
-/level/15/exec/

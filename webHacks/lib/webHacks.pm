@@ -159,7 +159,7 @@ foreach my $file (@links) {
 		$backdoor = " (Posible Backdoor)\t";
 	}
 	
-	if($status !~ /404|500|302|303|301|503|400/m){		
+	if($status !~ /404|500|303|301|503|400/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
 		my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
@@ -189,8 +189,6 @@ foreach my $file (@links) {
   $pm->wait_all_children;
 
 }
-
-
 
 
 #search for directories like   192.168.0.1/~username
@@ -350,7 +348,7 @@ print $result_table;
 foreach my $file (@links) 
 {
 	
-	my @backups = ("FILE",".FILE.EXT.swp","FILE.inc","FILE~","FILE.bak","FILE.txt","FILE.tmp","FILE.temp","FILE.old","FILE.bakup","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)","FILE::\$DATA");
+	my @backups = (".FILE.EXT.swp","FILE.inc","FILE~","FILE.bak","FILE.txt","FILE.tmp","FILE.temp","FILE.old","FILE.bakup","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)","FILE::\$DATA");
 	$file =~ s/\n//g; 	
 	#print "file $file \n";
 	my $url;
@@ -746,12 +744,23 @@ if($decoded_response =~ /Directory of|Index of|Parent directory/i)
 ### get redirect url ###
 REDIRECT:
 $decoded_response =~ s/; url=/;url=/gi; 
+$decoded_response =~ s/\{//gi; 
 #$decoded_response =~ s/^.*?\/noscript//s;  #delete everything before xxxxxxxxx
 $decoded_response =~ s/<noscript[^\/noscript>]*\/noscript>//g;
+
 
 #<meta http-equiv="Refresh" content="0;URL=/page.cgi?page=status">
 $decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
 my $redirect_url = $1; 
+
+
+
+if ($redirect_url eq '')
+{
+	                    #<script>window.onload=function(){ url ="/webui";window.location.href=url;}</script>
+	$decoded_response =~ /window.onload=function\(\) url ="(.*?)"/i;
+	$redirect_url = $1; 
+}
 
 if ($redirect_url eq '')
 {
