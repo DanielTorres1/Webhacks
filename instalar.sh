@@ -29,7 +29,8 @@ echo -e "$OKBLUE [+] Instalando WEB hacks $RESET"
 
 echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET" 
 
-sudo pip install M2Crypto pyopenssl
+sudo apt-get install python-m2crypto
+sudo pip install M2Crypto pyopenssl scapy
 
 sudo cp webData.pl /usr/bin/
 sudo cp passWeb.pl /usr/bin/
