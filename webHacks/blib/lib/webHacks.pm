@@ -288,6 +288,87 @@ foreach my $file (@links) {
 }
 
 
+#Busca una palabra clave en la respuesta
+sub contentBuster
+{
+my $self = shift;
+my $headers = $self->headers;
+my $debug = $self->debug;
+my $rhost = $self->rhost;
+my $rport = $self->rport;
+my $path = $self->path;
+my $ssl = $self->ssl;
+my $error404 = $self->error404;
+my $threads = $self->threads;
+my ($url_file,$match) = @_;
+
+
+my $cookie = $self->cookie;
+
+if ($cookie ne "")
+	{$headers->header("Cookie" => $cookie);} 
+
+my $ajax = $self->ajax;
+
+if ($ajax ne "0")
+	{$headers->header("x-requested-with" => "xmlhttprequest");}
+
+# Max parallel processes  
+my $pm = new Parallel::ForkManager($threads); 
+my @links;
+
+########### file to array (url_file) #######
+open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
+while (my $url=<MYINPUT>)
+{ 
+$url =~ s/\n//g; 	
+push @links, $url;
+}
+close MYINPUT;
+#########################################
+
+
+my $lines = `wc -l $url_file | cut -d " " -f1`;
+$lines =~ s/\n//g;
+my $time = int($lines/600);
+
+print color('bold blue');
+print "######### Usando archivo: $url_file ##################### \n";
+print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie\n";
+print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
+print color('reset');
+
+my $result_table = Text::Table->new(
+        "STATUS", "  URL", "\t\t\t\t RISKY METHODS"
+);
+    
+print $result_table;    
+
+foreach my $file (@links) {
+      
+    $file =~ s/\n//g; 	
+
+	my $url;
+	if ($ssl)
+		{$url = "https://".$rhost.":".$rport.$path.$file;}
+	else
+		{$url = "http://".$rhost.":".$rport.$path.$file;}  
+        
+	#print "getting $url \n";
+	##############  thread ##############
+	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
+	my $status = $response->status_line;
+	my $decoded_content = $response->decoded_content;
+	
+	if($decoded_content =~ /$match/m){	 
+		print "$status\t$url\n";
+		last;
+	}	
+	##############	   
+  } 
+}
+
+
 
 #search for backupfiles
 sub backupbuster
@@ -906,9 +987,9 @@ print "poweredBy $poweredBy \n" if ($debug);
 
 #my $title;#) =~ /<title>(.+)<\/title>/s;
 
-$decoded_response =~ /<title>(.+)<\/title>/s ;
+$decoded_response =~ /<title>(.{1,90})<\/title>/s ;
 my $title =$1; 
-$title =~ s/>|\n|\t|\r//g; 
+$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 if ($title eq '')
 	{($title) = ($decoded_response =~ /<title(.*?)\n/i);}
 
@@ -1019,8 +1100,26 @@ if($decoded_response =~ /Set-Cookie: webvpn/i)
 	{$type=$type."|"."ciscoASA";} 	
 	
 if($decoded_response =~ /Huawei/i)
-	{$type=$type."|"."Huawei";} 				
+	{$type=$type."|"."Huawei";} 	
 
+if($decoded_response =~ /connect.sid|X-Powered-By: Express/i)
+	{$type=$type."|"."Express APP";}	
+
+if($decoded_response =~ /X-ORACLE-DMS/i)
+	{$type=$type."|"."Oracle Dynamic Monitoring";}	
+
+if($decoded_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
+	{$type=$type."|"."Postgres web";}	
+
+if($decoded_response =~ /viewport/i)
+	{$type=$type."|"."AngularJS";}			
+
+if($decoded_response =~ /roundcube_sessid/i)
+	{$type=$type."|"."Roundcube";}	 
+
+if($decoded_response =~ /Hikvision Digital/i)
+	{$title="Hikvision Digital";} 			
+	
 if($decoded_response =~ /FreeNAS/i)
 	{$title="FreeNAS";} 			
 
@@ -1029,8 +1128,8 @@ if($decoded_response =~ /ciscouser/i)
 
 if($decoded_response =~ /pfsense-logo/i)
 	{$title="Pfsense";} 
-	
-	
+
+
 
 		
 

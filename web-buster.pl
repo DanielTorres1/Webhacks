@@ -245,7 +245,7 @@ if ($mode eq "php" ){
 
 # php 
 if ($mode eq "phpinfo"){	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/phpinfo.txt");	
+	$webHacks->contentBuster("/usr/share/webhacks/wordlist/phpinfo.txt","HTTP_USER_AGENT");	
 	print "\n";
 }
 
