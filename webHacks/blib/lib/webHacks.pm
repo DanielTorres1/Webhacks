@@ -708,13 +708,21 @@ if ($module eq "phpmyadmin")
 		$password =~ s/\n//g; 	
 		my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
 		my $decoded_response = $response->decoded_content;
-		#name="token" value="3e011556a591f8b68267fada258b6d5a"
-		$decoded_response =~ /name="token" value="(.*?)"/;
-		my $token = $1;
-		
+				
 		#open (SALIDA,">phpmyadmin.html") || die "ERROR: No puedo abrir el fichero google.html\n";
 		#print SALIDA $decoded_response;
 		#close (SALIDA);
+
+		if ($decoded_response =~ /navigation.php\?token|navigation.php\?lang/i &&  $decoded_response =~ /main.php\?token|main.php\?lang=/i)
+		{			
+			print "Password encontrado $url (Sistema sin password)\n";
+			last;									
+		}	 
+		
+		#name="token" value="3e011556a591f8b68267fada258b6d5a"
+		$decoded_response =~ /name="token" value="(.*?)"/;
+		my $token = $1;
+
 
 
 		if ($decoded_response =~ /respondiendo|not responding/i)
@@ -1117,6 +1125,11 @@ if($decoded_response =~ /viewport/i)
 if($decoded_response =~ /roundcube_sessid/i)
 	{$type=$type."|"."Roundcube";}	 
 
+
+if($decoded_response =~ /theme-taiga.css/i)
+	{$type=$type."|"."Taiga";}	 
+
+
 if($decoded_response =~ /Hikvision Digital/i)
 	{$title="Hikvision Digital";} 			
 	
@@ -1128,7 +1141,6 @@ if($decoded_response =~ /ciscouser/i)
 
 if($decoded_response =~ /pfsense-logo/i)
 	{$title="Pfsense";} 
-
 
 
 		
