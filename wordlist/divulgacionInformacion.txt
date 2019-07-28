@@ -1,3 +1,6 @@
+access_log
+error
+error_log
 linusadmin-phpinfo.php
 php-info.php
 phpinfo.php

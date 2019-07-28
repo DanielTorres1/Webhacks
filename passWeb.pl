@@ -26,6 +26,8 @@ sub usage {
   print "	Ejemplo 3:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m PRTG -u prtgadmin -f passwords.txt  \n"; 
   print "	Ejemplo 4:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m zimbra -u juan.perez -f passwords.txt  \n"; 
   print "	Ejemplo 5:  passWeb.pl -t 192.168.0.2 -p 80 -d / -m zte -u user -f passwords.txt  \n"; 
+  print "	Ejemplo 6:  passWeb.pl -t 192.168.0.2 -p 8081 -d / -m pentaho -u admin -f top.txt \n"; 
+  
  
   
 }	

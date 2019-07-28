@@ -2,9 +2,6 @@
 .htpasswd
 .meta
 .web
-access_log
-error
-error_log
 htdocs
 status
 tmp/

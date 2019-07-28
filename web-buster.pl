@@ -71,14 +71,10 @@ sub usage {
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
   print "	  archivosPeligrosos: Archivos peligrosos \n";  
-  print "	  phpinfo: php info files \n";  
+  print "	  divulgacionInformacion: php info files, error logs \n";  
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
-  print "	  \n\tCombinaciones:\n";
-  print "	  iis:    directorios + admin + archivos + webservices + webserver + backup + archivos asp/aspx/html/htm\n";
-  print "	  tomcat: directorios + admin + archivos + webservices + webserver + backup + archivos jps/html/htm\n";
-  print "	  apache: directorios + admin + cgi + archivos + webservices + webserver + backup + archivos php/html/htm\n"; 
-  
+  print "	  \n\tCombinaciones:\n";  
   print "	  completoApache: Probara Todos los modulos de Apache \n";
   print "	  completoTomcat: Probara Todos los modulos de Tomcat \n";
   print "	  completoISS: Probara Todos los modulos de IIS \n";
@@ -244,8 +240,9 @@ if ($mode eq "php" ){
 }
 
 # php 
-if ($mode eq "phpinfo"){	
-	$webHacks->contentBuster("/usr/share/webhacks/wordlist/phpinfo.txt","HTTP_USER_AGENT");	
+if ($mode eq "divulgacionInformacion"){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/divulgacionInformacion.txt");	
+	#$webHacks->contentBuster("/usr/share/webhacks/wordlist/divulgacionInformacion.txt","HTTP_USER_AGENT");	
 	print "\n";
 }
 

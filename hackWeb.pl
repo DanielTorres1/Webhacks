@@ -14,7 +14,6 @@ my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $module = $opts{'m'} if $opts{'m'};
 my $user = $opts{'u'} if $opts{'u'};
-my $path = $opts{'d'} if $opts{'d'};
 my $passwords_file = $opts{'f'} if $opts{'f'};
 
 sub usage { 
@@ -22,6 +21,7 @@ sub usage {
   print "Uso:  \n";
   print "Autor: Daniel Torres Sandi \n";
   print "	Ejemplo 1:  hacktWeb.pl -t 192.168.0.2 -p 80 -m zte \n"; 
+  print "	Ejemplo 2:  hacktWeb.pl -t 192.168.0.2 -p 80 -m zimbraXXE \n"; 
 }	
 # Print help message if required
 if ($opts{'h'} || !(%opts)) {
@@ -45,4 +45,4 @@ my $webHacks = webHacks->new( rhost => $target,
 # Need to make a request to discover if SSL is in use
 #$webHacks->dispatch(url => "http://$target:$port".$path,method => 'GET');
 
-$webHacks->exploit( module => $module, path => $path);
+$webHacks->exploit( module => $module, path => '/');
