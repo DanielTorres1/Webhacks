@@ -10,6 +10,7 @@ acceso/
 admin_/
 admin/
 Admin/
+adm/
 admin0/
 admin2/
 admin2007/

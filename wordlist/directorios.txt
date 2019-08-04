@@ -66,6 +66,7 @@ kerp
 25
 2g
 3
+BOE/BI
 30
 300
 32
@@ -4064,8 +4065,6 @@ phpbb3
 phpBB3
 php-bin
 phpEventCalendar
-phpinfo
-phpinfos
 phplist
 phplive
 phpmailer

@@ -475,6 +475,45 @@ foreach my $file (@links)
 }
 
 
+sub openrelay
+{
+my $self = shift;
+my $headers = $self->headers;
+my $debug = $self->debug;
+
+my %options = @_;
+my $ip = $options{ ip };
+my $port = $options{ port };
+my $correo = $options{ correo };
+
+
+$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+$headers->header("Cookie" => "ZM_TEST=true");
+$headers->header("Referer" => "http://www.dnsexit.com/Direct.sv?cmd=testMailServer");
+$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
+		
+
+my $hash_data = {'actioncode' => 1, 
+				'from' => $correo,
+				'to' => $correo,
+				'emailserver' => $ip,
+				'port' => $port,
+				'Submit' => "Check+Email+Server",
+				
+				};		
+	my $post_data = convert_hash($hash_data);
+		
+	my $response = $self->dispatch(url => "http://www.dnsexit.com/Direct.sv?cmd=testMailServer",method => 'POST', post_data =>$post_data ,headers => $headers);
+	my $decoded_response = $response->decoded_content;
+	#$decoded_response =~ /<textarea name=(.*?\n\r\t)<\/textarea>/;
+	#my $result = $1; 
+	print "$decoded_response \n";
+	#print "$decoded_response \n";
+
+}
+
+
+
 sub exploit
 {
 my $self = shift;
@@ -499,6 +538,8 @@ if ($ssl)
   {$url = "https://".$rhost.":".$rport.$path;}
 else
   {$url = "http://".$rhost.":".$rport.$path;}
+
+
   
 if ($module eq "zte")
 {
@@ -858,7 +899,7 @@ if ($module eq "phpmyadmin")
 			
 			
 					
-		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server/i))
+		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
 		{			
 			print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
 			last;									
@@ -911,7 +952,8 @@ my $response = $self->dispatch(url => $url."nonexistroute123", method => 'GET', 
 my $decoded_response = $response->decoded_content;
 my $status = $response->status_line;
 
-if($decoded_response =~ /Django|laravel|error message|app\/controllers/i){	 
+
+if($decoded_response =~ /Django|laravel|DEBUG = True|error message|app\/controllers/i){	 
 	$type=$type."|Debug habilitado";
 }
 elsif($status =~ /200/m)
@@ -929,6 +971,7 @@ my $protocolo1 = $url_array1[0];
 #Peticion 2 (si fue redireccionada)
 my @url_array2 = split("/",$last_url);
 my $protocolo2 = $url_array2[0];
+
 
 
 if ($protocolo1 ne $protocolo2)
@@ -1255,6 +1298,7 @@ if($decoded_response =~ /roundcube_sessid/i)
 if($decoded_response =~ /theme-taiga.css/i)
 	{$type=$type."|"."Taiga";}	 
 
+
 if($decoded_response =~ /Web Services/i)	
 	{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
 
@@ -1264,7 +1308,9 @@ if($decoded_response =~ /Acceso no autorizado/i)
 if($type eq '' && $decoded_response =~ /login/m)
 	{$type=$type."|"."login";}	
 	
-		
+if($decoded_response =~ /login__block__header/i)	
+	{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
+			
 
 
 if($decoded_response =~ /Hikvision Digital/i)
@@ -1279,6 +1325,10 @@ if($decoded_response =~ /ciscouser/i)
 if($decoded_response =~ /pfsense-logo/i)
 	{$title="Pfsense";} 
 
+if($decoded_response =~ /servletBridgeIframe/i)
+	{$title="SAP Business Objects";} 	
+
+	
 
 if($decoded_response =~ /content="Babelstar"/i)
 	{$title="Body Cam";} 	
@@ -1286,6 +1336,9 @@ if($decoded_response =~ /content="Babelstar"/i)
 
 if($decoded_response =~ /login to iDRAC/i)
 	{$title="Dell iDRAC";} 
+
+if($decoded_response =~ /portal.peplink.com/i)
+	{$title="Web Admin PepLink";} 	
 	
 
 

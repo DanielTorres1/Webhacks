@@ -7,14 +7,14 @@ use Getopt::Std;
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
 my %opts;
-getopts('t:p:m:d:u:f:h', \%opts);
+getopts('t:p:m:c:u:h', \%opts);
 
 
 my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $module = $opts{'m'} if $opts{'m'};
 my $user = $opts{'u'} if $opts{'u'};
-my $passwords_file = $opts{'f'} if $opts{'f'};
+my $correo = $opts{'c'} if $opts{'c'};
 
 sub usage { 
   
@@ -22,6 +22,7 @@ sub usage {
   print "Autor: Daniel Torres Sandi \n";
   print "	Ejemplo 1:  hacktWeb.pl -t 192.168.0.2 -p 80 -m zte \n"; 
   print "	Ejemplo 2:  hacktWeb.pl -t 192.168.0.2 -p 80 -m zimbraXXE \n"; 
+  print "	Ejemplo 3:  hacktWeb.pl -t 192.168.0.2 -p 25 -m openrelay -c info\@localhost \n"; 
 }	
 # Print help message if required
 if ($opts{'h'} || !(%opts)) {
@@ -44,5 +45,10 @@ my $webHacks = webHacks->new( rhost => $target,
 
 # Need to make a request to discover if SSL is in use
 #$webHacks->dispatch(url => "http://$target:$port".$path,method => 'GET');
+
+if ($module eq "openrelay")
+{
+$webHacks->openrelay( ip => $target, port => $port, correo => $correo );	
+}
 
 $webHacks->exploit( module => $module, path => '/');

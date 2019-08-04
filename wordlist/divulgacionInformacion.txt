@@ -4,6 +4,8 @@ error_log
 linusadmin-phpinfo.php
 php-info.php
 phpinfo.php
+phpinfo
+phpinfos
 info.php
 ?phpinfo
 ?phpinfo=1

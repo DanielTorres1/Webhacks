@@ -219,13 +219,13 @@ if ($mode eq "webservices" ){
 
 
 # fuzz with backdoors apache
-if ($mode eq "backdoorsApache"){
+if ($mode eq "backdoorApache"){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/backdoorsApache.txt");	
 	print "\n";
 }
 
 # fuzz with backdoors IIS
-if ($mode eq "backdoorsIIS"){
+if ($mode eq "backdoorIIS"){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/backdoorsIIS.txt");	
 	print "\n";
 }

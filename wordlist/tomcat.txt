@@ -22,6 +22,7 @@ servlet/default/
 tomcat-docs/
 servlets-examples
 examples/
+status?full=true
 host-manager/
 host-manager/add/
 host-manager/host-manager.xml
