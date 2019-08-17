@@ -156,9 +156,19 @@ foreach my $file (@links) {
 	
 	# check body and headers
 	my $vuln=" ";
-	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak /i){	 
+	if ($decoded_content eq ""){	 
+		$vuln = " (Archivo vacio)\t";
+	}
+	
+	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de/i){	 
 		$vuln = " (Posible Backdoor)\t";
 	}
+	
+	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
+	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
+	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|Access denied for/i)
+		{$vuln = " (Mensaje de error)\t";} 	
+	 
 	
 	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
 		{$vuln = " (Listado directorio activo)\t";} 	
@@ -434,7 +444,7 @@ print $result_table;
 foreach my $file (@links) 
 {
 	
-	my @backups = (".FILE.EXT.swp","FILE.inc","FILE~","FILE.bak","FILE.txt","FILE.tmp","FILE.temp","FILE.old","FILE.bakup","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)","FILE::\$DATA");
+	my @backups = (".FILE.EXT.swp","FILE.inc","FILE~","FILE.bak","FILE.tmp","FILE.temp","FILE.old","FILE.bakup","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)","FILE::\$DATA");
 	$file =~ s/\n//g; 	
 	#print "file $file \n";
 	my $url;

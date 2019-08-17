@@ -14,7 +14,6 @@ manager/save
 manager/serverinfo
 manager/sessions
 manager/start
-manager/status.xsd
 manager/stop
 manager/undeploy
 jsp-examples/
@@ -32,4 +31,3 @@ host-manager/remove/
 host-manager/start/
 host-manager/stop/
 examples/servlet/snoop/
-examples/servlets/index.html

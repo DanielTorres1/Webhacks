@@ -11,6 +11,8 @@ xphperrors.log
 akeeba.backend.log
 php_cli_errors.log
 php_error.log
+aniversario.php
+wp-includes/rss-functions.php
 php-error.log
 php_errors.log
 php-errors.log
@@ -66,14 +68,10 @@ typo3/phpmyadmin/scripts/setup.php
 web/phpMyAdmin/scripts/setup.php
 xampp/phpmyadmin/scripts/setup.php
 phpspec.yml
-wp-admin/c99.php
-wp-admin/install.php
-wp-admin/setup-config.php
 wp-content/plugins/akismet/admin.php
 wp-content/plugins/count-per-day/js/yc/d00.php
 wp-content/plugins/google-sitemap-generator/sitemap-core.php
 wp.php
-wp-includes/rss-functions.php
 cgi-bin/php.ini
 php4.ini
 php5.ini
@@ -432,7 +430,7 @@ users.sql.gz
 users.sqlite
 vb.sql
 web.sql
-/wp-content/uploads/dump.sql
+wp-content/uploads/dump.sql
 wwwroot.sql
 www.sql
 archive.rar
@@ -443,7 +441,6 @@ forum.rar
 home.rar
 index.rar
 joomla.rar
-.rar
 site.rar
 vb.rar
 web.rar

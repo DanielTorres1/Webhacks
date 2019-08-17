@@ -68,9 +68,11 @@ sub usage {
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
+  print "	  php: 	Probar si existen archivos php \n";
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
   print "	  archivosPeligrosos: Archivos peligrosos \n";  
+  print "	  archivosDefecto: Archivos por defecto \n";    
   print "	  divulgacionInformacion: php info files, error logs \n";  
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
@@ -233,9 +235,7 @@ if ($mode eq "backdoorIIS"){
 #########################
 # fuzz with files (with extension)
 if ($mode eq "php" ){		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","htm");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");		
 	print "\n";
 }
 
@@ -246,6 +246,12 @@ if ($mode eq "divulgacionInformacion"){
 	print "\n";
 }
 
+
+if ($mode eq "archivosDefecto"){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosDefecto.txt");	
+	#$webHacks->contentBuster("/usr/share/webhacks/wordlist/divulgacionInformacion.txt","HTTP_USER_AGENT");	
+	print "\n";
+}
 
 ##########################
 # fuzz with iis
@@ -330,6 +336,16 @@ if ($mode eq "completoIIS" ){
 	print "\n";
 }
 
+
+if ($mode eq "completoTomcat" ){				
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/webserver.txt");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","jsp");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt","htm");		
+	print "\n";
+}
 
 
 # fuzz with user names 

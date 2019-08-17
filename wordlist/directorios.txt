@@ -102,6 +102,10 @@ abierto
 Abogacia
 abogado
 abogados
+geonetwork/srv
+geonetwork
+geoserver/web
+geoserver
 about
 About
 about-us
@@ -330,6 +334,7 @@ announce
 announcement
 announcements
 annuaire
+uai
 annual
 anon
 anon_ftp
@@ -1642,7 +1647,6 @@ docedit
 dock
 docnote
 docroot
-docs
 docs41
 docs51
 docu
@@ -1922,8 +1926,6 @@ evt
 ewebeditor
 ews
 ex
-example
-examples
 excalibur
 excel
 exception_log

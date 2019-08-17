@@ -10,3 +10,4 @@ imagenes/b374k.php
 imagenes/c99.php
 imagenes/r57.php
 imagenes/wso.php
+wp-admin/c99.php
