@@ -391,6 +391,7 @@ database.sqlite
 database.yml.sqlite3
 data.sql
 data.sqlite
+data.txt
 db1.sqlite
 db.sql
 db.sqlite
