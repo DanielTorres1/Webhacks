@@ -6,4 +6,3 @@ manager/status.xsd
 examples/servlets/index.html
 wp-admin/install.php
 wp-admin/setup-config.php
-

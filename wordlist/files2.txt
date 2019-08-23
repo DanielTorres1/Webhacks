@@ -374,6 +374,7 @@ docs/html/admin/index.EXT
 docs/html/developer/ch02.EXT
 docs/html/developer/ch03s15.EXT
 dom.EXT
+down.EXT
 download.EXT
 downloads/dom.EXT
 downloads.EXT
