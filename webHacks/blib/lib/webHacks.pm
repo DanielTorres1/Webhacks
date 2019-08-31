@@ -174,9 +174,18 @@ foreach my $file (@links) {
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
-	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|Access denied for/i)
+	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor /i)
 		{$vuln = " (Mensaje de error)\t";} 		 
-	
+		
+		
+	if($decoded_content =~ /Access denied for/i)
+	{
+		#Access denied for user 'acanqui'@'192.168.4.20' 
+		$decoded_content =~ /Access denied for user (.*?)\(/;
+		my $usuario_ip = $1; 
+		$vuln = " (Exposicion de usuario - $usuario_ip)\t";
+	 } 	
+		
 	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
 		{$vuln = " (Listado directorio activo)\t";} 	
 	

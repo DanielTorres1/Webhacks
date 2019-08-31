@@ -1,5 +1,8 @@
 web.config.txt
 readme.html
+docs/CHANGELOG.txt
+CHANGELOG.txt
+README.html
 README
 docs/
 examples/

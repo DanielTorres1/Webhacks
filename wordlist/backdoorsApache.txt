@@ -11,3 +11,12 @@ imagenes/c99.php
 imagenes/r57.php
 imagenes/wso.php
 wp-admin/c99.php
+Sh3ll.php
+shell.php
+shellz.php
+r00t.php
+r57eng.php
+r57shell.php
+r58.php
+r99.php
+madspotshell.php
