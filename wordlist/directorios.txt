@@ -1,4 +1,6 @@
 kerp
+wp-includes
+wp-content/uploads
 0
 00
 01

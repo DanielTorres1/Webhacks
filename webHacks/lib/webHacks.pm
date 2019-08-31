@@ -160,10 +160,17 @@ foreach my $file (@links) {
 	
 	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de/i){	 
 		$vuln = " (Posible Backdoor)\t";
-	}
-	if ($decoded_content =~ /r=usuario\/create/i){	 
-		$vuln = " (Exposición de usuarios/passwords)\t";
 	}	
+
+	
+	if($url =~ /r=usuario/m){	 
+		if ($decoded_content =~ /r=usuario\/create/i)
+			{$vuln = " (Exposición de usuarios/passwords)\t";}	
+		else
+			{$status="404";}
+	}
+	
+	
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'

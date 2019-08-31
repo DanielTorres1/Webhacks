@@ -1,4 +1,6 @@
 web.config.txt
+readme.html
+README
 docs/
 examples/
 example/

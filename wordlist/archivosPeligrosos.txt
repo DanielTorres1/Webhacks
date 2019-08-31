@@ -5,6 +5,7 @@
 sql/
 db/
 app/database/
+emergency.php
 config.ini
 backup.sql
 database/

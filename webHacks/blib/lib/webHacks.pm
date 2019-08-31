@@ -129,8 +129,6 @@ foreach my $file (@links) {
 	case "htm"	{ $file =~ s/EXT/htm/g;  }
 	case "jsp"	{ $file =~ s/EXT/jsp/g;  }
     }
-	
-
 
 	my $url;
 	if ($ssl)
@@ -162,17 +160,22 @@ foreach my $file (@links) {
 	
 	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de/i){	 
 		$vuln = " (Posible Backdoor)\t";
+	}	
+
+	
+	if($url =~ /r=usuario/m){	 
+		if ($decoded_content =~ /r=usuario\/create/i)
+			{$vuln = " (Exposición de usuarios/passwords)\t";}	
+		else
+			{$status="404";}
 	}
-	if ($decoded_content =~ /r=usuario\/create/i){	 
-		$vuln = " (Exposición de usuarios)\t";
-	}
+	
 	
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
 	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|Access denied for/i)
-		{$vuln = " (Mensaje de error)\t";} 	
-	 
+		{$vuln = " (Mensaje de error)\t";} 		 
 	
 	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
 		{$vuln = " (Listado directorio activo)\t";} 	
