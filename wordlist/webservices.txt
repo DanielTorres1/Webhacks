@@ -36,6 +36,8 @@ WebServices.asmx
 WidgetService.asmx
 wsapi.asmx
 ws.asmx
+v1/
+v2/
 WSAutorizaciones.asmx
 wsfe.wsdl
 ws_intranet.asmx

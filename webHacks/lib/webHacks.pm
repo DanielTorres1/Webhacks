@@ -869,7 +869,7 @@ if ($module eq "phpmyadmin")
 
 
 
-		if ($decoded_response =~ /respondiendo|not responding/i)
+		if ($decoded_response =~ /respondiendo|not responding|<h1>Error<\/h1>/i)
 		{			
 			print "ERROR: El servidor no está respondiendo \n";
 			last;									
@@ -987,6 +987,7 @@ elsif($status =~ /200/m)
 	$type=$type."|NodeJS";
 } 
 $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
+$status = $response->status_line;
 my $last_url = $response->request()->uri();
 print "url $url last_url $last_url \n" if ($debug);
 
@@ -999,10 +1000,21 @@ my @url_array2 = split("/",$last_url);
 my $protocolo2 = $url_array2[0];
 
 
-
 if ($protocolo1 ne $protocolo2)
 	{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
-	
+
+
+my $url_original = URI->new($url);
+my $domain_original = $url_original->host;
+
+my $url_final = URI->new($last_url);
+my $domain_final = $url_final->host;
+
+print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
+
+if ($domain_original ne $domain_final)
+	{$type=$type."|301 Moved";}  # hubo redireccion http://dominio.com --> http://www.dominio.com
+		
 $decoded_response = $response->decoded_content;
 $decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 
@@ -1380,7 +1392,8 @@ if($decoded_response =~ /portal.peplink.com/i)
             "author" => $author,
             "proxy" => $proxy,
             "type" => $type,
-            "server" => $server,            
+            "server" => $server,
+            "status" => $status
         );
         
 

@@ -6,6 +6,7 @@ php-info.php
 phpinfo.php
 phpinfo
 phpinfos
+pinfo.php
 info.php
 ?phpinfo
 ?phpinfo=1

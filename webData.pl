@@ -21,6 +21,7 @@ my $redirect = $opts{'r'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
+my $debug = 0;
 
 sub usage { 
   
@@ -56,7 +57,7 @@ if ($ssl eq '')
 						rport => $port,	
 						path => $path,	
 						max_redirect => $redirect,						
-					    debug => 0);	
+					    debug => $debug);	
 	# Need to make a request to discover if SSL is in use
 	$webHacks->dispatch(url => "http://$target:$port",method => 'GET');
 }
@@ -68,7 +69,7 @@ else
 						path => $path,		
 						ssl => $ssl,						
 						max_redirect => $redirect,
-					    debug => 0);	
+					    debug => $debug);	
 }
 	   				   
 
@@ -88,6 +89,7 @@ my $author = %data{'author'};
 my $proxy = %data{'proxy'};
 my $type = %data{'type'};
 my $server = %data{'server'};
+my $status = %data{'status'};
 
 
 
@@ -106,7 +108,7 @@ if ($extract ne 'todo')
 }
 else
 {
-	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~";
+	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~$status";
 }
  
 

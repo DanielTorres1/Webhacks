@@ -9,6 +9,7 @@ app/database/
 emergency.php
 config.ini
 backup.sql
+xmlrpc.php
 database/
 admin/files/
 IoMgmt/Adapters/wifi0/WPS/Pin
