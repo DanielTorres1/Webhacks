@@ -20,6 +20,7 @@ admin/fckeditor/editor/filemanager/upload/test.html
 wp-content/themes/bridge/js/searchreplacedb2.php
 wp-content/plugins/contact-form-7/searchreplacedb2.php
 wp-content/plugins/contact-form-7/includes/searchreplacedb2.php
+views/backend/users/userReg.php
 wp-admin/searchreplacedb2.php
 wp-admin/setup-config.php
 wp-register.php
