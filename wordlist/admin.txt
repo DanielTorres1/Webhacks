@@ -80,7 +80,6 @@ clientes/
 creo_admin/
 cuenta/
 cuentas/
-datos/
 db-admin/
 db_admin/
 dbadmin/
@@ -112,8 +111,6 @@ phpSQLiteAdmin/
 sqlite/
 phymyadmin/
 portal/
-prueba/
-pruebas/
 tomcat/
 usuario/
 usuarios/

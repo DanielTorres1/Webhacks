@@ -187,7 +187,10 @@ foreach my $file (@links) {
 	 } 	
 		
 	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
-		{$vuln = " (Listado directorio activo)\t";} 	
+		{$vuln = " (Listado directorio activo)\t";} 
+	
+	if($decoded_content =~ /HTTP_X_FORWARDED_HOST/i)
+		{$vuln = " (phpinfo)\t";} 
 	
 	#print " pinche status2 $status \n";
 	if($status !~ /404|500|303|301|503|400/m){		
@@ -597,7 +600,7 @@ if ($module eq "zimbraXXE")
 	
 	print "$decoded_response \n";
 	
-	if($decoded_response =~ /zimbra/m){	 		
+	if($decoded_response =~ /ldap_root_password/m){	 		
 		$decoded_response =~ /name="zimbra_user">\n    <value>(.*?)</;
 		my $username = $1; 
 	
@@ -979,7 +982,7 @@ my $decoded_response = $response->decoded_content;
 my $status = $response->status_line;
 
 
-if($decoded_response =~ /Django|laravel|DEBUG = True|error message|app\/controllers/i){	 
+if($decoded_response =~ /Django|APP_ENV|DEBUG = True|error message|app\/controllers/i){	 
 	$type=$type."|Debug habilitado";
 }
 elsif($status =~ /200/m)

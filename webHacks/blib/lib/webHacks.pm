@@ -187,7 +187,10 @@ foreach my $file (@links) {
 	 } 	
 		
 	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
-		{$vuln = " (Listado directorio activo)\t";} 	
+		{$vuln = " (Listado directorio activo)\t";} 
+	
+	if($decoded_content =~ /HTTP_X_FORWARDED_HOST/i)
+		{$vuln = " (phpinfo)\t";} 
 	
 	#print " pinche status2 $status \n";
 	if($status !~ /404|500|303|301|503|400/m){		
@@ -597,7 +600,7 @@ if ($module eq "zimbraXXE")
 	
 	print "$decoded_response \n";
 	
-	if($decoded_response =~ /zimbra/m){	 		
+	if($decoded_response =~ /ldap_root_password/m){	 		
 		$decoded_response =~ /name="zimbra_user">\n    <value>(.*?)</;
 		my $username = $1; 
 	
