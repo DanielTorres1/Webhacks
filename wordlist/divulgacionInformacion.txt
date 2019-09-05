@@ -1,6 +1,7 @@
 access_log
 error
 error_log
+xampp/phpinfo.php
 linusadmin-phpinfo.php
 php-info.php
 phpinfo.php

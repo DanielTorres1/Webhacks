@@ -4592,6 +4592,7 @@ web-directory
 webdist
 webdoc
 webdocs
+docs
 webdot
 webedit
 web_email

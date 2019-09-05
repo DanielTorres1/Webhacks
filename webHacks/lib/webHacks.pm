@@ -835,7 +835,7 @@ if ($module eq "PRTG")
 		print "[+] user:$user password:$password status:$status\n";
 		
 		
-		if (! ($response_headers =~ /error/m)){	 
+		if (!($response_headers =~ /error/m) && ! ($status =~ /500 read timeout/m)){	 
 			print "Password encontrado: [PRTG] $url Usuario:$user Password:$password\n";
 			last;
 		}
@@ -1129,14 +1129,9 @@ if ($redirect_url eq '')
 }
 
 
-
-
-
-# Si la redireccion no tiene la IP
-#if (! ($redirect_url =~ /$rhost/m)){	 
-	#$redirect_url="";
- #}
-
+# si la ruta de la redireccion no esta completa borrarla
+if (($redirect_url eq 'https:' ) || ($redirect_url eq 'http:'))
+	{$redirect_url=""}
 
 
 ##### GO TO REDIRECT URL ####
@@ -1148,13 +1143,14 @@ if($redirect_url =~ /webfig|\.\.\//m ){
 	$redirect_url="";
 	print "mikrotik/OWA detectado \n" if ($debug);
 }
-# ruta completa
+# ruta completa http://10.0.0.1/owa
 if($redirect_url =~ /http/m ){	 
 	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
 	$decoded_response = $response->decoded_content; 	 
  }  
 #ruta parcial /cgi-bin/login.htm
-elsif ($redirect_url ne '' )
+#si no hay redireccion o la URL de rediccion es incorrecta
+elsif ( $redirect_url ne ''  )
 {	
 	my $final_url;
 	my $firstChar = substr($redirect_url, 0, 1);
