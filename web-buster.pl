@@ -307,8 +307,7 @@ if ($mode eq "backupIIS" ){
 #
 if ($mode eq "completoApache" ){			
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/phpinfo.txt");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/cgi.txt");		

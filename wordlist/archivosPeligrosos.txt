@@ -6,6 +6,9 @@
 .subversion
 sql/
 db/
+include/config.inc
+passwd.bak
+.passwords
 wsdl/
 app/database/
 emergency.php
