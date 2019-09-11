@@ -5,7 +5,7 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('t:p:d:j:h:c:e:s:m:q', \%opts);
+getopts('t:p:d:j:h:c:e:s:m:o:q', \%opts);
 
 my $site = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
@@ -14,6 +14,7 @@ my $path = $opts{'d'} if $opts{'d'};
 my $cookie = "";
 $cookie = $opts{'c'} if $opts{'c'};
 my $ssl = $opts{'s'};
+my $mostrarTodo = $opts{'o'};
 my $ajax = "0";
 $ajax = $opts{'j'} if $opts{'j'};
 my $mode = $opts{'m'} if $opts{'m'};
@@ -64,6 +65,9 @@ sub usage {
   print "-s : SSL (opcional) \n";
   print "		-s 1 = SSL \n";
   print "		-s 0 = NO SSL \n";	
+  print "-o : Definir que resultados mostrar (opcional) \n";
+  print "		-o 1 = Mostrar todo inclusive errores 404, 500, etc \n";
+  print "		-o 0 = Mostrar solo 200 OK \n";	
   print "-m : Modo. Puede ser: \n";
   print "	  directorios: Probar si existen directorios comunes \n";
   print "	  archivos: Probar si existen directorios comunes \n";
@@ -109,7 +113,8 @@ if ($quiet ne 1)
 {print $banner,"\n";}
 
 
-
+$mostrarTodo = 1 if ($mostrarTodo eq '');
+print "mostrarTodo $mostrarTodo" if ($debug);
 			    
 					    
 my $webHacks ;
@@ -124,7 +129,8 @@ if($error404 eq '' and $ssl eq '')
 						cookie => $cookie,
 						ajax => $ajax,						
 						max_redirect => 0,
-					    debug => $debug);	
+					    debug => $debug,
+					    mostrarTodo => $mostrarTodo);	
 
 # Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
@@ -141,7 +147,8 @@ if($error404 ne '' and $ssl eq '' )
 						cookie => $cookie,
 						ajax => $ajax,						
 						max_redirect => 0,
-					    debug => $debug);	
+					    debug => $debug,
+					    mostrarTodo => $mostrarTodo);	
 
 # Need to make a request to discover if SSL is in use
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');					    
@@ -158,7 +165,8 @@ if($ssl ne '' and $error404 eq '' )
 						cookie => $cookie,
 						ajax => $ajax,						
 						max_redirect => 0,
-					    debug => $debug);	
+					    debug => $debug,
+					    mostrarTodo => $mostrarTodo);	
 }
 
 if ($error404 ne ''  and $ssl ne '' )
@@ -172,7 +180,8 @@ if ($error404 ne ''  and $ssl ne '' )
 						cookie => $cookie,
 						ajax => $ajax,						
 						max_redirect => 0,
-					    debug => $debug);	
+					    debug => $debug,
+					    mostrarTodo => $mostrarTodo);	
 }
 
 

@@ -46,6 +46,7 @@ has cookie      => ( isa => 'Str', is => 'rw', default => '' );
 has ajax      => ( isa => 'Str', is => 'rw', default => '0' );
 has threads      => ( isa => 'Int', is => 'rw', default => 10 );
 has debug      => ( isa => 'Int', is => 'rw', default => 0 );
+has mostrarTodo      => ( isa => 'Int', is => 'rw', default => 1 );
 has headers  => ( isa => 'Object', is => 'rw', lazy => 1, builder => '_build_headers' );
 has browser  => ( isa => 'Object', is => 'rw', lazy => 1, builder => '_build_browser' );
 
@@ -55,6 +56,7 @@ sub dirbuster
 my $self = shift;
 my $headers = $self->headers;
 my $debug = $self->debug;
+my $mostrarTodo = $self->mostrarTodo;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
@@ -102,7 +104,7 @@ if ($extension ne "")
 else
 	{print "##################### \n";}
 
-print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie\n";
+print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie mostrarTodo $mostrarTodo\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
 
@@ -171,7 +173,6 @@ foreach my $file (@links) {
 	}
 	
 	
-	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
 	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor /i)
@@ -191,6 +192,8 @@ foreach my $file (@links) {
 	
 	if($decoded_content =~ /HTTP_X_FORWARDED_HOST/i)
 		{$vuln = " (phpinfo)\t";} 
+		
+	
 	
 	#print " pinche status2 $status \n";
 	if($status !~ /404|500|303|301|503|400/m){		
@@ -203,6 +206,10 @@ foreach my $file (@links) {
 		$options =~ s/,,//g; # delete safe methods	
 		print "$current_status\t$url$vuln $options \n";
 		#$result_table->add($url,$status,$options);			
+	}
+	else
+	{
+		print "$status\t$url$vuln  \n" if ($mostrarTodo);
 	}
 	
 	#if($status =~ /302|301/m){		
@@ -231,6 +238,7 @@ sub userbuster
 my $self = shift;
 my $headers = $self->headers;
 my $debug = $self->debug;
+my $mostrarTodo = $self->mostrarTodo;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
@@ -328,6 +336,7 @@ sub contentBuster
 my $self = shift;
 my $headers = $self->headers;
 my $debug = $self->debug;
+my $mostrarTodo = $self->mostrarTodo;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
@@ -410,6 +419,7 @@ sub backupbuster
 my $self = shift;
 my $headers = $self->headers;
 my $debug = $self->debug;
+my $mostrarTodo = $self->mostrarTodo;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
@@ -1133,12 +1143,6 @@ if ($redirect_url eq '')
 if (($redirect_url eq 'https:' ) || ($redirect_url eq 'http:'))
 	{$redirect_url=""}
 
-# Si la redireccion no tiene la IP
-#if (! ($redirect_url =~ /$rhost/m)){	 
-	#$redirect_url="";
- #}
-
-
 
 ##### GO TO REDIRECT URL ####
 $redirect_url =~ s/\"//g;  
@@ -1522,6 +1526,7 @@ sub _build_headers {
 #print "building header \n";
 my $self = shift;
 my $debug = $self->debug;
+my $mostrarTodo = $self->mostrarTodo;
 my $headers = HTTP::Headers->new;
 
 
@@ -1656,6 +1661,7 @@ my $rport = $self->rport;
 my $ssl = $self->ssl;
 
 my $debug = $self->debug;
+my $mostrarTodo = $self->mostrarTodo;
 my $proxy_host = $self->proxy_host;
 my $proxy_port = $self->proxy_port;
 my $proxy_user = $self->proxy_user;
@@ -1709,3 +1715,4 @@ return $browser;
     
 }
 1;
+
