@@ -3,6 +3,10 @@
 .svn/
 .env
 .ssh
+.git/config
+.git/HEAD
+.git/logs/HEAD
+.git/index
 .subversion
 sql/
 db/

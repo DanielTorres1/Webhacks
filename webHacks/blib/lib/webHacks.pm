@@ -330,89 +330,6 @@ foreach my $file (@links) {
 }
 
 
-#Busca una palabra clave en la respuesta
-sub contentBuster
-{
-my $self = shift;
-my $headers = $self->headers;
-my $debug = $self->debug;
-my $mostrarTodo = $self->mostrarTodo;
-my $rhost = $self->rhost;
-my $rport = $self->rport;
-my $path = $self->path;
-my $ssl = $self->ssl;
-my $error404 = $self->error404;
-my $threads = $self->threads;
-my ($url_file,$match) = @_;
-
-
-my $cookie = $self->cookie;
-
-if ($cookie ne "")
-	{$headers->header("Cookie" => $cookie);} 
-
-my $ajax = $self->ajax;
-
-if ($ajax ne "0")
-	{$headers->header("x-requested-with" => "xmlhttprequest");}
-
-# Max parallel processes  
-my $pm = new Parallel::ForkManager($threads); 
-my @links;
-
-########### file to array (url_file) #######
-open (MYINPUT,"<$url_file") || die "ERROR: Can not open the file $url_file\n";
-while (my $url=<MYINPUT>)
-{ 
-$url =~ s/\n//g; 	
-push @links, $url;
-}
-close MYINPUT;
-#########################################
-
-
-my $lines = `wc -l $url_file | cut -d " " -f1`;
-$lines =~ s/\n//g;
-my $time = int($lines/600);
-
-print color('bold blue');
-print "######### Usando archivo: $url_file ##################### \n";
-print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie\n";
-print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
-print color('reset');
-
-my $result_table = Text::Table->new(
-        "STATUS", "  URL", "\t\t\t\t RISKY METHODS"
-);
-    
-print $result_table;    
-
-foreach my $file (@links) {
-      
-    $file =~ s/\n//g; 	
-
-	my $url;
-	if ($ssl)
-		{$url = "https://".$rhost.":".$rport.$path.$file;}
-	else
-		{$url = "http://".$rhost.":".$rport.$path.$file;}  
-        
-	#print "getting $url \n";
-	##############  thread ##############
-	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
-	my $status = $response->status_line;
-	my $decoded_content = $response->decoded_content;
-	
-	if($decoded_content =~ /$match/m){	 
-		print "$status\t$url\n";
-		last;
-	}	
-	##############	   
-  } 
-}
-
-
-
 #search for backupfiles
 sub backupbuster
 {
@@ -503,10 +420,10 @@ foreach my $file (@links)
 		my $current_status = $status_array[0];
 		
 		#if($status !~ /404|503|400/m){	
-		if($status !~ /404|500|302|303|301|503|400/m){				
-			#$result_table->add($url,$status);	
-			print "$current_status\t$url\n";
-		}		
+		if($status !~ /404|500|302|303|301|503|400/m)
+			{print "$current_status\t$url\n";}
+		else
+			{print "$status\t$url  \n" if ($mostrarTodo);}		
 		$pm->finish; # do the exit in the child process		   
 	}# end foreach backupname
 	$pm->wait_all_children; 
@@ -1301,7 +1218,7 @@ if($decoded_response =~ /FortiGate/i)
 if($decoded_response =~ /www.drupal.org/i)
 	{$type=$type."|"."drupal";} 	
 	
-if($decoded_response =~ /wp-content/i)
+if($decoded_response =~ /wp-content|wp-admin|wp-caption/i)
 	{$type=$type."|"."wordpress";} 		
 		
 
@@ -1344,7 +1261,9 @@ if($decoded_response =~ /roundcube_sessid/i)
 
 if($decoded_response =~ /theme-taiga.css/i)
 	{$type=$type."|"."Taiga";}	 
-
+		
+if($decoded_response =~ /X-Powered-By-Plesk/i)
+	{$type=$type."|"."PleskWin";}	 
 
 if($decoded_response =~ /Web Services/i)	
 	{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
