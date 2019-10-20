@@ -64,6 +64,7 @@ views/backend
 5
 500
 51
+sqlbuddy
 6
 64
 7

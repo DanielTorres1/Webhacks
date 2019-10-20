@@ -1,6 +1,7 @@
 access_log
 error
 error_log
+_notes/dwsync.xml
 xampp/phpinfo.php
 linusadmin-phpinfo.php
 php-info.php

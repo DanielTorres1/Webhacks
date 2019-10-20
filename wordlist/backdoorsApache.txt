@@ -1,6 +1,10 @@
 b374k.php
 c99.php
 r57.php
+cmd.php
+images.php
+javaw.php
+backdoor.php
 wso.php
 images/b374k.php
 images/c99.php
@@ -11,6 +15,7 @@ imagenes/c99.php
 imagenes/r57.php
 imagenes/wso.php
 wp-admin/c99.php
+php-tiny-shell.php
 Sh3ll.php
 shell.php
 shellz.php
@@ -20,3 +25,4 @@ r57shell.php
 r58.php
 r99.php
 madspotshell.php
+xmrig328.exe

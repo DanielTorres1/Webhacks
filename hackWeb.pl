@@ -50,4 +50,5 @@ if ($module eq "openrelay")
 $webHacks->openrelay( ip => $target, port => $port, correo => $correo );	
 }
 
+# El resto
 $webHacks->exploit( module => $module, path => '/');

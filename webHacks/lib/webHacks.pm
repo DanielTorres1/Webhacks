@@ -160,7 +160,7 @@ foreach my $file (@links) {
 		$vuln = " (Archivo vacio)\t";
 	}
 	
-	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de/i){	 
+	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de|Upload your file|Cannot execute a blank command|fileupload in/i){	 
 		$vuln = " (Posible Backdoor)\t";
 	}	
 
@@ -190,7 +190,7 @@ foreach my $file (@links) {
 	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
 		{$vuln = " (Listado directorio activo)\t";} 
 	
-	if($decoded_content =~ /HTTP_X_FORWARDED_HOST/i)
+	if($decoded_content =~ /HTTP_X_FORWARDED_HOST|SCRIPT_FILENAME/i)
 		{$vuln = " (phpinfo)\t";} 
 		
 	
@@ -1258,6 +1258,18 @@ if($decoded_response =~ /src="app\//i)
 if($decoded_response =~ /roundcube_sessid/i)
 	{$type=$type."|"."Roundcube";}	 
 
+if($decoded_response =~ /playback_bottom_bar/i)
+	{$type=$type."|"."Dahua Camera";}	 	
+
+if($decoded_response =~ /\/webplugin.exe/i)
+	{$type=$type."|"."Dahua DVR";}	 		
+
+if($decoded_response =~ /ftnt-fortinet-grid icon-xl/i)
+	{$type=$type."|"."Fortinet";}	 			
+	
+	
+	
+
 
 if($decoded_response =~ /theme-taiga.css/i)
 	{$type=$type."|"."Taiga";}	 
@@ -1300,7 +1312,7 @@ if($decoded_response =~ /content="Babelstar"/i)
 	{$title="Body Cam";} 	
 	
 
-if($decoded_response =~ /login to iDRAC/i)
+if( ($decoded_response =~ /login to iDRAC/i) && !($decoded_response =~ /Cisco/i)  )
 	{$title="Dell iDRAC";} 
 
 if($decoded_response =~ /portal.peplink.com/i)

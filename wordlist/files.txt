@@ -376,7 +376,6 @@ nginx-error.log
 nginx-ssl.access.log
 nginx-ssl.error.log
 node.xml
-_notes/dwsync.xml
 npm-debug.log
 order.log
 orders.log
