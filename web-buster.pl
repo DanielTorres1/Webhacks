@@ -282,6 +282,12 @@ if ($mode eq "sharepoint"){
 	print "\n";
 }
 
+# registration URL 
+if ($mode eq "registroHabilitado"){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
+	print "\n";
+}
+
 ##########################
 
 

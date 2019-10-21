@@ -1,0 +1,3 @@
+index.php?option=com_users&view=registration
+wp-login.php?action=register
+user/register
