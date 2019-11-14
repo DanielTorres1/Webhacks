@@ -323,6 +323,7 @@ if ($mode eq "backupIIS" ){
 if ($mode eq "completoApache" ){			
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/cgi.txt");		
@@ -330,13 +331,14 @@ if ($mode eq "completoApache" ){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/backdoorsApache.txt");		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","htm");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");		
 	print "\n";
 }
 
 
 if ($mode eq "completoIIS" ){				
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/webserver.txt");

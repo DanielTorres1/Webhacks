@@ -193,8 +193,8 @@ foreach my $file (@links) {
 	if($decoded_content =~ /HTTP_X_FORWARDED_HOST|SCRIPT_FILENAME/i)
 		{$vuln = " (phpinfo)\t";} 
 		
-	
-	
+	my $content_length = $response->content_length;
+	#print "content_length $content_length \n";
 	#print " pinche status2 $status \n";
 	if($status !~ /404|500|303|301|503|400/m){		
 		my @status_array = split(" ",$status);	
@@ -204,6 +204,12 @@ foreach my $file (@links) {
 		$options = $response2->{_headers}->{allow};	
 		$options =~ s/GET|HEAD|POST|OPTIONS//g; # delete safe methods	
 		$options =~ s/,,//g; # delete safe methods	
+		
+		if(($status =~ /302/m) && ($content_length > 500) ){	 
+			$vuln = " (HTML en redirect)\t";
+		}
+ 
+		
 		print "$current_status\t$url$vuln $options \n";
 		#$result_table->add($url,$status,$options);			
 	}
