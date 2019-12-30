@@ -1,3 +1,13 @@
+cgi-bin/count.cgi
+cgi-sys/defaultwebpage.cgi
+cgi-bin/hi
+cgi-bin/test.sh
+test
+cgi-bin/authLogin.cgi
+cgi-bin/test.cgi
+cgi-bin/test-cgi
+cgi-bin/help.cgi
+wp-login.php
 cgi-bin/faxsurvey
 cgi-bin/netauth.cgi
 cgi-bin/calender_admin.pl
