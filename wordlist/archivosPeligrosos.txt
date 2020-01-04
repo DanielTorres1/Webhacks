@@ -2,6 +2,9 @@
 .git2/
 .svn/
 .env
+.hg/
+.bzr/
+CVS/
 .ssh
 .listing
 .git/config

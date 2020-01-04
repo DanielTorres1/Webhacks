@@ -69,21 +69,21 @@ sub usage {
   print "		-o 1 = Mostrar todo inclusive errores 404, 500, etc \n";
   print "		-o 0 = Mostrar solo 200 OK \n";	
   print "-m : Modo. Puede ser: \n";
-  print "	  directorios: Probar si existen directorios comunes \n";
-  print "	  archivos: Probar si existen directorios comunes \n";
+  print "	  folders: Probar si existen directorios comunes \n";
+  print "	  files: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
   print "	  php: 	Probar si existen archivos php \n";
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
-  print "	  archivosPeligrosos: Archivos peligrosos \n";  
-  print "	  archivosDefecto: Archivos por defecto \n";    
-  print "	  divulgacionInformacion: php info files, error logs \n";  
+  print "	  files2: Archivos peligrosos \n";  
+  print "	  default: Archivos por defecto \n";    
+  print "	  information: php info files, error logs \n";  
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
   print "	  backup: Busca backups de archivos de configuracion comunes (Drupal, wordpress, IIS, etc) \n";
   print "	  \n\tCombinaciones:\n";  
-  print "	  completoApache: Probara Todos los modulos de Apache \n";
-  print "	  completoTomcat: Probara Todos los modulos de Tomcat \n";
-  print "	  completoISS: Probara Todos los modulos de IIS \n";
+  print "	  apacheServer: Probara Todos los modulos de Apache \n";
+  print "	  tomcatServer: Probara Todos los modulos de Tomcat \n";
+  print "	  iisServer: Probara Todos los modulos de IIS \n";
   #print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";  
   print "\n";
   print "Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos\n";
@@ -186,7 +186,7 @@ if ($error404 ne ''  and $ssl ne '' )
 
 
 # fuzz with common files names
-if ($mode eq "archivos" ){	
+if ($mode eq "files" ){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");	
 	print "\n";
 }
@@ -198,13 +198,13 @@ if ($mode eq "admin"){
 }
 
 # fuzz with archivosPeligrosos
-if ($mode eq "archivosPeligrosos"){	
+if ($mode eq "files2"){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");	
 	print "\n";
 }
 
 # fuzz with common directory names
-if ($mode eq "directorios"){		
+if ($mode eq "folders"){		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
 	print "\n";
 }
@@ -249,14 +249,14 @@ if ($mode eq "php" ){
 }
 
 # php 
-if ($mode eq "divulgacionInformacion"){	
+if ($mode eq "information"){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/divulgacionInformacion.txt");	
 	#$webHacks->contentBuster("/usr/share/webhacks/wordlist/divulgacionInformacion.txt","HTTP_USER_AGENT");	
 	print "\n";
 }
 
 
-if ($mode eq "archivosDefecto"){	
+if ($mode eq "default"){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosDefecto.txt");	
 	#$webHacks->contentBuster("/usr/share/webhacks/wordlist/divulgacionInformacion.txt","HTTP_USER_AGENT");	
 	print "\n";
@@ -320,7 +320,7 @@ if ($mode eq "backupIIS" ){
 
 
 #
-if ($mode eq "completoApache" ){			
+if ($mode eq "apacheServer" ){			
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
@@ -336,7 +336,7 @@ if ($mode eq "completoApache" ){
 }
 
 
-if ($mode eq "completoIIS" ){				
+if ($mode eq "iisServer" ){				
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");
@@ -353,7 +353,7 @@ if ($mode eq "completoIIS" ){
 }
 
 
-if ($mode eq "completoTomcat" ){				
+if ($mode eq "tomcatServer" ){				
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
