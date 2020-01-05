@@ -47,7 +47,7 @@ my $banner = <<EOF;
 |  | |__  |__)    |__) |  | /__`  |  |__  |__) 
 |/\\| |___ |__)    |__) \\__/ .__/  |  |___ |  \\ v1.0                                              
 
-Autor: Daniel Torres Sandi
+Author: Daniel Torres Sandi
 EOF
 
 
