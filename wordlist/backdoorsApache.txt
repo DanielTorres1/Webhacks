@@ -26,3 +26,15 @@ r58.php
 r99.php
 madspotshell.php
 xmrig328.exe
+Adm1n.php
+admin2.php
+contacts.php
+cron.css
+css.php
+do.php
+hell0.php
+solo.php
+x.php
+test.php
+tests.php
+tests.html
