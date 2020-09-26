@@ -47,6 +47,7 @@ password.txt
 passWord.txt
 Password.txt
 xmlrpc.php
+api/datosLog 
 database/
 admin/files/
 IoMgmt/Adapters/wifi0/WPS/Pin
