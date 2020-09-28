@@ -597,7 +597,7 @@ if ($module eq "ZKSoftware")
 		if ($status =~ /200/m)
 		{
 			if  ($decoded_response =~ /Department|Departamento|frame/i){	 
-			print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [ZKSoftware] $url \nUsuario:$user Password:$password\n";
 			last;
 			}							
 		}	
@@ -769,7 +769,7 @@ if ($module eq "PRTG")
 		
 		
 		if (!($response_headers =~ /error/m) && ! ($status =~ /500 read timeout/m)){	 
-			print "Password encontrado: [PRTG] $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [PRTG] $url \nUsuario:$user Password:$password\n";
 			last;
 		}
 		
@@ -862,7 +862,7 @@ if ($module eq "phpmyadmin")
 					
 		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
 		{			
-			print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [phpmyadmin] $url \nUsuario:$user Password:$password\n";
 			last;									
 		}	
 		

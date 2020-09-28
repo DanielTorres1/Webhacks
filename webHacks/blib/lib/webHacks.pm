@@ -596,8 +596,8 @@ if ($module eq "ZKSoftware")
 		print "[+] user:$user password:$password status:$status\n";
 		if ($status =~ /200/m)
 		{
-			if  ($decoded_response =~ /Department|Departamento/m){	 
-			print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
+			if  ($decoded_response =~ /Department|Departamento|frame/i){	 
+			print "Password encontrado: [ZKSoftware] $url \nUsuario:$user Password:$password\n";
 			last;
 			}							
 		}	
@@ -769,7 +769,7 @@ if ($module eq "PRTG")
 		
 		
 		if (!($response_headers =~ /error/m) && ! ($status =~ /500 read timeout/m)){	 
-			print "Password encontrado: [PRTG] $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [PRTG] $url \nUsuario:$user Password:$password\n";
 			last;
 		}
 		
@@ -859,11 +859,10 @@ if ($module eq "phpmyadmin")
 		#print SALIDA $decoded_response;
 		#close (SALIDA);
 			
-			
 					
 		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
 		{			
-			print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
+			print "Password encontrado: [phpmyadmin] $url \nUsuario:$user Password:$password\n";
 			last;									
 		}	
 		
@@ -915,7 +914,7 @@ my $decoded_response = $response->decoded_content;
 my $status = $response->status_line;
 
 
-if($decoded_response =~ /Django|APP_ENV|DEBUG = True|error message|app\/controllers/i){	 
+if($decoded_response =~ /error message|Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
 	$type=$type."|Debug habilitado";
 }
 elsif($status =~ /200/m)

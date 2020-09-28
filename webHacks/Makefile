@@ -30,7 +30,7 @@
 
 # --- MakeMaker const_config section:
 
-# These definitions are from config.sh (via /usr/lib/x86_64-linux-gnu/perl/5.28/Config.pm).
+# These definitions are from config.sh (via /usr/lib/x86_64-linux-gnu/perl-base/Config.pm).
 # They may have been overridden via Makefile.PL or on the command line.
 AR = ar
 CC = x86_64-linux-gnu-gcc
@@ -43,16 +43,16 @@ FULL_AR = /usr/bin/ar
 LD = x86_64-linux-gnu-gcc
 LDDLFLAGS = -shared -L/usr/local/lib -fstack-protector-strong
 LDFLAGS =  -fstack-protector-strong -L/usr/local/lib
-LIBC = libc-2.28.so
+LIBC = libc-2.30.so
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = linux
-OSVERS = 4.9.0
+OSVERS = 4.19.0
 RANLIB = :
-SITELIBEXP = /usr/local/share/perl/5.28.1
-SITEARCHEXP = /usr/local/lib/x86_64-linux-gnu/perl/5.28.1
+SITELIBEXP = /usr/local/share/perl/5.30.3
+SITEARCHEXP = /usr/local/lib/x86_64-linux-gnu/perl/5.30.3
 SO = so
-VENDORARCHEXP = /usr/lib/x86_64-linux-gnu/perl5/5.28
+VENDORARCHEXP = /usr/lib/x86_64-linux-gnu/perl5/5.30
 VENDORLIBEXP = /usr/share/perl5
 
 
@@ -83,17 +83,17 @@ PREFIX = $(SITEPREFIX)
 PERLPREFIX = /usr
 SITEPREFIX = /usr/local
 VENDORPREFIX = /usr
-INSTALLPRIVLIB = /usr/share/perl/5.28
+INSTALLPRIVLIB = /usr/share/perl/5.30
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = /usr/local/share/perl/5.28.1
+INSTALLSITELIB = /usr/local/share/perl/5.30.3
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
 INSTALLVENDORLIB = /usr/share/perl5
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.28
+INSTALLARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.30
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = /usr/local/lib/x86_64-linux-gnu/perl/5.28.1
+INSTALLSITEARCH = /usr/local/lib/x86_64-linux-gnu/perl/5.30.3
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
-INSTALLVENDORARCH = /usr/lib/x86_64-linux-gnu/perl5/5.28
+INSTALLVENDORARCH = /usr/lib/x86_64-linux-gnu/perl5/5.30
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
 INSTALLBIN = /usr/bin
 DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
@@ -119,16 +119,16 @@ INSTALLSITEMAN3DIR = /usr/local/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
 INSTALLVENDORMAN3DIR = /usr/share/man/man3
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = /usr/share/perl/5.28
-PERL_ARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.28
-PERL_ARCHLIBDEP = /usr/lib/x86_64-linux-gnu/perl/5.28
+PERL_LIB = /usr/share/perl/5.30
+PERL_ARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.30
+PERL_ARCHLIBDEP = /usr/lib/x86_64-linux-gnu/perl/5.30
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = Makefile.old
 MAKE_APERL_FILE = Makefile.aperl
 PERLMAINCC = $(CC)
-PERL_INC = /usr/lib/x86_64-linux-gnu/perl/5.28/CORE
-PERL_INCDEP = /usr/lib/x86_64-linux-gnu/perl/5.28/CORE
+PERL_INC = /usr/lib/x86_64-linux-gnu/perl/5.30/CORE
+PERL_INCDEP = /usr/lib/x86_64-linux-gnu/perl/5.30/CORE
 PERL = "/usr/bin/perl"
 FULLPERL = "/usr/bin/perl"
 ABSPERL = $(PERL)
@@ -143,7 +143,7 @@ PERM_DIR = 755
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = /usr/share/perl/5.28/ExtUtils/MakeMaker.pm
+MAKEMAKER   = /usr/share/perl/5.30/ExtUtils/MakeMaker.pm
 MM_VERSION  = 7.34
 MM_REVISION = 73400
 
@@ -580,7 +580,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '   },' >> META_new.json
 	$(NOECHO) $(ECHO) '   "release_status" : "stable",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "version" : "1.0",' >> META_new.json
-	$(NOECHO) $(ECHO) '   "x_serialization_backend" : "JSON::PP version 2.97001"' >> META_new.json
+	$(NOECHO) $(ECHO) '   "x_serialization_backend" : "JSON::PP version 4.02"' >> META_new.json
 	$(NOECHO) $(ECHO) '}' >> META_new.json
 	-$(NOECHO) $(MV) META_new.json $(DISTVNAME)/META.json
 
@@ -814,7 +814,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 # --- MakeMaker makeaperl section ---
 MAP_TARGET    = perl
 FULLPERL      = "/usr/bin/perl"
-MAP_PERLINC   = "-Iblib/arch" "-Iblib/lib" "-I/usr/lib/x86_64-linux-gnu/perl/5.28" "-I/usr/share/perl/5.28"
+MAP_PERLINC   = "-Iblib/arch" "-Iblib/lib" "-I/usr/lib/x86_64-linux-gnu/perl/5.30" "-I/usr/share/perl/5.30"
 
 $(MAP_TARGET) :: $(MAKE_APERL_FILE)
 	$(MAKE) $(USEMAKEFILE) $(MAKE_APERL_FILE) $@
@@ -886,7 +886,7 @@ ppd :
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Table" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Unidecode" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="URI::Escape" />' >> webHacks.ppd
-	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.28" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.30" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '</SOFTPKG>' >> webHacks.ppd
