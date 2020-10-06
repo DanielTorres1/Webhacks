@@ -8,3 +8,5 @@ LocalSettings.php
 conexion.php
 settings.php
 .htaccess
+.well-known/openid-configuration
+.well-known/oauth-authorization-server
