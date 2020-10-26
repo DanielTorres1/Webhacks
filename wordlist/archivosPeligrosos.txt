@@ -1,3 +1,8 @@
+co/?action=usuario
+password/email
+librerias/filemanager/
+lib/filemanager/
+library/filemanager/
 .git/
 .git2/
 .svn/
