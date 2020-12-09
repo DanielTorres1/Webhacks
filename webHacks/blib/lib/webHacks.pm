@@ -175,7 +175,7 @@ foreach my $file (@links) {
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
-	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:/i)
+	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information/i)
 		{$vuln = " (Mensaje de error)\t";} 		 
 		
 		
@@ -196,6 +196,8 @@ foreach my $file (@links) {
 	my $content_length = $response->content_length;
 	#print "content_length $content_length \n";
 	#print " pinche status2 $status \n";
+
+	
 	if($status !~ /404|500|303|301|503|400/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
@@ -209,8 +211,17 @@ foreach my $file (@links) {
 			$vuln = " (HTML en redirect)\t";
 		}
  
+		# Revisar si el registro de usuario drupal/joomla/wordpress esta abierto
+		if ($url_file =~ "registroHabilitado"){	 		
+			if($decoded_content =~ /\/user\/register|registerform|member-registration/m){		
+				print "$current_status\t$url$vuln $options \n";
+			}
+		}
+		else
+		{		
+			print "$current_status\t$url$vuln $options \n";
+		}		
 		
-		print "$current_status\t$url$vuln $options \n";
 		#$result_table->add($url,$status,$options);			
 	}
 	else
