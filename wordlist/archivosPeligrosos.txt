@@ -1,3 +1,4 @@
+.htaccess
 co/?action=usuario
 password/email
 librerias/filemanager/
@@ -8,6 +9,8 @@ library/filemanager/
 .svn/
 .env
 .hg/
+................../config.sys
+config.sys
 .bzr/
 CVS/
 .ssh
