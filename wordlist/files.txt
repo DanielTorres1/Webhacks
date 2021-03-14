@@ -19,6 +19,7 @@
 2015.sql
 2015.tar
 2015.tar.gz
+rest
 2015.tgz
 2015.zip
 2016.sql
