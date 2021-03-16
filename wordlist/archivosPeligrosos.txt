@@ -1,6 +1,8 @@
 .htaccess
 co/?action=usuario
 password/email
+graphiql
+graphql
 librerias/filemanager/
 lib/filemanager/
 library/filemanager/

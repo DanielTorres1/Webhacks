@@ -26,8 +26,6 @@ views/backend
 1991
 1992
 1993
-graphiql
-graphql
 metrics
 1994
 1995
