@@ -72,6 +72,7 @@ sub usage {
   print "	  folders: Probar si existen directorios comunes \n";
   print "	  files: Probar si existen directorios comunes \n";
   print "	  cgi: 	Probar si existen archivos cgi \n";
+  print "	  graphQL: 	Probar si existe un endpoint de graphQL \n";
   print "	  php: 	Probar si existen archivos php \n";
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
@@ -186,6 +187,13 @@ if ($error404 ne ''  and $ssl ne '' )
 
 
 # fuzz with common files names
+
+
+if ($mode eq "graphQL" ){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/graphQL.txt");	
+	print "\n";
+}
+
 if ($mode eq "files" ){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");	
 	print "\n";
@@ -245,6 +253,7 @@ if ($mode eq "backdoorIIS"){
 # fuzz with files (with extension)
 if ($mode eq "php" ){		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");		
 	print "\n";
 }
 
@@ -322,6 +331,7 @@ if ($mode eq "backupIIS" ){
 #
 if ($mode eq "apacheServer" ){			
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt");
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/graphQL.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/admin.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");		
