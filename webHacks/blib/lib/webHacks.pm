@@ -1490,6 +1490,11 @@ $headers->header('Accept' => 'text/html,application/xhtml+xml,application/xml;q=
 $headers->header('Connection' => 'close'); 
 $headers->header('Cache-Control' => 'max-age=0'); 
 $headers->header('DNT' => '1'); 
+$headers->header('Upgrade-Insecure-Requests' => '1'); 
+$headers->header('' => ''); 
+
+
+Connection
 #$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
 #$headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
 
@@ -1558,7 +1563,7 @@ if ($method eq 'POST_OLD')
   }  
     
 if ($method eq 'GET')
-  { my $req = HTTP::Request->new(GET => $url, $headers);
+  { my $req = HTTP::Request->new(GET => $url, $headers, "\n");
     $response = $self->browser->request($req)
   }
 

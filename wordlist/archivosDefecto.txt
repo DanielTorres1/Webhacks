@@ -4,6 +4,7 @@ docs/CHANGELOG.txt
 CHANGELOG.txt
 changelog
 ChangeLog
+.htaccess
 robots
 robots.txt
 CHANGELOG

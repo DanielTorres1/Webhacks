@@ -12,6 +12,12 @@ datos
 09
 prueba
 pruebas
+Comunes
+Comprobante
+Transferencia
+ConsultaFavorito
+ConfiguracionCuenta
+ActualizarEstadoBloqueo
 0manager
 1
 10
