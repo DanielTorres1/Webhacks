@@ -1491,10 +1491,10 @@ $headers->header('Connection' => 'close');
 $headers->header('Cache-Control' => 'max-age=0'); 
 $headers->header('DNT' => '1'); 
 $headers->header('Upgrade-Insecure-Requests' => '1'); 
-$headers->header('' => ''); 
+#$headers->header('' => ''); 
 
 
-Connection
+#Connection
 #$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
 #$headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
 
@@ -1563,7 +1563,7 @@ if ($method eq 'POST_OLD')
   }  
     
 if ($method eq 'GET')
-  { my $req = HTTP::Request->new(GET => $url, $headers, "\n");
+  { my $req = HTTP::Request->new(GET => $url, $headers, "\n\n");
     $response = $self->browser->request($req)
   }
 
@@ -1625,7 +1625,7 @@ my $max_redirect = $self->max_redirect;
 print "building browser \n" if ($debug);
 
 
-my $browser = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });        
+my $browser = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});        
 
 $browser->timeout(15);
 $browser->cookie_jar(HTTP::Cookies->new());

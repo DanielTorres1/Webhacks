@@ -21,7 +21,7 @@ my $redirect = $opts{'r'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
-my $debug = 0;
+my $debug = 1;
 
 sub usage { 
   

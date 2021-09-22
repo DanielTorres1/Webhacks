@@ -32,4 +32,4 @@ pktflags=0;
 	# M2Crypto	
 cert = ssl.get_server_certificate((ip, port))
 x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
-print x509.get_subject().get_components()
+print (x509.get_subject().get_components())
