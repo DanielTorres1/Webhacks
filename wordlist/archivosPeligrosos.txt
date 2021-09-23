@@ -6,6 +6,7 @@ librerias/filemanager/
 lib/filemanager/
 library/filemanager/
 rdweb/
+RDWeb/
 .git/
 .git2/
 .svn/

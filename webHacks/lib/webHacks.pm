@@ -198,7 +198,7 @@ foreach my $file (@links) {
 	#print " pinche status2 $status \n";
 
 	
-	if($status !~ /404|303|301|400/m){		
+	if($status !~ /404|400|302/m){		
 		my @status_array = split(" ",$status);	
 		my $current_status = $status_array[0];
 		my $response2 = $self->dispatch(url => $url,method => 'OPTIONS',headers => $headers);
