@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from socket import socket
 import ssl
 import M2Crypto
