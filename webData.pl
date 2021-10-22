@@ -94,9 +94,9 @@ my $wappalyzer;
 
 
  if($port =~ /443/m)
- 	{$wappalyzer=`wappalyzer https://$target:$port/ --pretty | wappalyzer-parser.py`; }
+ 	{$wappalyzer=`wappalyzer https://$target:$port$path --pretty | wappalyzer-parser.py`; }
  else
- 	{$wappalyzer=`wappalyzer http://$target:$port/ --pretty | wappalyzer-parser.py`;}
+ 	{$wappalyzer=`wappalyzer http://$target:$port$path --pretty | wappalyzer-parser.py`;}
 
 
 
@@ -115,7 +115,7 @@ if ($extract ne 'todo')
 }
 else
 {
-	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~$status~$wappalyzer";
+	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~$status || $wappalyzer";
 }
  
 
