@@ -924,8 +924,8 @@ my $response = $self->dispatch(url => $url."nonexistroute123", method => 'GET', 
 my $decoded_response = $response->decoded_content;
 my $status = $response->status_line;
 
-
-if($decoded_response =~ /error message|Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
+#error message
+if($decoded_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
 	$type=$type."|Debug habilitado";
 }
 elsif($status =~ /200/m)
