@@ -94,3 +94,4 @@ api/swagger-ui.html
 v1.x/swagger-ui.html
 swagger/index.html
 index.php?option=com_jce&task=plugin&plugin=imgmanager&file=imgmanager&method=form
+CFIDE/adminapi/base.cfc?wsdl

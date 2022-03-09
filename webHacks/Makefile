@@ -1,7 +1,7 @@
 # This Makefile is for the webHacks extension to perl.
 #
 # It was generated automatically by MakeMaker version
-# 7.44 (Revision: 74400) from the contents of
+# 7.62 (Revision: 76200) from the contents of
 # Makefile.PL. Don't edit this file, edit Makefile.PL instead.
 #
 #       ANY CHANGES MADE HERE WILL BE LOST!
@@ -43,16 +43,16 @@ FULL_AR = /usr/bin/ar
 LD = x86_64-linux-gnu-gcc
 LDDLFLAGS = -shared -L/usr/local/lib -fstack-protector-strong
 LDFLAGS =  -fstack-protector-strong -L/usr/local/lib
-LIBC = libc-2.31.so
+LIBC = libc-2.33.so
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = linux
 OSVERS = 4.19.0
 RANLIB = :
-SITELIBEXP = /usr/local/share/perl/5.32.1
-SITEARCHEXP = /usr/local/lib/x86_64-linux-gnu/perl/5.32.1
+SITELIBEXP = /usr/local/share/perl/5.34.0
+SITEARCHEXP = /usr/local/lib/x86_64-linux-gnu/perl/5.34.0
 SO = so
-VENDORARCHEXP = /usr/lib/x86_64-linux-gnu/perl5/5.32
+VENDORARCHEXP = /usr/lib/x86_64-linux-gnu/perl5/5.34
 VENDORLIBEXP = /usr/share/perl5
 
 
@@ -85,17 +85,17 @@ PREFIX = $(SITEPREFIX)
 PERLPREFIX = /usr
 SITEPREFIX = /usr/local
 VENDORPREFIX = /usr
-INSTALLPRIVLIB = /usr/share/perl/5.32
+INSTALLPRIVLIB = /usr/share/perl/5.34
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = /usr/local/share/perl/5.32.1
+INSTALLSITELIB = /usr/local/share/perl/5.34.0
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
 INSTALLVENDORLIB = /usr/share/perl5
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.32
+INSTALLARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.34
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = /usr/local/lib/x86_64-linux-gnu/perl/5.32.1
+INSTALLSITEARCH = /usr/local/lib/x86_64-linux-gnu/perl/5.34.0
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
-INSTALLVENDORARCH = /usr/lib/x86_64-linux-gnu/perl5/5.32
+INSTALLVENDORARCH = /usr/lib/x86_64-linux-gnu/perl5/5.34
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
 INSTALLBIN = /usr/bin
 DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
@@ -121,16 +121,16 @@ INSTALLSITEMAN3DIR = /usr/local/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
 INSTALLVENDORMAN3DIR = /usr/share/man/man3
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = /usr/share/perl/5.32
-PERL_ARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.32
-PERL_ARCHLIBDEP = /usr/lib/x86_64-linux-gnu/perl/5.32
+PERL_LIB = /usr/share/perl/5.34
+PERL_ARCHLIB = /usr/lib/x86_64-linux-gnu/perl/5.34
+PERL_ARCHLIBDEP = /usr/lib/x86_64-linux-gnu/perl/5.34
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = Makefile.old
 MAKE_APERL_FILE = Makefile.aperl
 PERLMAINCC = $(CC)
-PERL_INC = /usr/lib/x86_64-linux-gnu/perl/5.32/CORE
-PERL_INCDEP = /usr/lib/x86_64-linux-gnu/perl/5.32/CORE
+PERL_INC = /usr/lib/x86_64-linux-gnu/perl/5.34/CORE
+PERL_INCDEP = /usr/lib/x86_64-linux-gnu/perl/5.34/CORE
 PERL = "/usr/bin/perl"
 FULLPERL = "/usr/bin/perl"
 ABSPERL = $(PERL)
@@ -145,9 +145,9 @@ PERM_DIR = 755
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = /usr/share/perl/5.32/ExtUtils/MakeMaker.pm
-MM_VERSION  = 7.44
-MM_REVISION = 74400
+MAKEMAKER   = /usr/share/perl/5.34/ExtUtils/MakeMaker.pm
+MM_VERSION  = 7.62
+MM_REVISION = 76200
 
 # FULLEXT = Pathname for extension directory (eg Foo/Bar/Oracle).
 # BASEEXT = Basename part of FULLEXT. May be just equal FULLEXT. (eg Oracle)
@@ -197,7 +197,7 @@ TO_INST_PM = lib/webHacks.pm
 
 
 # --- MakeMaker platform_constants section:
-MM_Unix_VERSION = 7.44
+MM_Unix_VERSION = 7.62
 PERL_MALLOC_DEF = -DPERL_EXTMALLOC_DEF -Dmalloc=Perl_malloc -Dfree=Perl_mfree -Drealloc=Perl_realloc -Dcalloc=Perl_calloc
 
 
@@ -315,8 +315,6 @@ all :: pure_all manifypods
 	$(NOECHO) $(NOOP)
 
 pure_all :: config pm_to_blib subdirs linkext
-	$(NOECHO) $(NOOP)
-
 	$(NOECHO) $(NOOP)
 
 subdirs :: $(MYEXTLIB)
@@ -496,7 +494,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) 'configure_requires:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  ExtUtils::MakeMaker: '\''0'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'dynamic_config: 1' >> META_new.yml
-	$(NOECHO) $(ECHO) 'generated_by: '\''ExtUtils::MakeMaker version 7.44, CPAN::Meta::Converter version 2.150010'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) 'generated_by: '\''ExtUtils::MakeMaker version 7.62, CPAN::Meta::Converter version 2.150010'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'license: artistic_2' >> META_new.yml
 	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  url: http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
@@ -533,7 +531,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '      "Daniel Torres <daniel.torres@owasp.org>"' >> META_new.json
 	$(NOECHO) $(ECHO) '   ],' >> META_new.json
 	$(NOECHO) $(ECHO) '   "dynamic_config" : 1,' >> META_new.json
-	$(NOECHO) $(ECHO) '   "generated_by" : "ExtUtils::MakeMaker version 7.44, CPAN::Meta::Converter version 2.150010",' >> META_new.json
+	$(NOECHO) $(ECHO) '   "generated_by" : "ExtUtils::MakeMaker version 7.62, CPAN::Meta::Converter version 2.150010",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "license" : [' >> META_new.json
 	$(NOECHO) $(ECHO) '      "artistic_2"' >> META_new.json
 	$(NOECHO) $(ECHO) '   ],' >> META_new.json
@@ -582,7 +580,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '   },' >> META_new.json
 	$(NOECHO) $(ECHO) '   "release_status" : "stable",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "version" : "1.0",' >> META_new.json
-	$(NOECHO) $(ECHO) '   "x_serialization_backend" : "JSON::PP version 4.04"' >> META_new.json
+	$(NOECHO) $(ECHO) '   "x_serialization_backend" : "JSON::PP version 4.06"' >> META_new.json
 	$(NOECHO) $(ECHO) '}' >> META_new.json
 	-$(NOECHO) $(MV) META_new.json $(DISTVNAME)/META.json
 
@@ -816,7 +814,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 # --- MakeMaker makeaperl section ---
 MAP_TARGET    = perl
 FULLPERL      = "/usr/bin/perl"
-MAP_PERLINC   = "-Iblib/arch" "-Iblib/lib" "-I/usr/lib/x86_64-linux-gnu/perl/5.32" "-I/usr/share/perl/5.32"
+MAP_PERLINC   = "-Iblib/arch" "-Iblib/lib" "-I/usr/lib/x86_64-linux-gnu/perl/5.34" "-I/usr/share/perl/5.34"
 
 $(MAP_TARGET) :: $(MAKE_APERL_FILE)
 	$(MAKE) $(USEMAKEFILE) $(MAKE_APERL_FILE) $@
@@ -888,7 +886,7 @@ ppd :
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Table" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Text::Unidecode" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="URI::Escape" />' >> webHacks.ppd
-	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.32" />' >> webHacks.ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.34" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> webHacks.ppd
 	$(NOECHO) $(ECHO) '</SOFTPKG>' >> webHacks.ppd

@@ -130,6 +130,7 @@ foreach my $file (@links) {
 	case "aspx"	{ $file =~ s/EXT/aspx/g;  }
 	case "htm"	{ $file =~ s/EXT/htm/g;  }
 	case "jsp"	{ $file =~ s/EXT/jsp/g;  }
+	case "pl"	{ $file =~ s/EXT/pl/g;  }
     }
 
 	my $url;

@@ -74,6 +74,7 @@ sub usage {
   print "	  cgi: 	Probar si existen archivos cgi \n";
   print "	  graphQL: 	Probar si existe un endpoint de graphQL \n";
   print "	  php: 	Probar si existen archivos php \n";
+  print "	  perl:	Probar si existen archivos perl \n";
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
   print "	  files2: Archivos peligrosos \n";  
@@ -310,6 +311,12 @@ if ($mode eq "tomcat"){
 if ($mode eq "jsp"  ){				
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","jsp");		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");	
+	print "\n";
+}
+
+# fuzz with perl
+if ($mode eq "perl"  ){					
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","pl");	
 	print "\n";
 }
 #######################
