@@ -63,8 +63,8 @@ sub usage {
   print "-c : cookie con la que hacer el escaneo ej: PHPSESSION=k35234325 \n";
   print "-e : Busca este patron en la respuesta para determinar si es una pagina de error 404\n";
   print "-s : SSL (opcional) \n";
-  print "		-s 1 = SSL \n";
-  print "		-s 0 = NO SSL \n";	
+  print "		-s https = SSL \n";
+  print "		-s http = NO SSL \n";	
   print "-o : Definir que resultados mostrar (opcional) \n";
   print "		-o 1 = Mostrar todo inclusive errores 404, 500, etc \n";
   print "		-o 0 = Mostrar solo 200 OK \n";	
@@ -92,10 +92,10 @@ sub usage {
   print "	  web-buster.pl -t 192.168.0.2 -p 80 -d / -m archivos -h 10 \n";
   print "\n";
   print "Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  \n";
-  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s 1 -h 30\n";  
+  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s https -h 30\n";  
   print "\n";
   print "Ejemplo 3:  Buscar archivos/directorios del host 192.168.0.2 (apache) en el puerto 443 (SSL)  \n";
-  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d / -m apache -s 1 -h 30\n";  
+  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d / -m apache -s https -h 30\n";  
   print "\n";  
 }	
 
@@ -321,7 +321,7 @@ if ($mode eq "perl"  ){
 }
 #######################
 
-
+#file.ext~, file.ext.bak, file.ext.tmp, file.ext.old, file.bak, file.tmp and file.old
 # fuzz with backup names (add .bak, .swp, etc)
 if ($mode eq "backupApache"){			
 	$webHacks->backupbuster("/usr/share/webhacks/wordlist/configFilesApache.txt");	

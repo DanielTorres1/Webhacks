@@ -15,7 +15,7 @@ getopts('t:p:s:e:i:d:l:r:h', \%opts);
 
 my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
-my $ssl = $opts{'s'};
+my $proto = $opts{'s'};
 my $path = $opts{'d'};
 my $redirect = $opts{'r'};
 my $sqli = $opts{'i'} if $opts{'i'};
@@ -35,8 +35,8 @@ sub usage {
   print "		-e parcial = titulo,metadatos,descripcion y banner \n";
   print "		-e todo = titulo,metadatos,descripcion,banner, version del lenguaje/CMS/framework usado, etc\n";	
   print "-s : SSL (opcional) \n";
-  print "		-s 1 = SSL \n";
-  print "		-s 0 = NO SSL \n";	
+  print "		-s http = NO SSL \n";
+  print "		-s https = SSL \n";	
   
   print "Autor: Daniel Torres Sandi \n";
   print "	Ejemplo 1:  webData.pl -t ejemplo.com -p 80 -d / -e todo -l log.txt -r 0 \n"; 
@@ -50,7 +50,7 @@ if ($opts{'h'} || !(%opts)) {
 }
 
 my $webHacks;
-if ($ssl eq '')
+if ($proto eq '')
 {
 
 	$webHacks = webHacks->new( rhost => $target,
@@ -67,7 +67,7 @@ else
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,	
 						path => $path,		
-						ssl => $ssl,						
+						proto => $proto,						
 						max_redirect => $redirect,
 					    debug => $debug);	
 }
@@ -92,14 +92,7 @@ my $server = %data{'server'};
 my $status = %data{'status'};
 my $wappalyzer;
 
-
- if($port =~ /443/m)
- 	{$wappalyzer=`wappalyzer https://$target:$port$path --pretty | wappalyzer-parser.py`; }
- else
- 	{$wappalyzer=`wappalyzer http://$target:$port$path --pretty | wappalyzer-parser.py`;}
-
-
-
+$wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty | wappalyzer-parser.py`; 
 
 if ($extract ne 'todo')
 {

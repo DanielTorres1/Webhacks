@@ -359,6 +359,7 @@ authuser
 authusers
 auto
 autobackup
+wp-content/plugins
 autocheck
 autodeploy
 autodiscover
@@ -1248,6 +1249,7 @@ favorite
 favorites
 fb
 fbook
+booked
 fcategory
 fck
 fckeditor

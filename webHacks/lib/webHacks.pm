@@ -30,7 +30,7 @@ no warnings 'uninitialized';
 has 'rhost', is => 'rw', isa => 'Str',default => '';	
 has 'rport', is => 'rw', isa => 'Str',default => '80';	
 has 'path', is => 'rw', isa => 'Str',default => '/';	
-has 'ssl', is => 'rw', isa => 'Str',default => '';	
+has 'proto', is => 'rw', isa => 'Str',default => 'http';	
 has 'max_redirect', is => 'rw', isa => 'Int',default => 0;	
 has 'html', is => 'rw', isa => 'Str',default => '';	
 has 'final_url', is => 'rw', isa => 'URI';	
@@ -62,7 +62,7 @@ my $rport = $self->rport;
 my $path = $self->path;
 my $error404 = $self->error404;
 my $threads = $self->threads;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 my ($url_file,$extension) = @_;
 
 my $cookie = $self->cookie;
@@ -90,7 +90,7 @@ close MYINPUT;
 #########################################
 
 
-print "ssl in dirbuster $ssl \n" if ($debug);
+print "ssl in dirbuster $proto \n" if ($debug);
 
 my $lines = `wc -l $url_file | cut -d " " -f1`;
 $lines =~ s/\n//g;
@@ -104,7 +104,7 @@ if ($extension ne "")
 else
 	{print "##################### \n";}
 
-print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie mostrarTodo $mostrarTodo\n";
+print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie mostrarTodo $mostrarTodo\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
 
@@ -133,11 +133,7 @@ foreach my $file (@links) {
 	case "pl"	{ $file =~ s/EXT/pl/g;  }
     }
 
-	my $url;
-	if ($ssl)
-		{$url = "https://".$rhost.":".$rport.$path.$file;}
-	else
-		{$url = "http://".$rhost.":".$rport.$path.$file;}   
+	my $url = "$proto://".$rhost.":".$rport.$path.$file;  
         
 	#print "getting $url \n";
 	
@@ -260,7 +256,7 @@ my $mostrarTodo = $self->mostrarTodo;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 my $error404 = $self->error404;
 my $threads = $self->threads;
 my ($url_file) = @_;
@@ -297,7 +293,7 @@ my $time = int($lines/600);
 
 print color('bold blue');
 print "######### Usando archivo: $url_file ##################### \n";
-print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie\n";
+print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
 
@@ -311,11 +307,7 @@ foreach my $file (@links) {
     $pm->start and next; # do the fork   
     $file =~ s/\n//g; 	
 
-	my $url;
-	if ($ssl)
-		{$url = "https://".$rhost.":".$rport.$path."~".$file."/";}
-	else
-		{$url = "http://".$rhost.":".$rport.$path."~".$file."/";}  
+	my $url = "$proto://".$rhost.":".$rport.$path."~".$file."/";
         
 	#print "getting $url \n";
 	##############  thread ##############
@@ -358,7 +350,7 @@ my $mostrarTodo = $self->mostrarTodo;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $path = $self->path;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 my $error404 = $self->error404;
 my $threads = $self->threads;
 my ($url_file) = @_;
@@ -394,7 +386,7 @@ my $time = int($lines/60);
 
 print color('bold blue');
 print "######### Usando archivo: $url_file ##################### \n";
-print "Configuracion : Hilos: $threads \t SSL:$ssl \t Ajax: $ajax \t Cookie: $cookie\n";
+print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie\n";
 print "Tiempo estimado en probar $lines archivos de backup : $time minutos\n\n";
 print color('reset');
 
@@ -416,10 +408,7 @@ foreach my $file (@links)
 	foreach my $backup_file (@backups) {			
 		$backup_file =~ s/FILE/$file/g;    		
 		
-		if ($ssl)
-			{$url = "https://".$rhost.":".$rport.$path.$backup_file;}
-		else
-			{$url = "http://".$rhost.":".$rport.$path.$backup_file;}
+		$url = "$proto://".$rhost.":".$rport.$path.$backup_file;
 				    
 		$pm->start and next; # do the fork 
 		#print  "$url \n"; 
@@ -495,7 +484,7 @@ my $headers = $self->headers;
 my $debug = $self->debug;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 
 
 my %options = @_;
@@ -507,14 +496,8 @@ print color('bold blue') if($debug);
 print "######### Testendo: $module ##################### \n\n" if($debug);
 print color('reset') if($debug);
 
-my $url;
-if ($ssl)
-  {$url = "https://".$rhost.":".$rport.$path;}
-else
-  {$url = "http://".$rhost.":".$rport.$path;}
-
-
-  
+my $url = "$proto://".$rhost.":".$rport.$path;
+ 
 if ($module eq "zte")
 {
 	my $response = $self->dispatch(url => $url."../../../../../../../../../../../../etc/passwd",method => 'GET', headers => $headers);
@@ -566,7 +549,7 @@ my $headers = $self->headers;
 my $debug = $self->debug;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 
 my %options = @_;
 my $module = $options{ module };
@@ -582,11 +565,7 @@ print "######### Testendo: $module ##################### \n\n" if($debug);
 print color('reset') if($debug);
 
 
-my $url;
-if ($ssl)
-  {$url = "https://".$rhost.":".$rport.$path;}
-else
-  {$url = "http://".$rhost.":".$rport.$path;}
+my $url = "$proto://".$rhost.":".$rport.$path;
 
 if ($module eq "ZKSoftware")
 {
@@ -894,7 +873,7 @@ my $headers = $self->headers;
 my $debug = $self->debug;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 my $path = $self->path;
 
 my $type=""; #Aqui se guarda que tipo de app es taiga/express/camara,etc
@@ -904,24 +883,9 @@ my $log_file = $options{ log_file };
 $headers->header("Accept-Encoding" => "gzip, deflate");
 
 my $url;
-if ($ssl)
-  {
-	  if ($rport eq '443')
-		{$url = "https://".$rhost.$path;}
-	  else
-		{$url = "https://".$rhost.":".$rport.$path;}
-	  
-  }
-else
-  {
-	if ($rport eq '80')
-	  {$url = "http://".$rhost.$path;}
-	else
-	  {$url = "http://".$rhost.":".$rport.$path;}
-  }
+$url = "$proto://".$rhost.":".$rport.$path;
 
-
-my $response = $self->dispatch(url => $url."nonexistroute123", method => 'GET', headers => $headers);
+my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
 my $status = $response->status_line;
 
@@ -936,6 +900,7 @@ elsif($status =~ /200/m)
 $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 $status = $response->status_line;
 my $last_url = $response->request()->uri();
+
 print "url $url last_url $last_url \n" if ($debug);
 
 #Peticion original  https://186.121.202.25/
@@ -1382,7 +1347,7 @@ my $headers = $self->headers;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
 my $debug = $self->debug;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 my $html = $self->html;
 my $url = $self->final_url;
 #print "html  $html  \n" ;	
@@ -1611,7 +1576,7 @@ sub _build_browser {
 my $self = shift;
 my $rhost = $self->rhost;
 my $rport = $self->rport;
-my $ssl = $self->ssl;
+my $proto = $self->proto;
 
 my $debug = $self->debug;
 my $mostrarTodo = $self->mostrarTodo;
@@ -1634,14 +1599,14 @@ $browser->show_progress(1) if ($debug);
 $browser->max_redirect($max_redirect);
 
 
-if ($ssl eq '')
+if ($proto eq '')
 {
 	print "Detecting SSL \n" if ($debug);
-	my $ssl_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
-	if($ssl_output =~ /CN/m)
-		{$self->ssl(1);print "SSL detected \n" if ($debug);}
+	my $proto_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
+	if($proto_output =~ /CN/m)
+		{$self->proto('https');print "SSL detected \n" if ($debug);}
 	else
-		{$self->ssl(0); print "NO SSL detected \n" if ($debug);}
+		{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 }
 
 print "proxy_env $proxy_env \n" if ($debug);

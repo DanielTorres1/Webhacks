@@ -32,6 +32,7 @@ echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET"
 sudo apt-get install -y  python3-m2crypto libcrypt-ssleay-perl
 sudo pip3 install M2Crypto pyopenssl scapy
 
+docker pull wappalyzer/cli
 
 
 sudo cp hackWeb.pl /usr/bin/
