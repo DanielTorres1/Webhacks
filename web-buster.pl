@@ -13,7 +13,7 @@ my $path = $opts{'d'} if $opts{'d'};
 
 my $cookie = "";
 $cookie = $opts{'c'} if $opts{'c'};
-my $ssl = $opts{'s'};
+my $proto = $opts{'s'};
 my $mostrarTodo = $opts{'o'};
 my $ajax = "0";
 $ajax = $opts{'j'} if $opts{'j'};
@@ -121,7 +121,7 @@ print "mostrarTodo $mostrarTodo" if ($debug);
 					    
 my $webHacks ;
 
-if($error404 eq '' and $ssl eq '')
+if($error404 eq '' and $proto eq '')
 {
 
 	$webHacks = webHacks->new( rhost => $site,
@@ -138,7 +138,7 @@ if($error404 eq '' and $ssl eq '')
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
 }
 
-if($error404 ne '' and $ssl eq '' )
+if($error404 ne '' and $proto eq '' )
 {
 	
 	$webHacks = webHacks->new( rhost => $site,
@@ -153,17 +153,18 @@ if($error404 ne '' and $ssl eq '' )
 					    mostrarTodo => $mostrarTodo);	
 
 # Need to make a request to discover if SSL is in use
+print "Descubrir si es HTTP o HTTPS";
 $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');					    
 }
 
-if($ssl ne '' and $error404 eq '' )
+if($proto ne '' and $error404 eq '' )
 {
 
 	$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
 						threads => $threads,
-						ssl => $ssl,
+						proto => $proto,
 						cookie => $cookie,
 						ajax => $ajax,						
 						max_redirect => 0,
@@ -171,14 +172,14 @@ if($ssl ne '' and $error404 eq '' )
 					    mostrarTodo => $mostrarTodo);	
 }
 
-if ($error404 ne ''  and $ssl ne '' )
+if ($error404 ne ''  and $proto ne '' )
 {	
 	$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
 						threads => $threads,
 						error404 => $error404,
-						ssl => $ssl,
+						proto => $proto,
 						cookie => $cookie,
 						ajax => $ajax,						
 						max_redirect => 0,

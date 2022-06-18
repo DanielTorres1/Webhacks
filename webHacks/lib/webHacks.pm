@@ -15,7 +15,6 @@ use HTML::Scrubber;
 use Switch;
 #use Encode;
 use Parallel::ForkManager;
-#use Net::SSL (); # From Crypt-SSLeay
 use Term::ANSIColor;
 use utf8;
 use Text::Unidecode;
@@ -23,8 +22,6 @@ binmode STDOUT, ":encoding(UTF-8)";
 
 
 no warnings 'uninitialized';
-
-#$Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL for proxy compatibility
 
 {
 has 'rhost', is => 'rw', isa => 'Str',default => '';	
