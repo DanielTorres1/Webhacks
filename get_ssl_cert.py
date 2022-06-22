@@ -35,12 +35,17 @@ for item in subject:
 	name=mo.group(1) 
 	certificate_data_json[name] = item.value
 
-san = loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
-dns_names = san.value.get_values_for_type(x509.DNSName)
-i=0
-for dns in dns_names:
-	certificate_data_json[f'subdomain{i}'] = dns
-	i=i+1
+
+try:
+	san = loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
+	dns_names = san.value.get_values_for_type(x509.DNSName)
+	i=0
+	for dns in dns_names:
+		certificate_data_json[f'subdomain{i}'] = dns
+		i=i+1
+except:
+  print("")
+
 
 print(certificate_data_json)
 
