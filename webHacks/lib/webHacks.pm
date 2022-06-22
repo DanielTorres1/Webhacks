@@ -101,7 +101,7 @@ if ($extension ne "")
 else
 	{print "##################### \n";}
 
-print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie mostrarTodo $mostrarTodo\n";
+print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie  error404:$error404 mostrarTodo $mostrarTodo\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
 
@@ -138,13 +138,15 @@ foreach my $file (@links) {
 	##############  thread ##############
 	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 	my $status = $response->status_line;
-	#print " pinche status $status \n";
+	#print " pinche status $status de $url buscando error $error404 \n";
 	my $decoded_content = $response->decoded_content;
+	
 		 
 	if ($error404 ne '')		
 		{			
 			if($decoded_content =~ /$error404/m){	
 				$status="404"; 
+				#print " pinche NEWWWW status $status de $url \n";
 			}
 		}
 	
@@ -214,7 +216,14 @@ foreach my $file (@links) {
 		else
 		{		
 			print "$current_status\t$url$vuln $options \n";
-		}		
+		}
+
+		# if($status =~ /200/m){	
+		# open (SALIDA,">log.html") || die "ERROR: No puedo abrir el fichero log.html\n";
+		# print SALIDA $decoded_content;
+		# close (SALIDA);
+		# sleep 10;		
+		# }
 		
 		#$result_table->add($url,$status,$options);			
 	}

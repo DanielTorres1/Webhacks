@@ -94,23 +94,33 @@ my $wappalyzer;
 
 $wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty | wappalyzer-parser.py`; 
 
-if ($extract ne 'todo')
-{
-	print "Title: $title \n" if ($title ne '' && $title ne ' ');
-	print "poweredBy $poweredBy \n" if ($poweredBy ne '' && $poweredBy ne ' ');
-	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
-	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
-	print "Proxy $proxy \n" if ($proxy ne '' && $proxy ne ' ');
-#	print "redirect_url $server \n" if ($redirect_url ne '' && $redirect_url ne ' ');
-	print "server $server \n" if ($server ne '' && $server ne ' ');
+# 	print "Title: $title \n" if ($title ne '' && $title ne ' ');
+# 	print "poweredBy $poweredBy \n" if ($poweredBy ne '' && $poweredBy ne ' ');
+# 	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
+# 	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
+# 	print "Proxy $proxy \n" if ($proxy ne '' && $proxy ne ' ');
+# #	print "redirect_url $server \n" if ($redirect_url ne '' && $redirect_url ne ' ');
+# 	print "server $server \n" if ($server ne '' && $server ne ' ');
 	
+if($status =~ /Name or service not known/m){	 
+	$status =~ /Can't connect to (.*?):/;
+	my $domain = $1; 
+
+	my @domain_array = split /\./, $domain;
+	my $length = scalar @domain_array;
+	if ($length > 2)			
+	{
+		$domain = @domain_array[1].'.'.@domain_array[2];
+		print "Name or service not known~$domain";
+	}
+	else
+		{print "Name or service not known~$domain";}
 	
-}
-else
-{
+ } 
+ else
+ {
 	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~$status || $wappalyzer";
-}
- 
+ }
 
 #if ($sqli)
 #{
