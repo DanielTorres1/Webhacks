@@ -20,7 +20,7 @@ SYNACK = 0x12 # Set flag values for later reference
 ip=sys.argv[1]
 port=int(sys.argv[2])
 pktflags=0;
-#print ssl.OPENSSL_VERSION
+print ssl.OPENSSL_VERSION
  
 certificate_data_json = {} 
 
