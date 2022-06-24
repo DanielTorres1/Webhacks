@@ -147,7 +147,6 @@ account/logon
 accounts
 accounts/
 Accounts/
-accounts.cgi
 account/signin
 accountsEXT
 accounts/login
@@ -185,8 +184,6 @@ Adm/
 ad_manage
 adm_auth
 adm-bin/
-adm.cgi
-Adm.cgi
 adm/fckeditor
 admEXT
 AdmEXT
@@ -299,7 +296,6 @@ auth
 auth/
 Auth/
 auth/adm
-auth.cgi
 _AuthChangeUrl?
 authenticate
 authenticatedy
@@ -1637,7 +1633,6 @@ local/
 local_bd_new.txt
 local_bd_old.txt
 .localcache/
-local-cgi/
 local/composer.lock
 local/composer.phar
 local.config.rb
