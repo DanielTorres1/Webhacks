@@ -80,6 +80,7 @@ admin.php
 api/apidocs
 apidocs
 api
+test
 api/v2
 api/v1
 v2
