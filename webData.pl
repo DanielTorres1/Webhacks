@@ -119,7 +119,7 @@ if($status =~ /Name or service not known/m){
  } 
  else
  {
-	print "$title~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type~$server~$status || $wappalyzer";
+	print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type || $wappalyzer";
  }
 
 #if ($sqli)

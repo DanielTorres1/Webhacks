@@ -678,7 +678,6 @@ templates/ROOT.php
 templates/symlink.php
 templates/sym.php
 templates/config_DB.php
-templates/config.php
 templates/xtremecrip.php
 templates/default_theme/PRO/index.php
 templates/default_theme/PRO/cp.php

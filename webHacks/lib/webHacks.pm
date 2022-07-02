@@ -140,6 +140,16 @@ foreach my $file (@links) {
 	my $status = $response->status_line;
 	#print " pinche status $status de $url buscando error $error404 \n";
 	my $decoded_content = $response->decoded_content;
+
+	############ check if there is a redirect (HTML)
+	my $redirect_path = getRedirect($decoded_content);
+	if ( $redirect_path ne ''  ){
+		#print("redirect_path  $redirect_path ");
+		#$response = $self->dispatch(url => $redirect_path, method => 'GET', headers => $headers);
+		#$decoded_content = $response->decoded_content; 	 
+		$url = $url.$redirect_path
+	}  
+	#########################################
 	
 		 
 	if ($error404 ne '')		
@@ -870,7 +880,126 @@ if ($module eq "phpmyadmin")
 
 }
 
+#Extract redirect from HTML
+sub getRedirect 
+{
+	my $decoded_response = $_[0];
+	$decoded_response =~ s/; url=/;url=/gi; 
+	$decoded_response =~ s/\{//gi; 
+	#$decoded_response =~ s/^.*?\/noscript//s;  #delete everything before xxxxxxxxx
+	$decoded_response =~ s/<noscript[^\/noscript>]*\/noscript>//g;
 
+
+	#<meta http-equiv="Refresh" content="0;URL=/page.cgi?page=status">
+	$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
+	my $redirect_url = $1; 
+
+
+
+	if ($redirect_url eq '')
+	{
+							#<script>window.onload=function(){ url ="/webui";window.location.href=url;}</script>
+		$decoded_response =~ /window.onload=function\(\) url ="(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+	if ($redirect_url eq '')
+	{
+							#<meta http-equiv="Refresh" content="1;url=http://facturas.tigomoney.com.bo/tigoMoney/">	
+		$decoded_response =~ /meta http-equiv="Refresh" content="1;URL=(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+
+	if ($redirect_url eq '')
+	{
+		#<META http-equiv="Refresh" content="0;url=http://www.infocred.com.bo/BICWebSite"> 	
+		$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+
+	if ($redirect_url eq '')
+	{
+		#window.location="http://www.cadeco.org/cam";</script>	
+		$decoded_response =~ /window.location="(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+	if ($redirect_url eq '')
+	{
+		#window.location.href="login.html?ver="+fileVer;	
+		$decoded_response =~ /window.location.href="(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+	if ($redirect_url eq '')
+	{
+		#window.location.href = "/doc/page/login.asp?_" 	
+		$decoded_response =~ /window.location.href = "(.*?)"/i;
+		$redirect_url = $1; 	
+	}
+
+
+	if ($redirect_url eq '')
+	{
+		#window.location = "http://backupagenda.vivagsm.com/pdm-login-web-nuevatel-bolivia/signin/"
+		$decoded_response =~ /window.location = "(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+	if ($redirect_url eq '')
+	{
+		#top.location="/login";
+		$decoded_response =~ /top.location="(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+	if ($redirect_url eq '')
+	{	
+	#<html><script>document.location.replace("/+CSCOE+/logon.html")</script></html>
+		$decoded_response =~ /location.replace\("(.*?)"/;
+		$redirect_url = $1;	
+	}
+
+	if ($redirect_url eq '')
+	{	
+	#jumpUrl = "/cgi-bin/login.html";
+		$decoded_response =~ /jumpUrl = "(.*?)"/;
+		$redirect_url = $1;	
+	}
+
+	if ($redirect_url eq '')
+	{	
+	#top.document.location.href = "/index.html";
+		$decoded_response =~ /top.document.location.href = "(.*?)"/;
+		$redirect_url = $1;	
+	}
+
+	if ($redirect_url eq '')
+	{	
+	#<meta http-equiv="refresh" content="0.1;url=808gps/login.html"/>  
+		$decoded_response =~ /http-equiv="refresh" content="0.1;url=(.*?)"/;
+		$redirect_url = $1;	
+	}
+
+
+	# si la ruta de la redireccion no esta completa borrarla
+	if (($redirect_url eq 'https:' ) || ($redirect_url eq 'http:'))
+		{$redirect_url=""}
+
+
+	##### GO TO REDIRE URL ####
+	$redirect_url =~ s/\"//g;  
+	#print "redirect_url $redirect_url \n" if ($debug);
+
+	# webfig (mikrotik) ..\/ (OWA) no usar redireccion
+	if($redirect_url =~ /webfig|\.\.\//m ){
+		$redirect_url="";
+	#	print "mikrotik/OWA detectado \n" if ($debug);
+	}
+	return $redirect_url;
+}
 
 sub getData
 {
@@ -936,128 +1065,11 @@ if ($domain_original ne $domain_final)
 $decoded_response = $response->decoded_content;
 $decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 
-	
-### get redirect url ###
+########################
+#my $redirect_url = "";
 REDIRECT:
-$decoded_response =~ s/; url=/;url=/gi; 
-$decoded_response =~ s/\{//gi; 
-#$decoded_response =~ s/^.*?\/noscript//s;  #delete everything before xxxxxxxxx
-$decoded_response =~ s/<noscript[^\/noscript>]*\/noscript>//g;
+my $redirect_url = getRedirect($decoded_response);
 
-
-#<meta http-equiv="Refresh" content="0;URL=/page.cgi?page=status">
-$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
-my $redirect_url = $1; 
-
-
-
-if ($redirect_url eq '')
-{
-	                    #<script>window.onload=function(){ url ="/webui";window.location.href=url;}</script>
-	$decoded_response =~ /window.onload=function\(\) url ="(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-if ($redirect_url eq '')
-{
-	                    #<meta http-equiv="Refresh" content="1;url=http://facturas.tigomoney.com.bo/tigoMoney/">	
-	$decoded_response =~ /meta http-equiv="Refresh" content="1;URL=(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-
-if ($redirect_url eq '')
-{
-	#<META http-equiv="Refresh" content="0;url=http://www.infocred.com.bo/BICWebSite"> 
-	
-	$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-
-if ($redirect_url eq '')
-{
-	#window.location="http://www.cadeco.org/cam";</script>	
-
-	$decoded_response =~ /window.location="(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-if ($redirect_url eq '')
-{
-	#window.location.href="login.html?ver="+fileVer;	
-	$decoded_response =~ /window.location.href="(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-if ($redirect_url eq '')
-{
-	#window.location.href = "/doc/page/login.asp?_" 	
-	$decoded_response =~ /window.location.href = "(.*?)"/i;
-	$redirect_url = $1; 	
-}
-
-
-if ($redirect_url eq '')
-{
-	#window.location = "http://backupagenda.vivagsm.com/pdm-login-web-nuevatel-bolivia/signin/"
-
-	$decoded_response =~ /window.location = "(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-if ($redirect_url eq '')
-{
-	#top.location="/login";
-
-	$decoded_response =~ /top.location="(.*?)"/i;
-	$redirect_url = $1; 
-}
-
-if ($redirect_url eq '')
-{	
-  #<html><script>document.location.replace("/+CSCOE+/logon.html")</script></html>
-
-	$decoded_response =~ /location.replace\("(.*?)"/;
-	$redirect_url = $1;	
-}
-
-if ($redirect_url eq '')
-{	
-  #jumpUrl = "/cgi-bin/login.html";
-	$decoded_response =~ /jumpUrl = "(.*?)"/;
-	$redirect_url = $1;	
-}
-
-if ($redirect_url eq '')
-{	
-  #top.document.location.href = "/index.html";
-	$decoded_response =~ /top.document.location.href = "(.*?)"/;
-	$redirect_url = $1;	
-}
-
-if ($redirect_url eq '')
-{	
-  #<meta http-equiv="refresh" content="0.1;url=808gps/login.html"/>  
-	$decoded_response =~ /http-equiv="refresh" content="0.1;url=(.*?)"/;
-	$redirect_url = $1;	
-}
-
-
-# si la ruta de la redireccion no esta completa borrarla
-if (($redirect_url eq 'https:' ) || ($redirect_url eq 'http:'))
-	{$redirect_url=""}
-
-
-##### GO TO REDIRECT URL ####
-$redirect_url =~ s/\"//g;  
-print "redirect_url $redirect_url \n" if ($debug);
-
-# webfig (mikrotik) ..\/ (OWA) no usar redireccion
-if($redirect_url =~ /webfig|\.\.\//m ){
-	$redirect_url="";
-	print "mikrotik/OWA detectado \n" if ($debug);
-}
 # ruta completa http://10.0.0.1/owa
 if($redirect_url =~ /http/m ){	 
 	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);

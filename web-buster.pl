@@ -78,7 +78,7 @@ sub usage {
   print "	  perl:	Probar si existen archivos perl \n";
   print "	  webdav: Directorios webdav \n";
   print "	  webservices: Directorios webservices \n";  
-  print "	  files2: Archivos peligrosos \n";  
+  print "	  archivosPeligrosos: Archivos peligrosos \n";  
   print "	  default: Archivos por defecto \n";    
   print "	  information: php info files, error logs \n";  
   print "	  webserver: Probar si existen archivos propios de un servidor web (server-status, access_log, etc) \n";
@@ -191,6 +191,11 @@ if ($error404 ne ''  and $proto ne '' )
 
 # fuzz with common files names
 
+if ($mode eq "test" ){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/test.txt");	
+	print "\n";
+}
+
 
 if ($mode eq "graphQL" ){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/graphQL.txt");	
@@ -209,7 +214,7 @@ if ($mode eq "admin"){
 }
 
 # fuzz with archivosPeligrosos
-if ($mode eq "files2"){	
+if ($mode eq "archivosPeligrosos"){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");	
 	print "\n";
 }
@@ -255,8 +260,17 @@ if ($mode eq "backdoorIIS"){
 #########################
 # fuzz with files (with extension)
 if ($mode eq "php" ){		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","php");			
+	print "\n";
+}
+
+if ($mode eq "common" ){		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/common.txt");			
+	print "\n";
+}
+
+if ($mode eq "extended" ){		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/extended.txt");			
 	print "\n";
 }
 
@@ -282,9 +296,8 @@ if ($mode eq "iis"){
 }
 # fuzz with asp files
 if ($mode eq "asp"){			
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","asp");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","aspx");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","asp");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","aspx");		
 	print "\n";
 }
 
@@ -311,14 +324,13 @@ if ($mode eq "tomcat"){
 }
 # fuzz with jsp
 if ($mode eq "jsp"  ){				
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","jsp");		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","jsp");			
 	print "\n";
 }
 
 # fuzz with perl
 if ($mode eq "perl"  ){					
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","pl");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","pl");	
 	print "\n";
 }
 #######################
@@ -348,9 +360,9 @@ if ($mode eq "apacheServer" ){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/cgi.txt");		
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/webserver.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/backdoorsApache.txt");		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","php");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","htm");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");		
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","php");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","htm");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","html");		
 	print "\n";
 }
 
@@ -364,10 +376,10 @@ if ($mode eq "iisServer" ){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/backdoorsIIS.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/sharepoint.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/webservices.txt");
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","asp");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","aspx");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","htm");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","html");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","asp");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","aspx");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","htm");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","html");	
 	print "\n";
 }
 
@@ -377,7 +389,7 @@ if ($mode eq "tomcatServer" ){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/directorios.txt");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/webserver.txt");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files2.txt","jsp");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","jsp");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt","htm");		
 	print "\n";
 }

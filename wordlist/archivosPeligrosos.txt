@@ -17,6 +17,7 @@ jquery-file-upload/server/php/index.php
 config.sys
 .bzr/
 CVS/
+CFIDE/scripts/ajax/FCKeditor/editor/filemanager/connectors/cfm/upload.cfm
 .ssh
 .listing
 .git/config
