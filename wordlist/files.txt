@@ -1,3 +1,6 @@
+otrs/index.pl
+otrs/customer.pl
+otrs/installer.pl
 1.sql
 1.tar.gz
 1.zip
