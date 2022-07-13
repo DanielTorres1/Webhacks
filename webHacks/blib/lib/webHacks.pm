@@ -1032,11 +1032,12 @@ elsif($status =~ /200/m)
 {
 	$type=$type."|NodeJS";
 } 
-$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
-$status = $response->status_line;
+
+$response = $self->dispatch(url => $url, method => 'GET');
 my $last_url = $response->request()->uri();
 
-print "url $url last_url $last_url \n" if ($debug);
+print "url $url last_url $last_url  \n" if ($debug);
+$status = $response->status_line;
 
 #Peticion original  https://186.121.202.25/
 my @url_array1 = split("/",$url);
@@ -1064,10 +1065,11 @@ if ($domain_original ne $domain_final)
 		
 $decoded_response = $response->decoded_content;
 $decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
-
+#print "decoded_response $decoded_response" if ($debug);
 ########################
 #my $redirect_url = "";
 REDIRECT:
+#obtener redirect javascrip/html
 my $redirect_url = getRedirect($decoded_response);
 
 # ruta completa http://10.0.0.1/owa
@@ -1551,6 +1553,11 @@ if ($method eq 'GET')
     $response = $self->browser->request($req)
   }
 
+if ($method eq 'HEAD')
+  { my $req = HTTP::Request->new(HEAD => $url, $headers, "\n\n");
+    $response = $self->browser->request($req)
+  }  
+
 if ($method eq 'OPTIONS')
   { my $req = HTTP::Request->new(OPTIONS => $url, $headers);
     $response = $self->browser->request($req)
@@ -1608,13 +1615,11 @@ my $max_redirect = $self->max_redirect;
 
 print "building browser \n" if ($debug);
 
+   
+my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => 15, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
 
-my $browser = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});        
-
-$browser->timeout(15);
 $browser->cookie_jar(HTTP::Cookies->new());
 $browser->show_progress(1) if ($debug);
-$browser->max_redirect($max_redirect);
 
 
 if ($proto eq '')
