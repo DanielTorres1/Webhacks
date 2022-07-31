@@ -1,1 +1,0 @@
-# Nmap 7.92 scan initiated Tue Jun 21 11:02:10 2022 as: nmap -sC -sV -O -v -oV -p25 10.10.10.17

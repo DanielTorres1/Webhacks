@@ -132,7 +132,7 @@ foreach my $file (@links) {
 
 	my $url ;
 	if ($rport eq '80' || $rport eq '443')
-		{$url = "$proto://".$rhost.":".$path.$file; }
+		{$url = "$proto://".$rhost.$path.$file; }
 	else
 		{$url = "$proto://".$rhost.":".$rport.$path.$file; }
         
@@ -140,7 +140,7 @@ foreach my $file (@links) {
 	
 	
 	##############  thread ##############
-	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
+	my $response = $self->dispatch(url => $url,method => 'POST',headers => $headers);
 	my $status = $response->status_line;
 	#print " pinche status $status de $url buscando error $error404 \n";
 	my $decoded_content = $response->decoded_content;
@@ -1684,8 +1684,8 @@ if ($proto eq '')
 	else
 		{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 }
-#$proxy_host='127.0.0.1';
-#$proxy_port='8083';
+$proxy_host='127.0.0.1';
+$proxy_port='8083';
 print "proxy_env $proxy_env \n" if ($debug);
 
 if ( $proxy_env eq 'ENV' )
