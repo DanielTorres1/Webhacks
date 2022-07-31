@@ -218,19 +218,16 @@ foreach my $file (@links) {
 		$options =~ s/,,//g; # delete safe methods	
 		
 		if(($status =~ /302/m) && ($content_length > 500) ){	 
-			$vuln = " (HTML en redirect)\t";
+			$vuln = " (redirect in HTML )\t";
 		}
  
 		# Revisar si el registro de usuario drupal/joomla/wordpress esta abierto
 		if ($url_file =~ "registroHabilitado"){	 		
 			if($decoded_content =~ /\/user\/register|registerform|member-registration/m){		
-				print "$current_status\t$url$vuln $options \n";
-			}
+				$vuln= ' (Registro habilitado)';				
+			}			
 		}
-		else
-		{		
-			print "$current_status\t$url$vuln $options \n";
-		}
+		print "$current_status\t$url$vuln $options \n";
 
 		# if($status =~ /200/m){	
 		# open (SALIDA,">log.html") || die "ERROR: No puedo abrir el fichero log.html\n";

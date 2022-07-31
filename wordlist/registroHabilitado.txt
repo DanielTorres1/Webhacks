@@ -1,3 +1,4 @@
 index.php?option=com_users&view=registration
+wp-register.php
 wp-login.php?action=register
 user/register

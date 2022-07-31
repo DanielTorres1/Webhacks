@@ -131,7 +131,7 @@ if($error404 eq '' and $proto eq '')
 						threads => $threads,						
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 0,
+						max_redirect => 1,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 
@@ -149,7 +149,7 @@ if($error404 ne '' and $proto eq '' )
 						error404 => $error404,						
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 0,
+						max_redirect => 1,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 
@@ -168,7 +168,7 @@ if($proto ne '' and $error404 eq '' )
 						proto => $proto,
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 0,
+						max_redirect => 1,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 }
@@ -183,13 +183,19 @@ if ($error404 ne ''  and $proto ne '' )
 						proto => $proto,
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 0,
+						max_redirect => 1,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 }
 
 
-# fuzz with common files names
+
+
+# registration URL 
+if ($mode eq "registroHabilitado"){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
+	print "\n";
+}
 
 if ($mode eq "test" ){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/test.txt");	
@@ -307,11 +313,7 @@ if ($mode eq "sharepoint"){
 	print "\n";
 }
 
-# registration URL 
-if ($mode eq "registroHabilitado"){	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/registroHabilitado.txt");	
-	print "\n";
-}
+
 
 ##########################
 
