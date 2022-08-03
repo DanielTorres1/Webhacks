@@ -5,7 +5,7 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('t:p:d:j:h:c:e:s:m:o:r:q', \%opts);
+getopts('t:p:d:r:j:h:c:e:s:m:o:q', \%opts);
 
 my $site = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
@@ -59,6 +59,7 @@ sub usage {
   print "Uso:  \n";  
   print "-t : IP o dominio del servidor web \n";
   print "-p : Puerto del servidor web \n";
+  print "-r : Seguir n redirecciones \n";
   print "-d : Ruta donde empezara a probar directorios \n";
   print "-j : Adicionar header ajax (xmlhttprequest) 1 para habilitar \n";
   print "-h : Numero de hilos (Conexiones en paralelo) \n";
@@ -91,13 +92,13 @@ sub usage {
   #print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";  
   print "\n";
   print "Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos\n";
-  print "	  web-buster.pl -t 192.168.0.2 -p 80 -d / -m archivos -h 10 \n";
+  print "	  web-buster.pl -r 1 -t 192.168.0.2 -p 80 -d / -m archivos -h 10 \n";
   print "\n";
   print "Ejemplo 2:  Buscar backups de archivos de configuracion en el directorio /wordpress/ del host 192.168.0.2 en el puerto 443 (SSL)  \n";
-  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s https -h 30\n";  
+  print "	  web-buster.pl -r 1 -t 192.168.0.2 -p 443 -d /wordpress/ -m backup -s https -h 30\n";  
   print "\n";
   print "Ejemplo 3:  Buscar archivos/directorios del host 192.168.0.2 (apache) en el puerto 443 (SSL)  \n";
-  print "	  web-buster.pl -t 192.168.0.2 -p 443 -d / -m apache -s https -h 30\n";  
+  print "	  web-buster.pl -r 1 -t 192.168.0.2 -p 443 -d / -m apache -s https -h 30\n";  
   print "\n";  
 }	
 
@@ -119,8 +120,9 @@ if ($quiet ne 1)
 
 $mostrarTodo = 1 if ($mostrarTodo eq '');
 print "mostrarTodo $mostrarTodo" if ($debug);
-			    
-					    
+
+$max_redirect = 0 if ($max_redirect eq '');
+#print "max_redirect $max_redirect";					    
 my $webHacks ;
 
 if($error404 eq '' and $proto eq '')
