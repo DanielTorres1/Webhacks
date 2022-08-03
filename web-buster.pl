@@ -5,11 +5,12 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('t:p:d:j:h:c:e:s:m:o:q', \%opts);
+getopts('t:p:d:j:h:c:e:s:m:o:r:q', \%opts);
 
 my $site = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $path = $opts{'d'} if $opts{'d'};
+my $max_redirect = $opts{'r'} if $opts{'r'};
 
 
 my $cookie = "";
@@ -131,7 +132,7 @@ if($error404 eq '' and $proto eq '')
 						threads => $threads,						
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 1,
+						max_redirect => $max_redirect,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 
@@ -149,7 +150,7 @@ if($error404 ne '' and $proto eq '' )
 						error404 => $error404,						
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 1,
+						max_redirect => $max_redirect,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 
@@ -168,7 +169,7 @@ if($proto ne '' and $error404 eq '' )
 						proto => $proto,
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 1,
+						max_redirect => $max_redirect,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 }
@@ -183,7 +184,7 @@ if ($error404 ne ''  and $proto ne '' )
 						proto => $proto,
 						cookie => $cookie,
 						ajax => $ajax,						
-						max_redirect => 1,
+						max_redirect => $max_redirect,
 					    debug => $debug,
 					    mostrarTodo => $mostrarTodo);	
 }
