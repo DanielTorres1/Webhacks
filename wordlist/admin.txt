@@ -334,5 +334,4 @@ webadmin/login.php
 webadmin.php
 web-console/
 web-console/Invoker
-wp-admin/
 wp-login.php
