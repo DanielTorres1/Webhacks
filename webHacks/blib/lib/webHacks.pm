@@ -1067,8 +1067,12 @@ my $log_file = $options{ log_file };
 
 $headers->header("Accept-Encoding" => "gzip, deflate");
 
-my $url;
-$url = "$proto://".$rhost.":".$rport.$path;
+my $url ;
+if ($rport eq '80' || $rport eq '443')
+	{$url = "$proto://".$rhost.$path; }
+else
+	{$url = "$proto://".$rhost.":".$rport.$path; }
+
 
 my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
 my $decoded_response = $response->decoded_content;
@@ -1107,11 +1111,11 @@ my $domain_original = $url_original->host;
 
 my $url_final = URI->new($last_url);
 my $domain_final = $url_final->host;
-
+my $newdomain;
 print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
 
 if ($domain_original ne $domain_final)
-	{$type=$type."|301 Moved";}  # hubo redireccion http://dominio.com --> http://www.dominio.com
+	{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
 		
 $decoded_response = $response->decoded_content;
 $decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
@@ -1319,9 +1323,6 @@ if($decoded_response =~ /\/webplugin.exe/i)
 if($decoded_response =~ /ftnt-fortinet-grid icon-xl/i)
 	{$type=$type."|"."Fortinet";}	 			
 	
-	
-	
-
 
 if($decoded_response =~ /theme-taiga.css/i)
 	{$type=$type."|"."Taiga";}	 
@@ -1359,7 +1360,6 @@ if($decoded_response =~ /servletBridgeIframe/i)
 	{$title="SAP Business Objects";} 	
 
 	
-
 if($decoded_response =~ /content="Babelstar"/i)
 	{$title="Body Cam";} 	
 	
@@ -1385,7 +1385,8 @@ if($decoded_response =~ /portal.peplink.com/i)
             "proxy" => $proxy,
             "type" => $type,
             "server" => $server,
-            "status" => $status
+            "status" => $status,
+			"newdomain" => $newdomain
         );
         
 

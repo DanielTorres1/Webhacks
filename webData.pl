@@ -17,11 +17,13 @@ my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $proto = $opts{'s'};
 my $path = $opts{'d'};
-my $redirect = $opts{'r'};
+my $max_redirect = $opts{'r'} if $opts{'r'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
 my $debug = 0;
+
+$max_redirect = 0 if ($max_redirect eq '');
 
 sub usage { 
   
@@ -56,7 +58,7 @@ if ($proto eq '')
 	$webHacks = webHacks->new( rhost => $target,
 						rport => $port,	
 						path => $path,	
-						max_redirect => $redirect,						
+						max_redirect => $max_redirect,						
 					    debug => $debug);	
 	# Need to make a request to discover if SSL is in use
 	$webHacks->dispatch(url => "http://$target:$port",method => 'GET');
@@ -68,7 +70,7 @@ else
 						rport => $port,	
 						path => $path,		
 						proto => $proto,						
-						max_redirect => $redirect,
+						max_redirect => $max_redirect,
 					    debug => $debug);	
 }
 	   				   
@@ -84,14 +86,15 @@ my $geo = %data{'geo'};
 my $Generator = %data{'Generator'};
 my $description = %data{'description'};
 my $langVersion = %data{'langVersion'};
-my $redirect_url = %data{'redirect_url'};
+my $max_redirect_url = %data{'redirect_url'};
 my $author = %data{'author'};
 my $proxy = %data{'proxy'};
 my $type = %data{'type'};
 my $server = %data{'server'};
 my $status = %data{'status'};
+my $newdomain = %data{'newdomain'};
 my $wappalyzer;
-
+#print " newdomain  $newdomain \n" ;
 $wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty | wappalyzer-parser.py`; 
 
 # 	print "Title: $title \n" if ($title ne '' && $title ne ' ');
@@ -99,28 +102,37 @@ $wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty 
 # 	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
 # 	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
 # 	print "Proxy $proxy \n" if ($proxy ne '' && $proxy ne ' ');
-# #	print "redirect_url $server \n" if ($redirect_url ne '' && $redirect_url ne ' ');
+# #	print "redirect_url $server \n" if ($max_redirect_url ne '' && $max_redirect_url ne ' ');
 # 	print "server $server \n" if ($server ne '' && $server ne ' ');
-	
+my $domain; 
+
+if ($newdomain ne '')
+	{$domain = $newdomain;}
+
+
 if($status =~ /Name or service not known/m){	 
 	$status =~ /Can't connect to (.*?):/;
-	my $domain = $1; 
-
+	$domain = $1; 
 	my @domain_array = split /\./, $domain;
 	my $length = scalar @domain_array;
 	if ($length > 2)			
 	{
 		$domain = @domain_array[1].'.'.@domain_array[2];
-		print "Name or service not known~$domain";
-	}
-	else
-		{print "Name or service not known~$domain";}
+		
+	}	
 	
  } 
- else
- {
-	print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$redirect_url~$author~$proxy~$type || $wappalyzer";
- }
+
+
+if ($domain ne '')
+	{print "Dominio identificado~$domain";}
+else
+	{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$max_redirect_url~$author~$proxy~$type || $wappalyzer";}
+
+ 
+
+
+ $newdomain 
 
 #if ($sqli)
 #{
