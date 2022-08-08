@@ -15,7 +15,6 @@ html/
 install/
 j4p/
 webdav/
-db/
 inetpub/
 inetsrv/
 sites/
