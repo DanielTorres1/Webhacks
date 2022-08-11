@@ -513,7 +513,13 @@ print color('bold blue') if($debug);
 print "######### Testendo: $module ##################### \n\n" if($debug);
 print color('reset') if($debug);
 
-my $url = "$proto://".$rhost.":".$rport.$path;
+my $url ;
+if ($rport eq '80' || $rport eq '443')
+	{$url = "$proto://".$rhost.$path; }
+else
+	{$url = "$proto://".$rhost.":".$rport.$path; }
+        
+
  
 if ($module eq "zte")
 {
@@ -581,8 +587,13 @@ print color('bold blue') if($debug);
 print "######### Testendo: $module ##################### \n\n" if($debug);
 print color('reset') if($debug);
 
+my $url ;
+if ($rport eq '80' || $rport eq '443')
+	{$url = "$proto://".$rhost.$path; }
+else
+	{$url = "$proto://".$rhost.":".$rport.$path; }
+        
 
-my $url = "$proto://".$rhost.":".$rport.$path;
 
 if ($module eq "ZKSoftware")
 {
@@ -850,9 +861,9 @@ if ($module eq "phpmyadmin")
 		#print SALIDA $decoded_response;
 		#close (SALIDA);
 
-		if ($decoded_response =~ /navigation.php\?token|navigation.php\?lang/i &&  $decoded_response =~ /main.php\?token|main.php\?lang=/i)
+		if ($decoded_response =~ /navigation.php/i ||  $decoded_response =~ /logout.php/i)
 		{			
-			print "Password encontrado: [phpmyadmin] $url (Sistema sin password)\n";
+			print "[phpmyadmin] $url (Sistema sin password)\n";
 			last;									
 		}	 
 		
