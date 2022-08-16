@@ -930,7 +930,7 @@ if ($module eq "phpmyadmin")
 					
 		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
 		{			
-			print "Password encontrado: [phpmyadmin] $url \nUsuario:$user Password:$password\n";
+			print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
 			last;									
 		}	
 		
