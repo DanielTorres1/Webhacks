@@ -603,7 +603,7 @@ if ($module eq "ZKSoftware")
 	{ 
 		$password =~ s/\n//g; 	
 		my $hash_data = {'username' => $user, 
-				'userpwd' => $password
+				'userpwd' => '123456'
 				};	
 	
 		my $post_data = convert_hash($hash_data);
@@ -613,9 +613,10 @@ if ($module eq "ZKSoftware")
 		my $status = $response->status_line;
 		
 		print "[+] user:$user password:$password status:$status\n";
+		print($decoded_response);
 		if ($status =~ /200/m)
 		{
-			if  ($decoded_response =~ /Department|Departamento|frame/i){	 
+			if  ($decoded_response =~ /Department|Departamento|frame|menu/i){	 
 			print "Password encontrado: [ZKSoftware] $url \nUsuario:$user Password:$password\n";
 			last;
 			}							
@@ -1695,25 +1696,26 @@ if ($proto eq '')
 }
 #$proxy_host='127.0.0.1';
 #$proxy_port='8083';
-print "proxy_env $proxy_env \n" if ($debug);
+#print "proxy_env $proxy_env \n" if ($debug);
 
-if ( $proxy_env eq 'ENV' )
-{
-print "set ENV PROXY \n";
-$Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL
-$ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;
+#if ( $proxy_env eq 'ENV' )
+#{
+#print "set ENV PROXY \n";
+#$Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL
+#$ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;
 
-}
-elsif (($proxy_user ne "") && ($proxy_host ne ""))
-{
- $browser->proxy(['http', 'https'], 'http://'.$proxy_user.':'.$proxy_pass.'@'.$proxy_host.':'.$proxy_port); # Using a private proxy
-}
-elsif ($proxy_host ne "")
-   { $browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port);} # Using a public proxy
- else
-   { 
-      $browser->env_proxy;} # No proxy       
-
+#}
+#elsif (($proxy_user ne "") && ($proxy_host ne ""))
+#{
+# $browser->proxy(['http', 'https'], 'http://'.$proxy_user.':'.$proxy_pass.'@'.$proxy_host.':'.$proxy_port); # Using a private proxy
+#}
+#elsif ($proxy_host ne "")
+   #{ $browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port);} # Using a public proxy
+ #else
+   #{ 
+      #$browser->env_proxy;} # No proxy      
+      
+$browser->env_proxy;
 return $browser;     
 }
     

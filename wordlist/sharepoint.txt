@@ -1,7 +1,3 @@
-1033
-3082
-50
-60
 accessdenied.aspx
 accessdeniedpage.aspx
 aclinv.aspx
@@ -270,6 +266,7 @@ keywordbbman.aspx
 labelimage.aspx
 _layouts
 _layouts/1033
+_layouts/1033/IMAGES
 _layouts/15/accessdeniedpage.aspx
 _layouts/15/aclinv.aspx
 _layouts/15/aclver.aspx
