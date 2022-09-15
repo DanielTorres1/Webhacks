@@ -603,7 +603,7 @@ if ($module eq "ZKSoftware")
 	{ 
 		$password =~ s/\n//g; 	
 		my $hash_data = {'username' => $user, 
-				'userpwd' => '123456'
+				'userpwd' => $password
 				};	
 	
 		my $post_data = convert_hash($hash_data);
@@ -613,11 +613,11 @@ if ($module eq "ZKSoftware")
 		my $status = $response->status_line;
 		
 		print "[+] user:$user password:$password status:$status\n";
-		print($decoded_response);
+		#print($decoded_response);
 		if ($status =~ /200/m)
 		{
-			if  ($decoded_response =~ /Department|Departamento|frame|menu/i){	 
-			print "Password encontrado: [ZKSoftware] $url \nUsuario:$user Password:$password\n";
+			if  ($decoded_response =~ /Department|Departamento|frame|menu|self.location.href='\/'/i){	 
+			print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
 			last;
 			}							
 		}	
