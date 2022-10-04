@@ -1078,6 +1078,12 @@ my %options = @_;
 my $log_file = $options{ log_file };
 
 $headers->header("Accept-Encoding" => "gzip, deflate");
+$headers->header("TE" => "deflate,gzip;q=0.3");
+$headers->header("Connection" => "close, TE");
+$headers->header("Cache-Control" => "max-age=0");
+$headers->header("Accept" => "*/*");
+$headers->header("DNT" => "1");
+$headers->header("User-Agent" => "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36");
 
 my $url ;
 if ($rport eq '80' || $rport eq '443')
@@ -1099,7 +1105,7 @@ elsif($status =~ /200/m)
 	$type=$type."|NodeJS";
 } 
 
-$response = $self->dispatch(url => $url, method => 'GET');
+$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 my $last_url = $response->request()->uri();
 
 print "url $url last_url $last_url  \n" if ($debug);
