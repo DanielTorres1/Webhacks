@@ -28,3 +28,5 @@ web.config
 README.txt
 update.php
 install.php
+administrador/jquery/index.html
+administrator/jquery/index.html
