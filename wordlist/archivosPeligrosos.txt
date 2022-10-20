@@ -84,7 +84,6 @@ test
 api/v2
 api/v1
 v2
-package.json
 security.txt
 application.wadl
 api/apidocs

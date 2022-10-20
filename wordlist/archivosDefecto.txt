@@ -6,6 +6,7 @@ changelog
 ChangeLog
 .htaccess
 robots
+package.json
 robots.txt
 CHANGELOG
 CHANGELOGS
