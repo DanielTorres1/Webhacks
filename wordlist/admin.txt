@@ -178,7 +178,6 @@ administratordb/
 administrator.html
 administrator/index.asp
 administrator/index.html
-administrator/index.php
 administratorlogin/
 administrator/login.asp
 administratorlogin.asp
@@ -458,7 +457,6 @@ websvn/
 wizmysqladmin/
 wp-admin/
 wp-login/
-wp-login.php
 xlogin/
 yonetici.asp
 yonetici.html
