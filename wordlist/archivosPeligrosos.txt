@@ -59,6 +59,7 @@ Passwords.txt
 password.txt
 passWord.txt
 Password.txt
+userlist.txt
 xmlrpc.php
 api/datosLog 
 database/
