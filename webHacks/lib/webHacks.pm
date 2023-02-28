@@ -1045,6 +1045,14 @@ sub getRedirect
 		$redirect_url = $1;	
 	}
 
+	if ($redirect_url eq '')
+	{	
+	#parent.location="login.cgi"
+		$decoded_response =~ /parent.location="(.*?)"/;
+		$redirect_url = $1;	
+	}
+	
+
 
 	# si la ruta de la redireccion no esta completa borrarla
 	if (($redirect_url eq 'https:' ) || ($redirect_url eq 'http:'))
