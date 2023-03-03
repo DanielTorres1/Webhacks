@@ -35,6 +35,8 @@ app/database/
 emergency.php
 config.ini
 backup.sql
+backup/
+respaldo/
 passlist.txt
 pass.txt
 Pass.txt
