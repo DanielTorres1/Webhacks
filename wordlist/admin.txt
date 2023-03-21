@@ -345,6 +345,8 @@ newsadmin/
 openvpnadmin/
 owa/
 padmin/
+postgres/
+postgresql/
 pages/admin/admin-login.asp
 pages/admin/admin-login.html
 pages/admin/admin-login.php

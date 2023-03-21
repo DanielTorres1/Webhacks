@@ -1073,366 +1073,370 @@ sub getRedirect
 
 sub getData
 {
-my $self = shift;
-my $headers = $self->headers;
-my $debug = $self->debug;
-my $rhost = $self->rhost;
-my $rport = $self->rport;
-my $proto = $self->proto;
-my $path = $self->path;
+	my $self = shift;
+	my $headers = $self->headers;
+	my $debug = $self->debug;
+	my $rhost = $self->rhost;
+	my $rport = $self->rport;
+	my $proto = $self->proto;
+	my $path = $self->path;
 
-my $type=""; #Aqui se guarda que tipo de app es taiga/express/camara,etc
-my %options = @_;
-my $log_file = $options{ log_file };
+	my $type=""; #Aqui se guarda que tipo de app es taiga/express/camara,etc
+	my %options = @_;
+	my $log_file = $options{ log_file };
 
-$headers->header("Accept-Encoding" => "gzip, deflate");
-$headers->header("TE" => "deflate,gzip;q=0.3");
-$headers->header("Connection" => "close, TE");
-$headers->header("Cache-Control" => "max-age=0");
-$headers->header("Accept" => "*/*");
-$headers->header("DNT" => "1");
-$headers->header("User-Agent" => "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36");
+	$headers->header("Accept-Encoding" => "gzip, deflate");
+	$headers->header("TE" => "deflate,gzip;q=0.3");
+	$headers->header("Connection" => "close, TE");
+	$headers->header("Cache-Control" => "max-age=0");
+	$headers->header("Accept" => "*/*");
+	$headers->header("DNT" => "1");
+	$headers->header("User-Agent" => "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36");
 
-my $url ;
-if ($rport eq '80' || $rport eq '443')
-	{$url = "$proto://".$rhost.$path; }
-else
-	{$url = "$proto://".$rhost.":".$rport.$path; }
-
-
-my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
-my $decoded_response = $response->decoded_content;
-my $status = $response->status_line;
-
-#error message
-if($decoded_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
-	$type=$type."|Debug habilitado";
-}
-elsif($status =~ /200/m)
-{
-	$type=$type."|NodeJS";
-} 
-
-$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
-my $last_url = $response->request()->uri();
-
-print "url $url last_url $last_url  \n" if ($debug);
-$status = $response->status_line;
-
-#Peticion original  https://186.121.202.25/
-my @url_array1 = split("/",$url);
-my $protocolo1 = $url_array1[0];
-
-#Peticion 2 (si fue redireccionada)
-my @url_array2 = split("/",$last_url);
-my $protocolo2 = $url_array2[0];
-
-
-if ($protocolo1 ne $protocolo2)
-	{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
-
-
-my $url_original = URI->new($url);
-my $domain_original = $url_original->host;
-
-my $url_final = URI->new($last_url);
-my $domain_final = $url_final->host;
-my $newdomain;
-print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
-
-if ($domain_original ne $domain_final)
-	{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
-		
-$decoded_response = $response->decoded_content;
-$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
-#print "decoded_response $decoded_response" if ($debug);
-########################
-#my $redirect_url = "";
-REDIRECT:
-#obtener redirect javascrip/html
-my $redirect_url = getRedirect($decoded_response);
-
-# ruta completa http://10.0.0.1/owa
-if($redirect_url =~ /http/m ){	 
-	$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
-	$decoded_response = $response->decoded_content; 	 
- }  
-#ruta parcial /cgi-bin/login.htm
-#si no hay redireccion o la URL de rediccion es incorrecta
-elsif ( $redirect_url ne ''  )
-{	
-	my $final_url;
-	my $firstChar = substr($redirect_url, 0, 1);
-	print "firstChar $firstChar \n" if ($debug);
-	chop($url); #delete / char
-	print "url $url \n" if ($debug);
-	if ($firstChar eq "/")
-		{$final_url = $url.$redirect_url;}
+	my $url ;
+	if ($rport eq '80' || $rport eq '443')
+		{$url = "$proto://".$rhost.$path; }
 	else
-		{$final_url = $url."/".$redirect_url;}
-
-	
-	print "final_url $final_url \n" if ($debug);
-	$response = $self->dispatch(url => $final_url, method => 'GET', headers => $headers);
-	$decoded_response = $response->decoded_content; 	
-	
-	 if($decoded_response =~ /meta http-equiv="refresh"/m){	 
-		 $url = $final_url;
-		 $url =~ s/index.php|index.asp//g;  
-		 goto REDIRECT;
-	 }	
-	 
-}
-############################
-
-	
-
-my $response_headers = $response->headers_as_string;
-my $final_url = $response->request->uri;
-print "final_url $final_url \n" if ($debug);
-$self->final_url($final_url);
-
-$decoded_response = $response_headers."\n".$decoded_response;
-$decoded_response =~ s/'/"/g; 
-
-open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
-print SALIDA $decoded_response;
-close (SALIDA);
+		{$url = "$proto://".$rhost.":".$rport.$path; }
 
 
-my ($poweredBy) = ($decoded_response =~ /X-Powered-By:(.*?)\n/i);
-if ($poweredBy eq '')
-	{	
-	if($decoded_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
+	my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
+	my $decoded_response = $response->decoded_content;
+	my $status = $response->status_line;
+
+	#error message
+	if($decoded_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
+		$type=$type."|Debug habilitado";
 	}
+	elsif($status =~ /200/m)
+	{
+		$type=$type."|NodeJS";
+	} 
 
-print "poweredBy $poweredBy \n" if ($debug);
+	$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
+	my $last_url = $response->request()->uri();
 
-# ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
+	print "url $url last_url $last_url  \n" if ($debug);
+	$status = $response->status_line;
 
-#my $title;#) =~ /<title>(.+)<\/title>/s;
+	#Peticion original  https://186.121.202.25/
+	my @url_array1 = split("/",$url);
+	my $protocolo1 = $url_array1[0];
 
-$decoded_response =~ /<title(.{1,90})<\/title>/s ;
-my $title =$1; 
-$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
-if ($title eq '')
-	{($title) = ($decoded_response =~ /<title(.*?)\n/i);}
-
-if ($title eq '')
-	{($title) = ($decoded_response =~ /Title:(.*?)\n/i);}
-
-
-$title = only_ascii($title);
-
-
-#<meta name="geo.placename" content="Quillacollo" />
-my ($geo) = ($decoded_response =~ /name="geo.placename" content="(.*?)"/i);
-print "geo $geo \n" if ($debug);
-
-#<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
- #meta name="Generator" content="Pandora 5.0" />
-my ($Generator) = ($decoded_response =~ /name="Generator" content="(.*?)"/i);
-print "Generator $Generator \n" if ($debug);
-
-#<meta name="Version" content="10_1_7-52331">
-my ($Version) = ($decoded_response =~ /name="Version" content="(.*?)"/i);
-print "Version $Version \n" if ($debug);
-$Generator = $Generator." ".$Version;
-
-my ($description) = ($decoded_response =~ /name="description" content="(.*?)"/i);
-if ($description eq '')
-	{($description) = ($decoded_response =~ /X-Meta-Description:(.*?)\n/i);}
-$description = only_ascii($description);	
-print "description $description \n" if ($debug);
+	#Peticion 2 (si fue redireccionada)
+	my @url_array2 = split("/",$last_url);
+	my $protocolo2 = $url_array2[0];
 
 
-#<meta name="author" content="Instituto Nacional de Estadística - Centro de Desarrollo de Redatam">
-my ($author) = ($decoded_response =~ /name="author" content="(.*?)"/i);
-if ($author eq '')
-	{($author) = ($decoded_response =~ /X-Meta-Author:(.*?)\n/i);}
-$author = only_ascii($author);
-print "author $author \n" if ($debug);
+	if ($protocolo1 ne $protocolo2)
+		{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
 
 
-my ($langVersion) = ($decoded_response =~ /X-AspNet-Version:(.*?)\n/i);
-print "langVersion $langVersion \n" if ($debug);
+	my $url_original = URI->new($url);
+	my $domain_original = $url_original->host;
 
-my ($proxy) = ($response_headers =~ /Via:(.*?)\n/i);
-print "proxy $proxy \n" if ($debug);
+	my $url_final = URI->new($last_url);
+	my $domain_final = $url_final->host;
+	my $newdomain;
+	print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
 
-my ($server) = ($response_headers =~ /Server:(.*?)\n/i);
-print "server $server \n" if ($debug);
+	if ($domain_original ne $domain_final)
+		{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
+			
+	$decoded_response = $response->decoded_content;
+	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
+	#print "decoded_response $decoded_response" if ($debug);
+	########################
+	#my $redirect_url = "";
+	REDIRECT:
+	#obtener redirect javascrip/html
+	my $redirect_url = getRedirect($decoded_response);
 
-#WWW-Authenticate: Basic realm="Broadband Router"
-my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);
-print "Authenticate $Authenticate \n" if ($debug);
+	# ruta completa http://10.0.0.1/owa
+	if($redirect_url =~ /http/m ){	 
+		$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
+		$decoded_response = $response->decoded_content; 	 
+	}  
+	#ruta parcial /cgi-bin/login.htm
+	#si no hay redireccion o la URL de rediccion es incorrecta
+	elsif ( $redirect_url ne ''  )
+	{	
+		my $final_url;
+		my $firstChar = substr($redirect_url, 0, 1);
+		print "firstChar $firstChar \n" if ($debug);
+		chop($url); #delete / char
+		print "url $url \n" if ($debug);
+		if ($firstChar eq "/")
+			{$final_url = $url.$redirect_url;}
+		else
+			{$final_url = $url."/".$redirect_url;}
 
-#jquery.js?ver=1.12.4
-my $jquery1;
-my $jquery2;
-($jquery1) = ($decoded_response =~ /jquery.js\?ver=(.*?)"/i);
+		
+		print "final_url $final_url \n" if ($debug);
+		$response = $self->dispatch(url => $final_url, method => 'GET', headers => $headers);
+		$decoded_response = $response->decoded_content; 	
+		
+		if($decoded_response =~ /meta http-equiv="refresh"/m){	 
+			$url = $final_url;
+			$url =~ s/index.php|index.asp//g;  
+			goto REDIRECT;
+		}	
+		
+	}
+	############################
 
-									
-if ($jquery1 eq '')								 #jquery/1.9.1/
-	{($jquery1,$jquery2) = ($decoded_response =~ /jquery\/(\d+).(\d+)./i);}
-
-if ($jquery1 eq '')								  #jquery-1.9.1.min	
-	{($jquery1,$jquery2) = ($decoded_response =~ /jquery-(\d+).(\d+)./i);}
-
-
-print "jquery $jquery1 \n" if ($debug);	
-
-if ($jquery1 ne '')
-	{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
-
-if($decoded_response =~ /GASOLINERA/m)
-	{$type=$type."|"."GASOLINERA";} 		
 	
-if($decoded_response =~ /Cisco Systems/i)
-	{$type=$type."|"."cisco";} 		
+	my $response_headers = $response->headers_as_string;
+	my $final_url = $response->request->uri;
+	print "final_url $final_url \n" if ($debug);
+	$self->final_url($final_url);
 
-if($decoded_response =~ /X-OWA-Version/i)
-	{$type=$type."|"."owa";} 	
+	$decoded_response = $response_headers."\n".$decoded_response;
+	$decoded_response =~ s/'/"/g; 
 
-if($decoded_response =~ /FortiGate/i)
-	{$type=$type."|"."FortiGate";} 	
+	open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
+	print SALIDA $decoded_response;
+	close (SALIDA);
 
-if($decoded_response =~ /www.drupal.org/i)
-	{$type=$type."|"."drupal";} 	
-	
-if($decoded_response =~ /wp-content|wp-admin|wp-caption/i)
-	{$type=$type."|"."wordpress";} 		
+
+	my ($poweredBy) = ($decoded_response =~ /X-Powered-By:(.*?)\n/i);
+	if ($poweredBy eq '')
+		{	
+		if($decoded_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
+		}
+
+	print "poweredBy $poweredBy \n" if ($debug);
+
+	# ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
+
+	#my $title;#) =~ /<title>(.+)<\/title>/s;
+
+	$decoded_response =~ /<title(.{1,90})<\/title>/s ;
+	my $title =$1; 
+	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
+	if ($title eq '')
+		{($title) = ($decoded_response =~ /<title(.*?)\n/i);}
+
+	if ($title eq '')
+		{($title) = ($decoded_response =~ /Title:(.*?)\n/i);}
+
+
+	$title = only_ascii($title);
+
+
+	#<meta name="geo.placename" content="Quillacollo" />
+	my ($geo) = ($decoded_response =~ /name="geo.placename" content="(.*?)"/i);
+	print "geo $geo \n" if ($debug);
+
+	#<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
+	#meta name="Generator" content="Pandora 5.0" />
+	my ($Generator) = ($decoded_response =~ /name="Generator" content="(.*?)"/i);
+	print "Generator $Generator \n" if ($debug);
+
+	#<meta name="Version" content="10_1_7-52331">
+	my ($Version) = ($decoded_response =~ /name="Version" content="(.*?)"/i);
+	print "Version $Version \n" if ($debug);
+	$Generator = $Generator." ".$Version;
+
+	my ($description) = ($decoded_response =~ /name="description" content="(.*?)"/i);
+	if ($description eq '')
+		{($description) = ($decoded_response =~ /X-Meta-Description:(.*?)\n/i);}
+	$description = only_ascii($description);	
+	print "description $description \n" if ($debug);
+
+
+	#<meta name="author" content="Instituto Nacional de Estadística - Centro de Desarrollo de Redatam">
+	my ($author) = ($decoded_response =~ /name="author" content="(.*?)"/i);
+	if ($author eq '')
+		{($author) = ($decoded_response =~ /X-Meta-Author:(.*?)\n/i);}
+	$author = only_ascii($author);
+	print "author $author \n" if ($debug);
+
+
+	my ($langVersion) = ($decoded_response =~ /X-AspNet-Version:(.*?)\n/i);
+	print "langVersion $langVersion \n" if ($debug);
+
+	my ($proxy) = ($response_headers =~ /Via:(.*?)\n/i);
+	print "proxy $proxy \n" if ($debug);
+
+	my ($server) = ($response_headers =~ /Server:(.*?)\n/i);
+	print "server $server \n" if ($debug);
+
+	#WWW-Authenticate: Basic realm="Broadband Router"
+	my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);
+	print "Authenticate $Authenticate \n" if ($debug);
+
+	#jquery.js?ver=1.12.4
+	my $jquery1;
+	my $jquery2;
+	($jquery1) = ($decoded_response =~ /jquery.js\?ver=(.*?)"/i);
+
+										
+	if ($jquery1 eq '')								 #jquery/1.9.1/
+		{($jquery1,$jquery2) = ($decoded_response =~ /jquery\/(\d+).(\d+)./i);}
+
+	if ($jquery1 eq '')								  #jquery-1.9.1.min	
+		{($jquery1,$jquery2) = ($decoded_response =~ /jquery-(\d+).(\d+)./i);}
+
+
+	print "jquery $jquery1 \n" if ($debug);	
+
+	if ($jquery1 ne '')
+		{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
+
+	if($decoded_response =~ /GASOLINERA/m)
+		{$type=$type."|"."GASOLINERA";} 		
+		
+	if($decoded_response =~ /Cisco Systems/i)
+		{$type=$type."|"."cisco";} 		
+
+	if($decoded_response =~ /X-OWA-Version/i)
+		{$type=$type."|"."owa";} 	
+
+	if($decoded_response =~ /FortiGate/i)
+		{$type=$type."|"."FortiGate";} 	
+
+	if($decoded_response =~ /www.drupal.org/i)
+		{$type=$type."|"."drupal";} 	
+		
+	if($decoded_response =~ /wp-content|wp-admin|wp-caption/i)
+		{$type=$type."|"."wordpress";} 		
+			
+
+	if($decoded_response =~ /csrfmiddlewaretoken/i)
+		{$type=$type."|"."Django";} 	
+
+	if($decoded_response =~ /IP Phone/i)
+		{$type=$type."|"." IP Phone ";} 			
+
+	if($decoded_response =~ /X-Amz-/i)
+		{$type=$type."|"."amazon";} 	
+
+	if($decoded_response =~ /X-Planisys-/i)
+		{$type=$type."|"."Planisys";} 		
+
+	if($decoded_response =~ /phpmyadmin.css/i)
+		{$type=$type."|"."phpmyadmin";} 		
+		
+	if($decoded_response =~ /Set-Cookie: webvpn/i)
+		{$type=$type."|"."ciscoASA";} 	
+		
+	if($decoded_response =~ /Huawei/i)
+		{$type=$type."|"."Huawei";} 	
+
+	if($decoded_response =~ /connect.sid|X-Powered-By: Express/i)
+		{$type=$type."|"."Express APP";}	
+
+	if($decoded_response =~ /X-ORACLE-DMS/i)
+		{$type=$type."|"."Oracle Dynamic Monitoring";}	
+
+	if($decoded_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
+		{$type=$type."|"."Postgres web";}	
+
+	if($decoded_response =~ /src="app\//i)
+		{$type=$type."|"."AngularJS";}			
+
+	if($decoded_response =~ /roundcube_sessid/i)
+		{$type=$type."|"."Roundcube";}	 
+
+	if($decoded_response =~ /playback_bottom_bar/i)
+		{$type=$type."|"."Dahua Camera";}	 	
+
+	if($decoded_response =~ /\/webplugin.exe/i)
+		{$type=$type."|"."Dahua DVR";}	 		
+
+	if($decoded_response =~ /ftnt-fortinet-grid icon-xl/i)
+		{$type=$type."|"."Fortinet";}	 			
 		
 
-if($decoded_response =~ /csrfmiddlewaretoken/i)
-	{$type=$type."|"."Django";} 	
+	if($decoded_response =~ /theme-taiga.css/i)
+		{$type=$type."|"."Taiga";}	 
+			
+	if($decoded_response =~ /X-Powered-By-Plesk/i)
+		{$type=$type."|"."PleskWin";}	 
 
-if($decoded_response =~ /IP Phone/i)
-	{$type=$type."|"." IP Phone ";} 			
+	if($decoded_response =~ /Web Services/i)	
+		{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
 
-if($decoded_response =~ /X-Amz-/i)
-	{$type=$type."|"."amazon";} 	
-
-if($decoded_response =~ /X-Planisys-/i)
-	{$type=$type."|"."Planisys";} 		
-
-if($decoded_response =~ /phpmyadmin.css/i)
-	{$type=$type."|"."phpmyadmin";} 		
-	
-if($decoded_response =~ /Set-Cookie: webvpn/i)
-	{$type=$type."|"."ciscoASA";} 	
-	
-if($decoded_response =~ /Huawei/i)
-	{$type=$type."|"."Huawei";} 	
-
-if($decoded_response =~ /connect.sid|X-Powered-By: Express/i)
-	{$type=$type."|"."Express APP";}	
-
-if($decoded_response =~ /X-ORACLE-DMS/i)
-	{$type=$type."|"."Oracle Dynamic Monitoring";}	
-
-if($decoded_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
-	{$type=$type."|"."Postgres web";}	
-
-if($decoded_response =~ /src="app\//i)
-	{$type=$type."|"."AngularJS";}			
-
-if($decoded_response =~ /roundcube_sessid/i)
-	{$type=$type."|"."Roundcube";}	 
-
-if($decoded_response =~ /playback_bottom_bar/i)
-	{$type=$type."|"."Dahua Camera";}	 	
-
-if($decoded_response =~ /\/webplugin.exe/i)
-	{$type=$type."|"."Dahua DVR";}	 		
-
-if($decoded_response =~ /ftnt-fortinet-grid icon-xl/i)
-	{$type=$type."|"."Fortinet";}	 			
-	
-
-if($decoded_response =~ /theme-taiga.css/i)
-	{$type=$type."|"."Taiga";}	 
+	if($decoded_response =~ /Acceso no autorizado/i)
+		{$title="Acceso no autorizado" if ($title eq "");} 	
 		
-if($decoded_response =~ /X-Powered-By-Plesk/i)
-	{$type=$type."|"."PleskWin";}	 
+	if($type eq '' && $decoded_response =~ /login/m)
+		{$type=$type."|"."login";}	
+		
+	if($decoded_response =~ /login__block__header/i)	
+		{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
+				
 
-if($decoded_response =~ /Web Services/i)	
-	{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
 
-if($decoded_response =~ /Acceso no autorizado/i)
-	{$title="Acceso no autorizado" if ($title eq "");} 	
+	if($decoded_response =~ /Hikvision Digital/i)
+		{$title="Hikvision Digital";} 			
+		
+	if($decoded_response =~ /FreeNAS/i)
+		{$title="FreeNAS";} 			
+
+	if($decoded_response =~ /ciscouser/i)
+		{$title="Cisco switch";} 
+
+	if($decoded_response =~ /pfsense-logo/i)
+		{$title="Pfsense";} 
+
+	if($decoded_response =~ /servletBridgeIframe/i)
+		{$title="SAP Business Objects";} 	
+
+		
+	if($decoded_response =~ /content="Babelstar"/i)
+		{$title="Body Cam";} 	
+		
+
+	if( ($decoded_response =~ /login to iDRAC/i) && !($decoded_response =~ /Cisco/i)  )
+		{$title="Dell iDRAC";} 
+
+	if($decoded_response =~ /portal.peplink.com/i)
+		{$title="Web Admin PepLink";} 	
+
+	# <h1>RouterOS v6.47.4</h1>
+	if($decoded_response =~ /RouterOS router/i)
+		{	$decoded_response =~ /\<h1\>(.*?)\<\/h1\>/;	
+			$server=$1;} 	
 	
-if($type eq '' && $decoded_response =~ /login/m)
-	{$type=$type."|"."login";}	
-	
-if($decoded_response =~ /login__block__header/i)	
-	{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
+
+
+	my %data = (            
+				"title" => $title,
+				"server" => $server,
+				"poweredBy" => $poweredBy,
+				"Authenticate" => $Authenticate,
+				"geo" => $geo,
+				"Generator" => $Generator,
+				"description" => $description,
+				"langVersion" => $langVersion,
+				"redirect_url" => $redirect_url,
+				"author" => $author,
+				"proxy" => $proxy,
+				"type" => $type,            
+				"status" => $status,
+				"newdomain" => $newdomain
+			);
 			
 
 
-if($decoded_response =~ /Hikvision Digital/i)
-	{$title="Hikvision Digital";} 			
-	
-if($decoded_response =~ /FreeNAS/i)
-	{$title="FreeNAS";} 			
+	my $scrubber = HTML::Scrubber->new( allow => [ qw[ form input] ] ); 	
+		$scrubber->rules(        
+			input => {			 
+				name => 1,                       
+			},  
+			form => {
+				action => 1 ,                        
+			},    
+		);
 
-if($decoded_response =~ /ciscouser/i)
-	{$title="Cisco switch";} 
-
-if($decoded_response =~ /pfsense-logo/i)
-	{$title="Pfsense";} 
-
-if($decoded_response =~ /servletBridgeIframe/i)
-	{$title="SAP Business Objects";} 	
-
-	
-if($decoded_response =~ /content="Babelstar"/i)
-	{$title="Body Cam";} 	
-	
-
-if( ($decoded_response =~ /login to iDRAC/i) && !($decoded_response =~ /Cisco/i)  )
-	{$title="Dell iDRAC";} 
-
-if($decoded_response =~ /portal.peplink.com/i)
-	{$title="Web Admin PepLink";} 	
-	
-
-
- my %data = (            
-            "title" => $title,
-            "poweredBy" => $poweredBy,
-            "Authenticate" => $Authenticate,
-            "geo" => $geo,
-            "Generator" => $Generator,
-            "description" => $description,
-            "langVersion" => $langVersion,
-            "redirect_url" => $redirect_url,
-            "author" => $author,
-            "proxy" => $proxy,
-            "type" => $type,
-            "server" => $server,
-            "status" => $status,
-			"newdomain" => $newdomain
-        );
-        
-
-
-my $scrubber = HTML::Scrubber->new( allow => [ qw[ form input] ] ); 	
-	$scrubber->rules(        
-         input => {			 
-            name => 1,                       
-        },  
-        form => {
-			 action => 1 ,                        
-        },    
-    );
-
-my $final_content = $scrubber->scrub($decoded_response);
-#print $final_content;
-        
-$self->html($final_content);
-return %data;
-		
+	my $final_content = $scrubber->scrub($decoded_response);
+	#print $final_content;
+			
+	$self->html($final_content);
+	return %data;
+			
 }
 
 

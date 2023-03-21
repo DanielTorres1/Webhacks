@@ -26,6 +26,7 @@ CFIDE/scripts/ajax/FCKeditor/editor/filemanager/connectors/cfm/upload.cfm
 .git/index
 .subversion
 sql/
+.github/
 db/
 include/config.inc
 passwd.bak
