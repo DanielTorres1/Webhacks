@@ -1288,13 +1288,16 @@ sub getData
 		{$type=$type."|"."GASOLINERA";} 		
 		
 	if($decoded_response =~ /Cisco Systems/i)
-		{$type=$type."|"."cisco";} 		
+		{$type=$type."|"."cisco";} 	
+
+	if($decoded_response =~ /Cisco Unified Communications/i)
+		{$server="Cisco Unified Communications";} 	
 
 	if($decoded_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	
 
 	if($decoded_response =~ /FortiGate/i)
-		{$type=$type."|"."FortiGate";} 	
+		{$type=$type."|"."FortiGate";$server='FortiGate';} 	
 
 	if($decoded_response =~ /www.drupal.org/i)
 		{$type=$type."|"."drupal";} 	
@@ -1346,7 +1349,7 @@ sub getData
 		{$type=$type."|"."Dahua DVR";}	 		
 
 	if($decoded_response =~ /ftnt-fortinet-grid icon-xl/i)
-		{$type=$type."|"."Fortinet";}	 			
+		{$type=$type."|"."Fortinet";$server='Fortinet';}	 			
 		
 
 	if($decoded_response =~ /theme-taiga.css/i)
