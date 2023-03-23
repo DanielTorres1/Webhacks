@@ -44,10 +44,11 @@ sudo chmod a+x /usr/bin/get_ssl_cert.py
 
 echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET" 
 
-sudo apt-get install -y  python3-m2crypto libcrypt-ssleay-perl cmdtest
+sudo apt-get install -y  python3-m2crypto libcrypt-ssleay-perl
 sudo pip3 install M2Crypto pyopenssl scapy
 
-docker pull wappalyzer/cli
+echo -e "$OKGREEN [+] Instalando wappalyzer $RESET" 
+npm i -g wappalyzer
 
 
 cpan E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
