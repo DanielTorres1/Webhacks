@@ -1363,10 +1363,7 @@ sub getData
 
 	if($decoded_response =~ /Acceso no autorizado/i)
 		{$title="Acceso no autorizado" if ($title eq "");} 	
-		
-	if($type eq '' && $decoded_response =~ /login/m)
-		{$type=$type."|"."login";}	
-		
+				
 	if($decoded_response =~ /login__block__header/i)	
 		{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
 				
@@ -1403,6 +1400,12 @@ sub getData
 		{	$decoded_response =~ /\<h1\>(.*?)\<\/h1\>/;	
 			$server=$1;} 	
 	
+	if($decoded_response =~ /Juniper Web Device Manager/i)
+		{$server='Juniper Web Device Manager';}
+
+	if($decoded_response =~ /by Cisco Systems, Inc/i)
+		{$server='Cisco WebUI';}
+
 
 
 	my %data = (            

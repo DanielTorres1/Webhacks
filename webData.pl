@@ -7,7 +7,8 @@ use utf8;
 use Text::Unidecode;
 binmode STDOUT, ":encoding(UTF-8)";
 
-#$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+$ENV{OPENSSL_CONF} = '/usr/share/lanscanner/sslv1.conf';
+$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
 
 my %opts;
 getopts('t:p:s:e:i:d:l:r:h', \%opts);
@@ -106,9 +107,6 @@ $wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty 
 # 	print "server $server \n" if ($server ne '' && $server ne ' ');
 my $domain; 
 
-if ($newdomain ne '')
-	{$domain = $newdomain;}
-
 
 if($status =~ /Name or service not known/m){	 
 	$status =~ /Can't connect to (.*?):/;
@@ -123,17 +121,18 @@ if($status =~ /Name or service not known/m){
 	
  } 
 
-
-if ($domain ne '')
-	{print "Dominio identificado~$domain";}
+if ($newdomain ne '')		
+	{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$author~$proxy~$type|Dominio identificado|$newdomain|| $wappalyzer";}
 else
-	{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$max_redirect_url~$author~$proxy~$type || $wappalyzer";}
+{
+	if ($domain ne '')
+		{print "Dominio identificado||$domain";}
+	else
+		{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$max_redirect_url~$author~$proxy~$type || $wappalyzer";}
+}
+
 
  
-
-
- $newdomain 
-
 #if ($sqli)
 #{
 	#my $error_response = $webHacks->sqli_test("'");
