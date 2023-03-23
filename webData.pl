@@ -96,7 +96,9 @@ my $status = %data{'status'};
 my $newdomain = %data{'newdomain'};
 my $wappalyzer;
 #print " newdomain  $newdomain \n" ;
-$wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty | wappalyzer-parser.py`; 
+#$wappalyzer=`docker run -it wappalyzer/cli $proto://$target:$port$path --pretty 2>/dev/null| wappalyzer-parser.py`; 
+$wappalyzer=`wappalyzer $proto://$target:$port$path --pretty 2>/dev/null| wappalyzer-parser.py`; 
+#system("docker run -it wappalyzer/cli $proto://$target:$port$path --pretty > wappalyzer.txt 2>/dev/null");
 
 # 	print "Title: $title \n" if ($title ne '' && $title ne ' ');
 # 	print "poweredBy $poweredBy \n" if ($poweredBy ne '' && $poweredBy ne ' ');
