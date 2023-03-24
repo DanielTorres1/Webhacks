@@ -123,13 +123,13 @@ if($status =~ /Name or service not known/m){
  } 
 
 if ($newdomain ne '')		
-	{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$author~$proxy~$type|Dominio identificado|$newdomain|| $wappalyzer";}
+	{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$author~$proxy~$type^$wappalyzer^Dominio identificado^$newdomain";}
 else
 {
 	if ($domain ne '')
 		{print "Dominio identificado||$domain";}
 	else
-		{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$max_redirect_url~$author~$proxy~$type || $wappalyzer";}
+		{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$max_redirect_url~$author~$proxy~$type^$wappalyzer";}
 }
 
 
