@@ -18,6 +18,7 @@ use Parallel::ForkManager;
 use Term::ANSIColor;
 use utf8;
 use Text::Unidecode;
+
 binmode STDOUT, ":encoding(UTF-8)";
 
 
@@ -1292,6 +1293,17 @@ sub getData
 
 	if($decoded_response =~ /Cisco Unified Communications/i)
 		{$server="Cisco Unified Communications";} 	
+	
+	if($decoded_response =~ /CSCOE/i)
+		{$server="ciscoASA";} 
+
+	if($decoded_response =~ /OLT Web Management Interface/i)
+		{$server="OLT Web Management Interface";} 
+
+	if($decoded_response =~ /Janus WebRTC Server/i)
+		{$server="Janus WebRTC Server";} 
+		
+
 
 	if($decoded_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	

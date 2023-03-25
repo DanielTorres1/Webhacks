@@ -11,7 +11,7 @@ $ENV{OPENSSL_CONF} = '/usr/share/lanscanner/sslv1.conf';
 $ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
 
 my %opts;
-getopts('t:p:s:e:i:d:l:r:h', \%opts);
+getopts('t:p:s:e:i:d:l:r:h:v', \%opts);
 
 
 my $target = $opts{'t'} if $opts{'t'};
@@ -22,9 +22,10 @@ my $max_redirect = $opts{'r'} if $opts{'r'};
 my $sqli = $opts{'i'} if $opts{'i'};
 my $extract = $opts{'e'} if $opts{'e'};
 my $log_file = $opts{'l'} if $opts{'l'};
-my $debug = 0;
+my $debug = $opts{'v'} if $opts{'v'};
 
 $max_redirect = 0 if ($max_redirect eq '');
+$debug = 0 if ($max_redirect eq '');
 
 sub usage { 
   

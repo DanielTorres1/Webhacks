@@ -18,6 +18,7 @@ use Parallel::ForkManager;
 use Term::ANSIColor;
 use utf8;
 use Text::Unidecode;
+
 binmode STDOUT, ":encoding(UTF-8)";
 
 
@@ -1293,6 +1294,10 @@ sub getData
 	if($decoded_response =~ /Cisco Unified Communications/i)
 		{$server="Cisco Unified Communications";} 	
 
+	
+	if($decoded_response =~ /CSCOE/i)
+		{$server="ciscoASA";} 
+
 	if($decoded_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	
 
@@ -1363,10 +1368,7 @@ sub getData
 
 	if($decoded_response =~ /Acceso no autorizado/i)
 		{$title="Acceso no autorizado" if ($title eq "");} 	
-		
-	if($type eq '' && $decoded_response =~ /login/m)
-		{$type=$type."|"."login";}	
-		
+				
 	if($decoded_response =~ /login__block__header/i)	
 		{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
 				
