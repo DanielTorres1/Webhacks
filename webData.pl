@@ -25,7 +25,7 @@ my $log_file = $opts{'l'} if $opts{'l'};
 my $debug = $opts{'v'} if $opts{'v'};
 
 $max_redirect = 0 if ($max_redirect eq '');
-$debug = 0 if ($max_redirect eq '');
+$debug = 0 if ($debug eq '');
 
 sub usage { 
   
