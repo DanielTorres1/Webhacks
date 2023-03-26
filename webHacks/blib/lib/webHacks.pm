@@ -1276,6 +1276,7 @@ sub getData
 	$decoded_response = $response_headers."\n".$decoded_response;
 	$decoded_response =~ s/'/"/g; 
 
+	$decoded_response =~ s/[^\x00-\x7f]//g;
 	open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
 	print SALIDA $decoded_response;
 	close (SALIDA);
