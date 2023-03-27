@@ -1254,7 +1254,7 @@ sub getData
 		{$url = "$proto://".$rhost.":".$rport.$path; }
 
 
-	$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
+	my $response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 	my $last_url = $response->request()->uri();
 
 	print "url $url last_url $last_url  \n" if ($debug);
