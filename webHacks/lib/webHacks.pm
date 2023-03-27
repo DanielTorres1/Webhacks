@@ -1284,7 +1284,7 @@ sub getData
 	if ($domain_original ne $domain_final)
 		{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
 			
-	$decoded_response = $response->decoded_content;
+	my $decoded_response = $response->decoded_content;
 	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 	#print "decoded_response $decoded_response" if ($debug);
 	########################
