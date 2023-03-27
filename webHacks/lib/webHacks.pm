@@ -1258,7 +1258,7 @@ sub getData
 	my $last_url = $response->request()->uri();
 
 	print "url $url last_url $last_url  \n" if ($debug);
-	$status = $response->status_line;
+	my $status = $response->status_line;
 
 	#Peticion original  https://186.121.202.25/
 	my @url_array1 = split("/",$url);
