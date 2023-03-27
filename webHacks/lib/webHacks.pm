@@ -1338,8 +1338,8 @@ sub getData
 	$decoded_response =~ s/\/index.php//g;
 	$decoded_response =~ s/https/http/g;
 	$decoded_response =~ s/www.//g;
-	$decoded_response =~ s/admin@example.com//g;
-	$decoded_response =~ s/postmaster@example.com//g;
+	$decoded_response =~ s/admin\@example.com//g;
+	$decoded_response =~ s/postmaster\@example.com//g;
 
 	# my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
 	# my $decoded_response = $response->decoded_content;
