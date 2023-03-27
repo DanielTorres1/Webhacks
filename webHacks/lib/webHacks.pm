@@ -650,6 +650,11 @@ else
 				$decoded_response =~ s/[^\x00-\x7f]//g;
 				$decoded_response =~ s/\\x2e/./g; 
 				$decoded_response =~ s/\\x20/ /g; 
+				$decoded_response =~ s/\\x5f/_/g; 
+				$decoded_response =~ s/\\x2d/-/g; 
+				$decoded_response =~ s/\\x22/"/g; 
+
+				
 
 				# print("imprmit");
 				# open (SALIDA,">iot.html") || die "ERROR: No puedo abrir el fichero google.html\n";
