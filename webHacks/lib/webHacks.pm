@@ -1254,19 +1254,6 @@ sub getData
 		{$url = "$proto://".$rhost.":".$rport.$path; }
 
 
-	my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
-	my $decoded_response = $response->decoded_content;
-	my $status = $response->status_line;
-
-	#error message
-	if($decoded_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
-		$type=$type."|Debug habilitado";
-	}
-	elsif($status =~ /200/m)
-	{
-		$type=$type."|NodeJS";
-	} 
-
 	$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
 	my $last_url = $response->request()->uri();
 
@@ -1345,10 +1332,25 @@ sub getData
 	print "final_url $final_url \n" if ($debug);
 	$self->final_url($final_url);
 
-	$decoded_response = $response_headers."\n".$decoded_response;
-	$decoded_response =~ s/'/"/g; 
-
+	#$decoded_response = $response_headers."\n".$decoded_response;
+	$decoded_response =~ s/'/"/g;
 	$decoded_response =~ s/[^\x00-\x7f]//g;
+	$decoded_response =~ s/\/index.php//g;
+	$decoded_response =~ s/https/http/g;
+	$decoded_response =~ s/www.//g;
+	$decoded_response =~ s/admin@example.com//g;
+	$decoded_response =~ s/postmaster@example.com//g;
+
+	# my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
+	# my $decoded_response = $response->decoded_content;
+	# my $status = $response->status_line;
+
+	# if($status =~ /200/m)
+	# {
+	# 	$type=$type."|Always200OK";
+	# } 
+		
+
 	open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
 	print SALIDA $decoded_response;
 	close (SALIDA);
@@ -1457,7 +1459,9 @@ sub getData
 	if($decoded_response =~ /Janus WebRTC Server/i)
 		{$server="Janus WebRTC Server";} 
 		
-
+	if($decoded_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
+		$type=$type."|Debug habilitado";
+	}
 
 	if($decoded_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	

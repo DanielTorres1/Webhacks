@@ -95,9 +95,9 @@ my $type = %data{'type'};
 my $server = %data{'server'};
 my $status = %data{'status'};
 my $newdomain = %data{'newdomain'};
-my $wappalyzer;
+my $wappalyzer = '';
 #print " newdomain  $newdomain \n" ;
-$wappalyzer=`wappalyzer $proto://$target:$port$path 2>/dev/null| wappalyzer-parser.py`; 
+#$wappalyzer=`wappalyzer $proto://$target:$port$path 2>/dev/null| wappalyzer-parser.py`; 
 
 
 # 	print "Title: $title \n" if ($title ne '' && $title ne ' ');
