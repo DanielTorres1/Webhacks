@@ -27,25 +27,25 @@ print_ascii_art
 
 echo -e "$OKBLUE [+] Instalando WEB hacks $RESET" 
 
-sudo cp hackWeb.pl /usr/bin/
-sudo cp webData.pl /usr/bin/
-sudo cp passWeb.pl /usr/bin/
-sudo cp web-buster.pl /usr/bin/
-sudo cp get_ssl_cert.py /usr/bin/
+cp hackWeb.pl /usr/bin/
+cp webData.pl /usr/bin/
+cp passWeb.pl /usr/bin/
+cp web-buster.pl /usr/bin/
+cp get_ssl_cert.py /usr/bin/
 
 mkdir /usr/share/webhacks 2>/dev/null
-sudo cp -R wordlist /usr/share/webhacks
+cp -R wordlist /usr/share/webhacks
 
-sudo chmod a+x /usr/bin/hackWeb.pl
-sudo chmod a+x /usr/bin/passWeb.pl
-sudo chmod a+x /usr/bin/webData.pl
-sudo chmod a+x /usr/bin/web-buster.pl
-sudo chmod a+x /usr/bin/get_ssl_cert.py
+chmod a+x /usr/bin/hackWeb.pl
+chmod a+x /usr/bin/passWeb.pl
+chmod a+x /usr/bin/webData.pl
+chmod a+x /usr/bin/web-buster.pl
+chmod a+x /usr/bin/get_ssl_cert.py
 
 echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET" 
 
-sudo apt-get install -y  python3-m2crypto libcrypt-ssleay-perl
-sudo pip3 install M2Crypto pyopenssl scapy
+apt-get install -y  python3-m2crypto libcrypt-ssleay-perl
+pip3 install M2Crypto pyopenssl scapy --break-system-packages
 
 echo -e "$OKGREEN [+] Instalando wappalyzer $RESET" 
 npm i -g wappalyzer
@@ -56,6 +56,6 @@ cpan X/XA/XAOC/ExtUtils-Depends-0.405.tar.gz
 cpan O/OA/OALDERS/LWP-Protocol-https-6.10.tar.gz
 #cpan N/NA/NANIS/Crypt-SSLeay-0.72.tar.gz
 cd webHacks/ 
-sudo cpan .
+cpan .
 
 echo -e "$OKRED [+] INSTALACION COMPLETA - (Abre otra consola para que el sistema reconozca los nuevos comandos ) $RESET" 
