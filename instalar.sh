@@ -53,8 +53,8 @@ npm i -g wappalyzer
 
 cpan E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
 cpan X/XA/XAOC/ExtUtils-Depends-0.405.tar.gz
-cpan O/OA/OALDERS/LWP-Protocol-https-6.07.tar.gz
-
+cpan O/OA/OALDERS/LWP-Protocol-https-6.10.tar.gz
+#cpan N/NA/NANIS/Crypt-SSLeay-0.72.tar.gz
 cd webHacks/ 
 sudo cpan .
 

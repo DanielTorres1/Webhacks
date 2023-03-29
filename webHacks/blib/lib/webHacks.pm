@@ -13,12 +13,12 @@ use HTTP::Request;
 use HTTP::Response;
 use HTML::Scrubber;
 use Switch;
-#use Encode;
 use Parallel::ForkManager;
 use Term::ANSIColor;
 use utf8;
 use Text::Unidecode;
 use Digest::MD5 qw(md5_hex);
+#use Net::SSL;
 binmode STDOUT, ":encoding(UTF-8)";
 
 
@@ -653,7 +653,7 @@ sub passwordTest
 			print "[+] user:$user password:$password status:$status\n";
 			#print($decoded_response);
 			if ($status =~ /302/m)
-			{							
+			{						
 				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlan_basic_t1.gch' ,method => 'GET', headers => $headers);
 				$decoded_response = $response->decoded_content;							
 				$decoded_response =~ s/[^\x00-\x7f]//g;
@@ -669,9 +669,10 @@ sub passwordTest
 					$KeyPassphrase = $1;					
 				}
 					
-				#<script language=javascript>Transfer_meaning('ESSID','Flia. Saavedra');</script>
+				#Transfer_meaning('ESSID','Flia. Saavedra');</script>
+				#Transfer_meaning('ESSID','dfg\x2esdkgadkngkern');
 				my $ESSID;
-				while ($decoded_response =~ /<script language=javascript>Transfer_meaning\('ESSID','(.*?)'\);<\/script>/g) {					
+				while ($decoded_response =~ /Transfer_meaning\('ESSID','(.*?)'/g) {					
 					$ESSID = $1;				
 				}
 			
@@ -752,7 +753,7 @@ sub passwordTest
 				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlanm_essid1_t.gch' ,method => 'GET', headers => $headers);
 				$decoded_response = $response->decoded_content;	
 				$decoded_response =~ s/Transfer_meaning\('ESSID',''//g;
-				$decoded_response =~ s/,''/,'0'/g;
+				#$decoded_response =~ s/,''/,'0'/g;
 				$decoded_response =~ s/[^\x00-\x7f]//g;
 				$decoded_response =~ s/\\x2e/./g; 
 				$decoded_response =~ s/\\x20/ /g; 
@@ -1253,25 +1254,11 @@ sub getData
 	else
 		{$url = "$proto://".$rhost.":".$rport.$path; }
 
-
-	my $response = $self->dispatch(url => "$proto://".$rhost.":".$rport."/nonexistroute123", method => 'GET', headers => $headers);
-	my $decoded_response = $response->decoded_content;
+    
+	$self->browser->default_headers($headers );
+	my $response = $self->browser->get($url);
+	my $last_url = $response->request()->uri();	
 	my $status = $response->status_line;
-
-	#error message
-	if($decoded_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
-		$type=$type."|Debug habilitado";
-	}
-	elsif($status =~ /200/m)
-	{
-		$type=$type."|NodeJS";
-	} 
-
-	$response = $self->dispatch(url => $url, method => 'GET', headers => $headers);
-	my $last_url = $response->request()->uri();
-
-	print "url $url last_url $last_url  \n" if ($debug);
-	$status = $response->status_line;
 
 	#Peticion original  https://186.121.202.25/
 	my @url_array1 = split("/",$url);
@@ -1292,46 +1279,50 @@ sub getData
 	my $url_final = URI->new($last_url);
 	my $domain_final = $url_final->host;
 	my $newdomain;
+	
 	print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
-
-	if ($domain_original ne $domain_final)
+	if ($domain_original ne $domain_final)	    
 		{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
-			
-	$decoded_response = $response->decoded_content;
+
+	my $final_url_redirect;
+	print "url $url last_url $last_url  \n" if ($debug);
+	if ($url ne $last_url)	    
+		{$final_url_redirect = $last_url;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
+
+	my $decoded_response = $response->decoded_content;
 	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 	#print "decoded_response $decoded_response" if ($debug);
-	########################
-	#my $redirect_url = "";
+	########################	
 	REDIRECT:
 	#obtener redirect javascrip/html
-	my $redirect_url = getRedirect($decoded_response);
+	my $redirect_url = getRedirect($decoded_response);	
+	print "redirect_url $redirect_url \n" if ($debug);
 
 	# ruta completa http://10.0.0.1/owa
-	if($redirect_url =~ /http/m ){	 
-		$response = $self->dispatch(url => $redirect_url, method => 'GET', headers => $headers);
+	if($redirect_url =~ /http/m ){	 		
+		$response = $self->browser->get($redirect_url);
 		$decoded_response = $response->decoded_content; 	 
 	}  
-	#ruta parcial /cgi-bin/login.htm
-	#si no hay redireccion o la URL de rediccion es incorrecta
+	#ruta parcial /cgi-bin/login.htm	
 	elsif ( $redirect_url ne ''  )
-	{	
-		my $final_url;
+	{			
 		my $firstChar = substr($redirect_url, 0, 1);
 		print "firstChar $firstChar \n" if ($debug);
 		chop($url); #delete / char
 		print "url $url \n" if ($debug);
 		if ($firstChar eq "/")
-			{$final_url = $url.$redirect_url;}
+			{$final_url_redirect = $url.$redirect_url;}
 		else
-			{$final_url = $url."/".$redirect_url;}
+			{$final_url_redirect = $url."/".$redirect_url;}
 
 		
-		print "final_url $final_url \n" if ($debug);
-		$response = $self->dispatch(url => $final_url, method => 'GET', headers => $headers);
+		print "final_url_redirect $final_url_redirect \n" if ($debug);		
+		$response = $self->browser->get($final_url_redirect);
 		$decoded_response = $response->decoded_content; 	
+		$final_url_redirect = $response->request()->uri();	
 		
 		if($decoded_response =~ /meta http-equiv="refresh"/m){	 
-			$url = $final_url;
+			$url = $final_url_redirect;
 			$url =~ s/index.php|index.asp//g;  
 			goto REDIRECT;
 		}	
@@ -1345,19 +1336,24 @@ sub getData
 	print "final_url $final_url \n" if ($debug);
 	$self->final_url($final_url);
 
-	$decoded_response = $response_headers."\n".$decoded_response;
-	$decoded_response =~ s/'/"/g; 
-
+	my $decoded_header_response = $response_headers."\n".$decoded_response;	
+	$decoded_response =~ s/'/"/g;
 	$decoded_response =~ s/[^\x00-\x7f]//g;
+	$decoded_response =~ s/\/index.php//g;
+	$decoded_response =~ s/https/http/g;
+	$decoded_response =~ s/www.//g;
+	$decoded_response =~ s/admin\@example.com//g;
+	$decoded_response =~ s/postmaster\@example.com//g;		
+
 	open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
 	print SALIDA $decoded_response;
 	close (SALIDA);
 
 
-	my ($poweredBy) = ($decoded_response =~ /X-Powered-By:(.*?)\n/i);
+	my ($poweredBy) = ($decoded_header_response =~ /X-Powered-By:(.*?)\n/i);
 	if ($poweredBy eq '')
 		{	
-		if($decoded_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
+		if($decoded_header_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
 		}
 
 	print "poweredBy $poweredBy \n" if ($debug);
@@ -1366,49 +1362,49 @@ sub getData
 
 	#my $title;#) =~ /<title>(.+)<\/title>/s;
 
-	$decoded_response =~ /<title(.{1,90})<\/title>/s ;
+	$decoded_header_response =~ /<title(.{1,90})<\/title>/s ;
 	my $title =$1; 
 	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 	if ($title eq '')
-		{($title) = ($decoded_response =~ /<title(.*?)\n/i);}
+		{($title) = ($decoded_header_response =~ /<title(.*?)\n/i);}
 
 	if ($title eq '')
-		{($title) = ($decoded_response =~ /Title:(.*?)\n/i);}
+		{($title) = ($decoded_header_response =~ /Title:(.*?)\n/i);}
 
 
 	$title = only_ascii($title);
 
 
 	#<meta name="geo.placename" content="Quillacollo" />
-	my ($geo) = ($decoded_response =~ /name="geo.placename" content="(.*?)"/i);
+	my ($geo) = ($decoded_header_response =~ /name="geo.placename" content="(.*?)"/i);
 	print "geo $geo \n" if ($debug);
 
 	#<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
 	#meta name="Generator" content="Pandora 5.0" />
-	my ($Generator) = ($decoded_response =~ /name="Generator" content="(.*?)"/i);
+	my ($Generator) = ($decoded_header_response =~ /name="Generator" content="(.*?)"/i);
 	print "Generator $Generator \n" if ($debug);
 
 	#<meta name="Version" content="10_1_7-52331">
-	my ($Version) = ($decoded_response =~ /name="Version" content="(.*?)"/i);
+	my ($Version) = ($decoded_header_response =~ /name="Version" content="(.*?)"/i);
 	print "Version $Version \n" if ($debug);
 	$Generator = $Generator." ".$Version;
 
-	my ($description) = ($decoded_response =~ /name="description" content="(.*?)"/i);
+	my ($description) = ($decoded_header_response =~ /name="description" content="(.*?)"/i);
 	if ($description eq '')
-		{($description) = ($decoded_response =~ /X-Meta-Description:(.*?)\n/i);}
+		{($description) = ($decoded_header_response =~ /X-Meta-Description:(.*?)\n/i);}
 	$description = only_ascii($description);	
 	print "description $description \n" if ($debug);
 
 
 	#<meta name="author" content="Instituto Nacional de Estadística - Centro de Desarrollo de Redatam">
-	my ($author) = ($decoded_response =~ /name="author" content="(.*?)"/i);
+	my ($author) = ($decoded_header_response =~ /name="author" content="(.*?)"/i);
 	if ($author eq '')
-		{($author) = ($decoded_response =~ /X-Meta-Author:(.*?)\n/i);}
+		{($author) = ($decoded_header_response =~ /X-Meta-Author:(.*?)\n/i);}
 	$author = only_ascii($author);
 	print "author $author \n" if ($debug);
 
 
-	my ($langVersion) = ($decoded_response =~ /X-AspNet-Version:(.*?)\n/i);
+	my ($langVersion) = ($decoded_header_response =~ /X-AspNet-Version:(.*?)\n/i);
 	print "langVersion $langVersion \n" if ($debug);
 
 	my ($proxy) = ($response_headers =~ /Via:(.*?)\n/i);
@@ -1424,14 +1420,14 @@ sub getData
 	#jquery.js?ver=1.12.4
 	my $jquery1;
 	my $jquery2;
-	($jquery1) = ($decoded_response =~ /jquery.js\?ver=(.*?)"/i);
+	($jquery1) = ($decoded_header_response =~ /jquery.js\?ver=(.*?)"/i);
 
 										
 	if ($jquery1 eq '')								 #jquery/1.9.1/
-		{($jquery1,$jquery2) = ($decoded_response =~ /jquery\/(\d+).(\d+)./i);}
+		{($jquery1,$jquery2) = ($decoded_header_response =~ /jquery\/(\d+).(\d+)./i);}
 
 	if ($jquery1 eq '')								  #jquery-1.9.1.min	
-		{($jquery1,$jquery2) = ($decoded_response =~ /jquery-(\d+).(\d+)./i);}
+		{($jquery1,$jquery2) = ($decoded_header_response =~ /jquery-(\d+).(\d+)./i);}
 
 
 	print "jquery $jquery1 \n" if ($debug);	
@@ -1439,137 +1435,144 @@ sub getData
 	if ($jquery1 ne '')
 		{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
 
-	if($decoded_response =~ /GASOLINERA/m)
+	if($decoded_header_response =~ /GASOLINERA/m)
 		{$type=$type."|"."GASOLINERA";} 		
 		
-	if($decoded_response =~ /Cisco Systems/i)
-		{$type=$type."|"."cisco";} 	
+	if(($decoded_header_response =~ /You have logged out of the Cisco Router/i) || ($decoded_header_response =~ /Cisco RV340 Configuration Utility/i))
+		{$server="Cisco Router";} 	
 
-	if($decoded_response =~ /Cisco Unified Communications/i)
+	if($decoded_header_response =~ /Cisco Unified Communications/i)
 		{$server="Cisco Unified Communications";} 	
 	
-	if($decoded_response =~ /CSCOE/i)
+	if($decoded_header_response =~ /CSCOE/i)
 		{$server="ciscoASA";} 
 
-	if($decoded_response =~ /OLT Web Management Interface/i)
+	if($decoded_header_response =~ /Boa\/0.9/i)
+		{if ($title eq '') {$title="Broadband device web server";}} 	
+
+	if($decoded_header_response =~ /OLT Web Management Interface/i)
 		{$server="OLT Web Management Interface";} 
 
-	if($decoded_response =~ /Janus WebRTC Server/i)
+	if($decoded_header_response =~ /Janus WebRTC Server/i)
 		{$server="Janus WebRTC Server";} 
 		
+	if($decoded_header_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
+		$type=$type."|Debug habilitado";
+	}
 
-
-	if($decoded_response =~ /X-OWA-Version/i)
+	if($decoded_header_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	
 
-	if($decoded_response =~ /FortiGate/i)
+	if($decoded_header_response =~ /FortiGate/i)
 		{$type=$type."|"."FortiGate";$server='FortiGate';} 	
 
-	if($decoded_response =~ /www.drupal.org/i)
+	if($decoded_header_response =~ /www.drupal.org/i)
 		{$type=$type."|"."drupal";} 	
 		
-	if($decoded_response =~ /wp-content|wp-admin|wp-caption/i)
+	if($decoded_header_response =~ /wp-content|wp-admin|wp-caption/i)
 		{$type=$type."|"."wordpress";} 		
 			
 
-	if($decoded_response =~ /csrfmiddlewaretoken/i)
+	if($decoded_header_response =~ /csrfmiddlewaretoken/i)
 		{$type=$type."|"."Django";} 	
 
-	if($decoded_response =~ /IP Phone/i)
+	if($decoded_header_response =~ /IP Phone/i)
 		{$type=$type."|"." IP Phone ";} 			
 
-	if($decoded_response =~ /X-Amz-/i)
+	if($decoded_header_response =~ /X-Amz-/i)
 		{$type=$type."|"."amazon";} 	
 
-	if($decoded_response =~ /X-Planisys-/i)
+	if($decoded_header_response =~ /X-Planisys-/i)
 		{$type=$type."|"."Planisys";} 		
 
-	if($decoded_response =~ /phpmyadmin.css/i)
+	if($decoded_header_response =~ /phpmyadmin.css/i)
 		{$type=$type."|"."phpmyadmin";} 		
 		
-	if($decoded_response =~ /Set-Cookie: webvpn/i)
+	if($decoded_header_response =~ /Set-Cookie: webvpn/i)
 		{$type=$type."|"."ciscoASA";} 	
 		
-	if($decoded_response =~ /Huawei/i)
+	if($decoded_header_response =~ /Huawei/i)
 		{$type=$type."|"."Huawei";} 	
 
-	if($decoded_response =~ /connect.sid|X-Powered-By: Express/i)
+	if($decoded_header_response =~ /connect.sid|X-Powered-By: Express/i)
 		{$type=$type."|"."Express APP";}	
 
-	if($decoded_response =~ /X-ORACLE-DMS/i)
+	if($decoded_header_response =~ /X-ORACLE-DMS/i)
 		{$type=$type."|"."Oracle Dynamic Monitoring";}	
 
-	if($decoded_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
+	if($decoded_header_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
 		{$type=$type."|"."Postgres web";}	
 
-	if($decoded_response =~ /src="app\//i)
+	if($decoded_header_response =~ /src="app\//i)
 		{$type=$type."|"."AngularJS";}			
 
-	if($decoded_response =~ /roundcube_sessid/i)
+	if($decoded_header_response =~ /roundcube_sessid/i)
 		{$type=$type."|"."Roundcube";}	 
 
-	if($decoded_response =~ /playback_bottom_bar/i)
-		{$type=$type."|"."Dahua Camera";}	 	
+	if($decoded_header_response =~ /playback_bottom_bar/i)
+		{$type=$type."|"."Dahua";}	
 
-	if($decoded_response =~ /\/webplugin.exe/i)
-		{$type=$type."|"."Dahua DVR";}	 		
+	if( ($decoded_header_response =~ /custom_logo\/web_logo.png/i) && ($decoded_header_response =~ /WEB SERVICE/i))
+		{$server="Dahua";}			
 
-	if($decoded_response =~ /ftnt-fortinet-grid icon-xl/i)
+	if($decoded_header_response =~ /\/webplugin.exe/i)
+		{$type=$type."|"."Dahua";}	 		
+
+	if($decoded_header_response =~ /ftnt-fortinet-grid icon-xl/i)
 		{$type=$type."|"."Fortinet";$server='Fortinet';}	 			
 		
 
-	if($decoded_response =~ /theme-taiga.css/i)
+	if($decoded_header_response =~ /theme-taiga.css/i)
 		{$type=$type."|"."Taiga";}	 
 			
-	if($decoded_response =~ /X-Powered-By-Plesk/i)
+	if($decoded_header_response =~ /X-Powered-By-Plesk/i)
 		{$type=$type."|"."PleskWin";}	 
 
-	if($decoded_response =~ /Web Services/i)	
+	if($decoded_header_response =~ /Web Services/i)	
 		{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
 
-	if($decoded_response =~ /Acceso no autorizado/i)
+	if($decoded_header_response =~ /Acceso no autorizado/i)
 		{$title="Acceso no autorizado" if ($title eq "");} 	
 				
-	if($decoded_response =~ /login__block__header/i)	
+	if($decoded_header_response =~ /login__block__header/i)	
 		{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
 				
 
 
-	if($decoded_response =~ /Hikvision Digital/i)
+	if($decoded_header_response =~ /Hikvision Digital/i)
 		{$title="Hikvision Digital";} 			
 		
-	if($decoded_response =~ /FreeNAS/i)
+	if($decoded_header_response =~ /FreeNAS/i)
 		{$title="FreeNAS";} 			
 
-	if($decoded_response =~ /ciscouser/i)
+	if($decoded_header_response =~ /ciscouser/i)
 		{$title="Cisco switch";} 
 
-	if($decoded_response =~ /pfsense-logo/i)
+	if($decoded_header_response =~ /pfsense-logo/i)
 		{$title="Pfsense";} 
 
-	if($decoded_response =~ /servletBridgeIframe/i)
+	if($decoded_header_response =~ /servletBridgeIframe/i)
 		{$title="SAP Business Objects";} 	
-
 		
-	if($decoded_response =~ /content="Babelstar"/i)
+	if($decoded_header_response =~ /content="Babelstar"/i)
 		{$title="Body Cam";} 	
 		
 
-	if( ($decoded_response =~ /login to iDRAC/i) && !($decoded_response =~ /Cisco/i)  )
+	if( ($decoded_header_response =~ /login to iDRAC/i) && !($decoded_response =~ /Cisco/i)  )
 		{$title="Dell iDRAC";} 
 
-	if($decoded_response =~ /portal.peplink.com/i)
+	if($decoded_header_response =~ /portal.peplink.com/i)
 		{$title="Web Admin PepLink";} 	
 
 	# <h1>RouterOS v6.47.4</h1>
-	if($decoded_response =~ /RouterOS router/i)
-		{	$decoded_response =~ /\<h1\>(.*?)\<\/h1\>/;	
+	if($decoded_header_response =~ /RouterOS router/i)
+		{	$decoded_header_response =~ /\<h1\>(.*?)\<\/h1\>/;	
 			$server=$1;} 	
 	
-	if($decoded_response =~ /Juniper Web Device Manager/i)
+	if($decoded_header_response =~ /Juniper Web Device Manager/i)
 		{$server='Juniper Web Device Manager';}
 
-	if($decoded_response =~ /by Cisco Systems, Inc/i)
+	if($decoded_header_response =~ /by Cisco Systems, Inc/i)
 		{$server='Cisco WebUI';}
 
 
@@ -1583,7 +1586,7 @@ sub getData
 				"Generator" => $Generator,
 				"description" => $description,
 				"langVersion" => $langVersion,
-				"redirect_url" => $redirect_url,
+				"redirect_url" => $final_url_redirect,
 				"author" => $author,
 				"proxy" => $proxy,
 				"type" => $type,            
@@ -1867,10 +1870,10 @@ my $proxy_env = $self->proxy_env;
 my $max_redirect = $self->max_redirect;
 
 print "building browser \n" if ($debug);
+print "max_redirect $max_redirect \n" if ($debug);
 
    
 my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => 15, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
-$browser->requests_redirectable(['http', 'https']);
 $browser->cookie_jar(HTTP::Cookies->new());
 $browser->show_progress(1) if ($debug);
 
