@@ -1290,10 +1290,13 @@ sub getData
 		{$final_url_redirect = $last_url;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
 
 	my $decoded_response = $response->decoded_content;
-	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
+
+
 	#print "decoded_response $decoded_response" if ($debug);
 	########################	
 	REDIRECT:
+	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
+	$decoded_response =~ s/<noscript>.*?<\/noscript>//s;
 	#obtener redirect javascrip/html
 	my $redirect_url = getRedirect($decoded_response);	
 	print "redirect_url $redirect_url \n" if ($debug);
@@ -1318,6 +1321,7 @@ sub getData
 		
 		print "final_url_redirect $final_url_redirect \n" if ($debug);		
 		$response = $self->browser->get($final_url_redirect);
+
 		$decoded_response = $response->decoded_content; 	
 		$final_url_redirect = $response->request()->uri();	
 		
@@ -1345,7 +1349,7 @@ sub getData
 	$decoded_response =~ s/admin\@example.com//g;
 	$decoded_response =~ s/postmaster\@example.com//g;		
 
-	open (SALIDA,">$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
+	open (SALIDA,">>$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
 	print SALIDA $decoded_response;
 	close (SALIDA);
 
@@ -1510,13 +1514,13 @@ sub getData
 		{$type=$type."|"."Roundcube";}	 
 
 	if($decoded_header_response =~ /playback_bottom_bar/i)
-		{$type=$type."|"."Dahua";}	
+		{$server="Dahua";}
 
-	if( ($decoded_header_response =~ /custom_logo\/web_logo.png/i) && ($decoded_header_response =~ /WEB SERVICE/i))
+	if((($decoded_header_response =~ /custom_logo\/web_logo.png/i) || ($decoded_header_response =~ /baseProj\/images\/favicon.ico/i) ) && ($decoded_header_response =~ /WEB SERVICE/i))
 		{$server="Dahua";}			
 
 	if($decoded_header_response =~ /\/webplugin.exe/i)
-		{$type=$type."|"."Dahua";}	 		
+		{$server="Dahua";}			
 
 	if($decoded_header_response =~ /ftnt-fortinet-grid icon-xl/i)
 		{$type=$type."|"."Fortinet";$server='Fortinet';}	 			

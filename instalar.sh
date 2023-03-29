@@ -47,8 +47,8 @@ echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET"
 apt-get install -y  python3-m2crypto libcrypt-ssleay-perl
 pip3 install M2Crypto pyopenssl scapy --break-system-packages
 
-echo -e "$OKGREEN [+] Instalando wappalyzer $RESET" 
-npm i -g wappalyzer
+#echo -e "$OKGREEN [+] Instalando wappalyzer $RESET" 
+#npm i -g wappalyzer
 
 
 cpan E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz
