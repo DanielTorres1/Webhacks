@@ -1297,6 +1297,9 @@ sub getData
 	REDIRECT:
 	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 	$decoded_response =~ s/<noscript>.*?<\/noscript>//s;
+
+	$decoded_response =~ s/.*\/logout.*\n//g;
+
 	#obtener redirect javascrip/html
 	my $redirect_url = getRedirect($decoded_response);	
 	print "redirect_url $redirect_url \n" if ($debug);
@@ -1891,12 +1894,12 @@ sub _build_browser {
 		else
 			{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 	}
-	$proxy_host='127.0.0.1';
-	$proxy_port='8083';
+	#$proxy_host='127.0.0.1';
+	#$proxy_port='8083';
 	#$ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;
 	#$browser->env_proxy;
 
-	$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
+	#$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
 	
 	return $browser;     
 }
