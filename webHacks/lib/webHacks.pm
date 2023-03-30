@@ -1858,62 +1858,47 @@ return $response;
 ################### build browser object #####################	
 sub _build_browser {    
 
-my $self = shift;
-my $rhost = $self->rhost;
-my $rport = $self->rport;
-my $proto = $self->proto;
+	my $self = shift;
+	my $rhost = $self->rhost;
+	my $rport = $self->rport;
+	my $proto = $self->proto;
 
-my $debug = $self->debug;
-my $mostrarTodo = $self->mostrarTodo;
-my $proxy_host = $self->proxy_host;
-my $proxy_port = $self->proxy_port;
-my $proxy_user = $self->proxy_user;
-my $proxy_pass = $self->proxy_pass;
-my $proxy_env = $self->proxy_env;
+	my $debug = $self->debug;
+	my $mostrarTodo = $self->mostrarTodo;
+	my $proxy_host = $self->proxy_host;
+	my $proxy_port = $self->proxy_port;
+	my $proxy_user = $self->proxy_user;
+	my $proxy_pass = $self->proxy_pass;
+	my $proxy_env = $self->proxy_env;
 
-my $max_redirect = $self->max_redirect;
+	my $max_redirect = $self->max_redirect;
 
-print "building browser \n" if ($debug);
-print "max_redirect $max_redirect \n" if ($debug);
+	print "building browser \n" if ($debug);
+	print "max_redirect $max_redirect \n" if ($debug);
 
-   
-my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => 15, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
-$browser->cookie_jar(HTTP::Cookies->new());
-$browser->show_progress(1) if ($debug);
+	
+	my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => 15, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
+	$browser->cookie_jar(HTTP::Cookies->new());
+	$browser->show_progress(1) if ($debug);
 
 
-if ($proto eq '')
-{
-	print "Detecting SSL \n" if ($debug);
-	my $proto_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
-	if($proto_output =~ /CN/m)
-		{$self->proto('https');print "SSL detected \n" if ($debug);}
-	else
-		{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
-}
-#$proxy_host='127.0.0.1';
-#$proxy_port='8083';
-#print "proxy_env $proxy_env \n" if ($debug);
+	if ($proto eq '')
+	{
+		print "Detecting SSL \n" if ($debug);
+		my $proto_output = `get_ssl_cert.py $rhost $rport 2>/dev/null`;
+		if($proto_output =~ /CN/m)
+			{$self->proto('https');print "SSL detected \n" if ($debug);}
+		else
+			{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
+	}
+	$proxy_host='127.0.0.1';
+	$proxy_port='8083';
+	#$ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;
+	#$browser->env_proxy;
 
-#if ( $proxy_env eq 'ENV' )
-#{
-#print "set ENV PROXY \n";
-#$Net::HTTPS::SSL_SOCKET_CLASS = "Net::SSL"; # Force use of Net::SSL
-#$ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;
-
-#}
-#elsif (($proxy_user ne "") && ($proxy_host ne ""))
-#{
-# $browser->proxy(['http', 'https'], 'http://'.$proxy_user.':'.$proxy_pass.'@'.$proxy_host.':'.$proxy_port); # Using a private proxy
-#}
-#elsif ($proxy_host ne "")
-   #{ $browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port);} # Using a public proxy
- #else
-   #{ 
-      #$browser->env_proxy;} # No proxy      
-      
-$browser->env_proxy;
-return $browser;     
+	$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
+	
+	return $browser;     
 }
     
 }
