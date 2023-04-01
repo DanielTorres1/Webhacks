@@ -300,6 +300,7 @@ jenkins/
 jmx-console/
 jmx-console/HtmlAdaptor
 LiveUser_Admin/
+login/
 login1/
 login.asp
 login_db/
