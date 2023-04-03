@@ -312,6 +312,7 @@ login-us/
 logo_sysadmin/
 Lotus_Domino_Admin/
 macadmin/
+manager/
 maintenance/
 manager/html
 manuallogin/

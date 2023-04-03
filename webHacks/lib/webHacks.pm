@@ -186,7 +186,7 @@ foreach my $file (@links) {
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
-	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information/i)
+	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information|E_WARNING/i)
 		{$vuln = " (Mensaje de error)\t";} 		 
 		
 		
@@ -1297,7 +1297,11 @@ sub getData
 	REDIRECT:
 	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 	$decoded_response =~ s/<noscript>.*?<\/noscript>//s;
-	$decoded_response =~ s/.*\/logout.*\n//g;
+	$decoded_response =~ s/.*\/logout.*\n//g; #eliminar la linea que contenga logout
+	$decoded_response =~ s/.*sclogin.html*//g; 
+	$decoded_response =~ s/.*index.html*//g; 
+	$decoded_response =~ s/.*?console*//g; 
+	
 
 	#obtener redirect javascrip/html
 	my $redirect_url = getRedirect($decoded_response);	
@@ -1462,12 +1466,16 @@ sub getData
 	if($decoded_header_response =~ /Janus WebRTC Server/i)
 		{$server="Janus WebRTC Server";} 
 		
-	if($decoded_header_response =~ /Django|APP_ENV|DEBUG = True|app\/controllers/i){	 
+	if($decoded_header_response =~ /APP_ENV|DEBUG = True|app\/controllers/i){	 
 		$type=$type."|Debug habilitado";
 	}
 
 	if($decoded_header_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	
+				
+	if($decoded_header_response =~ /idrac/i)
+		{$title ='Dell iDRAC';} 	
+		
 
 	if($decoded_header_response =~ /FortiGate/i)
 		{$type=$type."|"."FortiGate";$server='FortiGate';} 	
