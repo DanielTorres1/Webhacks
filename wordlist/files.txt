@@ -20,6 +20,7 @@ orders.action
 shareexit.action
 sharelanding.action
 addtocart.action
+xmlrpc.php
 buscar.action
 checkout.action
 contact.action
