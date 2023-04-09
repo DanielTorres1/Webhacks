@@ -165,44 +165,25 @@ foreach my $file (@links) {
 			}
 		}
 	
-	# check body and headers
-	my $vuln=" ";
+	############# check vulnerabilities ###
+	my $vuln=checkVuln($decoded_content);
+	if ($vuln ne ""){
+		$vuln=" (vulnerabilidad=$vuln)\t";
+	}
+
+	
 	if ($decoded_content eq ""){	 
 		$vuln = " (Archivo vacio)\t";
 	}
-	
-	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de|Upload your file|Cannot execute a blank command|fileupload in/i){	 
-		$vuln = " (Posible Backdoor)\t";
-	}	
 
-	
 	if($url =~ /r=usuario/m){	 
 		if ($decoded_content =~ /r=usuario\/create/i)
-			{$vuln = " (Exposición de usuarios/passwords)\t";}	
+			{$vuln = " (vulnerabilidad=ExposicionUsuarios)\t";}	
 		else
 			{$status="404";}
 	}
-	
-	
-	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
-	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
-	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information|E_WARNING/i)
-		{$vuln = " (Mensaje de error)\t";} 		 
-		
-		
-	if($decoded_content =~ /Access denied for/i)
-	{
-		#Access denied for user 'acanqui'@'192.168.4.20' 
-		$decoded_content =~ /Access denied for user (.*?)\(/;
-		my $usuario_ip = $1; 
-		$vuln = " (Exposicion de usuario - $usuario_ip)\t";
-	 } 	
-		
-	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
-		{$vuln = " (Listado directorio activo)\t";} 
-	
-	if($decoded_content =~ /HTTP_X_FORWARDED_HOST|SCRIPT_FILENAME/i)
-		{$vuln = " (phpinfo)\t";} 
+	##################
+	print "vuln $vuln \n" if ($debug);	
 		
 	my $content_length = $response->content_length;
 	#print "content_length $content_length \n";
@@ -1359,14 +1340,14 @@ sub getData
 	print SALIDA $decoded_response;
 	close (SALIDA);
 
+	my $vulnerability=checkVuln($decoded_response);
+	print "vulnerability $vulnerability \n" if ($debug);	
 
 	my ($poweredBy) = ($decoded_header_response =~ /X-Powered-By:(.*?)\n/i);
 	if ($poweredBy eq '')
 		{	
 		if($decoded_header_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
-		}
-
-	print "poweredBy $poweredBy \n" if ($debug);
+		}	
 
 	# ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
 
@@ -1386,46 +1367,47 @@ sub getData
 
 
 	#<meta name="geo.placename" content="Quillacollo" />
-	my ($geo) = ($decoded_header_response =~ /name="geo.placename" content="(.*?)"/i);
-	print "geo $geo \n" if ($debug);
+	my ($geo) = ($decoded_header_response =~ /name="geo.placename" content="(.*?)"/i);			
+	$poweredBy = $poweredBy.'| geo='.$geo if (length($geo) > 1);
+
 
 	#<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
 	#meta name="Generator" content="Pandora 5.0" />
 	my ($Generator) = ($decoded_header_response =~ /name="Generator" content="(.*?)"/i);
-	print "Generator $Generator \n" if ($debug);
-
+	
 	#<meta name="Version" content="10_1_7-52331">
 	my ($Version) = ($decoded_header_response =~ /name="Version" content="(.*?)"/i);
-	print "Version $Version \n" if ($debug);
-	$Generator = $Generator." ".$Version;
-
+	$Generator = $Generator." ".$Version;		 
+	$poweredBy = $poweredBy.'| Generator='.$Generator if (length($Generator) > 3);
+   
 	my ($description) = ($decoded_header_response =~ /name="description" content="(.*?)"/i);
 	if ($description eq '')
 		{($description) = ($decoded_header_response =~ /X-Meta-Description:(.*?)\n/i);}
-	$description = only_ascii($description);	
-	print "description $description \n" if ($debug);
+	$description = only_ascii($description);				
+	$poweredBy = $poweredBy.'| description='.$description if (length($description) > 1);
 
 
 	#<meta name="author" content="Instituto Nacional de Estadística - Centro de Desarrollo de Redatam">
 	my ($author) = ($decoded_header_response =~ /name="author" content="(.*?)"/i);
 	if ($author eq '')
 		{($author) = ($decoded_header_response =~ /X-Meta-Author:(.*?)\n/i);}
-	$author = only_ascii($author);
-	print "author $author \n" if ($debug);
+	$author = only_ascii($author);				
+	$poweredBy = $poweredBy.'| author='.$author if (length($author) > 1);
 
 
-	my ($langVersion) = ($decoded_header_response =~ /X-AspNet-Version:(.*?)\n/i);
-	print "langVersion $langVersion \n" if ($debug);
+	my ($langVersion) = ($decoded_header_response =~ /X-AspNet-Version:(.*?)\n/i);			
+	$poweredBy = $poweredBy.'| langVersion='.$langVersion if (length($langVersion) > 1);
 
-	my ($proxy) = ($response_headers =~ /Via:(.*?)\n/i);
-	print "proxy $proxy \n" if ($debug);
+	my ($proxy) = ($response_headers =~ /Via:(.*?)\n/i);		
+	$poweredBy = $poweredBy.'| proxy='.$proxy if (length($proxy) > 1);	
 
 	my ($server) = ($response_headers =~ /Server:(.*?)\n/i);
 	print "server $server \n" if ($debug);
 
 	#WWW-Authenticate: Basic realm="Broadband Router"
-	my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);
-	print "Authenticate $Authenticate \n" if ($debug);
+	my ($Authenticate) = ($response_headers =~ /WWW-Authenticate:(.*?)\n/i);	
+	$poweredBy = $poweredBy.'| proxy='.$Authenticate if (length($Authenticate) > 1);
+	print "poweredBy $poweredBy \n" if ($debug);
 
 	#jquery.js?ver=1.12.4
 	my $jquery1;
@@ -1465,10 +1447,6 @@ sub getData
 
 	if($decoded_header_response =~ /Janus WebRTC Server/i)
 		{$server="Janus WebRTC Server";} 
-		
-	if($decoded_header_response =~ /APP_ENV|DEBUG = True|app\/controllers/i){	 
-		$type=$type."|Debug habilitado";
-	}
 
 	if($decoded_header_response =~ /X-OWA-Version/i)
 		{$type=$type."|"."owa";} 	
@@ -1589,23 +1567,16 @@ sub getData
 	if($decoded_header_response =~ /by Cisco Systems, Inc/i)
 		{$server='Cisco WebUI';}
 
-
-
+	
 	my %data = (            
 				"title" => $title,
 				"server" => $server,
-				"poweredBy" => $poweredBy,
-				"Authenticate" => $Authenticate,
-				"geo" => $geo,
-				"Generator" => $Generator,
-				"description" => $description,
-				"langVersion" => $langVersion,
-				"redirect_url" => $final_url_redirect,
-				"author" => $author,
-				"proxy" => $proxy,
-				"type" => $type,            
 				"status" => $status,
-				"newdomain" => $newdomain
+				"redirect_url" => $final_url_redirect,
+				"type" => $type,            				
+				"newdomain" => $newdomain,			
+				"poweredBy" => $poweredBy,
+				"vulnerability" => $vulnerability
 			);
 			
 
@@ -1749,7 +1720,6 @@ $headers->header('DNT' => '1');
 #$headers->header('Upgrade-Insecure-Requests' => '1'); 
 #$headers->header('' => ''); 
 
-
 #Connection
 #$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
 #$headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
@@ -1799,6 +1769,46 @@ chop($post_data); # delete last character (&)
 return $post_data;
 }
 
+sub checkVuln (){
+	my ($decoded_content) = @_;
+	# check body and headers
+	my $vuln="";
+
+
+	if($decoded_content =~ /APP_ENV|DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/i){	 
+		$vuln = "debugHabilitado";
+	}
+
+	if ($decoded_content =~ / RAT |C99Shell|b374k| r57 | wso | pouya | Kacak | jsp file browser |vonloesch.de|Upload your file|Cannot execute a blank command|fileupload in/i){	 
+		$vuln = "backdoor";
+	}	
+
+	if ($decoded_content =~ /db\=information_schema/i){	 
+		$vuln = "OpenPhpMyAdmin";
+	}		
+	
+	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
+	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
+	#Stack trace
+	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information|E_WARNING/i)
+		{$vuln = "MensajeError";} 	
+			 			
+	if($decoded_content =~ /Access denied for/i)
+	{
+		#Access denied for user 'acanqui'@'192.168.4.20' 
+		$decoded_content =~ /Access denied for user (.*?)\(/;
+		my $usuario_ip = $1; 
+		$vuln = "ExposicionUsuarios";
+	 } 	
+		
+	if($decoded_content =~ /Directory of|Index of|Parent directory/i)
+		{$vuln = "ListadoDirectorios";} 
+	
+	if($decoded_content =~ /HTTP_X_FORWARDED_HOST|HTTP_X_FORWARDED_SERVER|phpinfo\(\)/i)
+		{$vuln = "phpinfo";} 
+	
+	return $vuln;
+}
 
 sub dispatch {    
 my $self = shift;

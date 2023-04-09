@@ -80,23 +80,19 @@ else
 
 
 my %data = $webHacks->getData(log_file => $log_file);
-
 my $title = %data{'title'};
-my $poweredBy = %data{'poweredBy'};
-my $Authenticate = %data{'Authenticate'};
-my $geo = %data{'geo'};
-my $Generator = %data{'Generator'};
-my $description = %data{'description'};
-my $langVersion = %data{'langVersion'};
-my $max_redirect_url = %data{'redirect_url'};
-my $author = %data{'author'};
-my $proxy = %data{'proxy'};
-my $type = %data{'type'};
 my $server = %data{'server'};
 my $status = %data{'status'};
+my $redirect_url = %data{'redirect_url'};
+my $type = %data{'type'};
 my $newdomain = %data{'newdomain'};
+my $vulnerability = %data{'vulnerability'};
+my $poweredBy = %data{'poweredBy'};
 my $wappalyzer = '';
-#print " newdomain  $newdomain \n" ;
+
+$vulnerability="vulnerabilidad=$vulnerability" if (length($vulnerability)>1);	
+
+#print " vulnerability2  $vulnerability \n" ;
 #$wappalyzer=`wappalyzer $proto://$target:$port$path 2>/dev/null| wappalyzer-parser.py`; 
 
 
@@ -105,7 +101,7 @@ my $wappalyzer = '';
 # 	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
 # 	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
 # 	print "Proxy $proxy \n" if ($proxy ne '' && $proxy ne ' ');
-# #	print "redirect_url $server \n" if ($max_redirect_url ne '' && $max_redirect_url ne ' ');
+# #	print "redirect_url $server \n" if ($redirect_url ne '' && $redirect_url ne ' ');
 # 	print "server $server \n" if ($server ne '' && $server ne ' ');
 my $domain; 
 
@@ -124,13 +120,13 @@ if($status =~ /Name or service not known/m){
  } 
 
 if ($newdomain ne '')		
-	{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$author~$proxy~$type^$wappalyzer^Dominio identificado^$newdomain";}
+	{print "$title~$server~$status~$redirect_url~$type~$poweredBy~$vulnerability~^$wappalyzer^Dominio identificado^$newdomain";}
 else
 {
 	if ($domain ne '')
-		{print "Dominio identificado||$domain";}
+		{print "^$wappalyzer^Dominio identificado^$domain";}
 	else
-		{print "$title~$server~$status~$poweredBy~$Authenticate~$geo~$Generator~$description~$langVersion~$max_redirect_url~$author~$proxy~$type^$wappalyzer";}
+		{print "$title~$server~$status~$redirect_url~$type~$poweredBy~$vulnerability~^$wappalyzer";}
 }
 
 
