@@ -1184,21 +1184,29 @@ sub passwordTest
 sub getRedirect 
 {
 	my $decoded_response = $_[0];
+	my $redirect_url = '';
+
 	$decoded_response =~ s/; url=/;url=/gi; 
 	$decoded_response =~ s/\{//gi; 
 	#$decoded_response =~ s/^.*?\/noscript//s;  #delete everything before xxxxxxxxx
 	$decoded_response =~ s/<noscript[^\/noscript>]*\/noscript>//g;
-
-
+	
 	#<meta http-equiv="Refresh" content="0;URL=/page.cgi?page=status">
+	
 	$decoded_response =~ /meta http-equiv="Refresh" content="0;URL=(.*?)"/i;
-	my $redirect_url = $1; 
-
+	$redirect_url = $1; 
 
 
 	if ($redirect_url eq '')
 	{
-							#<script>window.onload=function(){ url ="/webui";window.location.href=url;}</script>
+		                    #<meta http-equiv="refresh" content="1;URL="/admin""/>
+		$decoded_response =~ /meta http-equiv="Refresh" content="1;URL="(.*?)"/i;
+		$redirect_url = $1; 
+	}
+
+	if ($redirect_url eq '')
+	{
+		#<script>window.onload=function(){ url ="/webui";window.location.href=url;}</script>
 		$decoded_response =~ /window.onload=function\(\) url ="(.*?)"/i;
 		$redirect_url = $1; 
 	}
@@ -1229,7 +1237,7 @@ sub getRedirect
 	if ($redirect_url eq '')
 	{
 		#window.location.href="login.html?ver="+fileVer;	
-		$decoded_response =~ /window.location.href="(.*?)"/i;
+		$decoded_response =~ /location.href="(.*?)"/i;
 		$redirect_url = $1; 
 	}
 
@@ -1291,7 +1299,6 @@ sub getRedirect
 	}
 	
 
-
 	# si la ruta de la redireccion no esta completa borrarla
 	if (($redirect_url eq 'https:' ) || ($redirect_url eq 'http:'))
 		{$redirect_url=""}
@@ -1306,6 +1313,14 @@ sub getRedirect
 		$redirect_url="";
 	#	print "mikrotik/OWA detectado \n" if ($debug);
 	}
+	 
+	#redirect_suffix = "/redirect.html?count="+Math.random();
+	if ($redirect_url eq '')
+	{		
+		$decoded_response =~ /redirect_suffix = "(.*?)"/;
+		$redirect_url = $1;	
+	}
+	
 	return $redirect_url;
 }
 
@@ -1331,104 +1346,94 @@ sub getData
 	$headers->header("DNT" => "1");
 	$headers->header("User-Agent" => "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36");
 
-	my $url ;
+	my $url_original ;
 	if ($rport eq '80' || $rport eq '443')
-		{$url = "$proto://".$rhost.$path; }
+		{$url_original = "$proto://".$rhost.$path; }
 	else
-		{$url = "$proto://".$rhost.":".$rport.$path; }
+		{$url_original = "$proto://".$rhost.":".$rport.$path; }
 
-    
 	$self->browser->default_headers($headers );
-	my $response = $self->browser->get($url);
-	my $last_url = $response->request()->uri();	
-	my $status = $response->status_line;
-
-	#Peticion original  https://186.121.202.25/
-	my @url_array1 = split("/",$url);
-	my $protocolo1 = $url_array1[0];
-
-	#Peticion 2 (si fue redireccionada)
-	my @url_array2 = split("/",$last_url);
-	my $protocolo2 = $url_array2[0];
-
-
-	if ($protocolo1 ne $protocolo2)
-		{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
-
-
-	my $url_original = URI->new($url);
-	my $domain_original = $url_original->host;
-
-	my $url_final = URI->new($last_url);
-	my $domain_final = $url_final->host;
-	my $newdomain;
-	
-	print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
-	if ($domain_original ne $domain_final)	    
-		{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
-
+    ############ 1 ###################
+	my $redirect_url = 'no';#iniciamos con un valor distinto de vacio ''
+	my $current_url = $url_original;
 	my $final_url_redirect;
-	print "url $url last_url $last_url  \n" if ($debug);
-	if ($url ne $last_url)	    
-		{$final_url_redirect = $last_url;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
+	my $response ;
+	my $decoded_response;
+	my $status;
+	my $newdomain;
+	while ($redirect_url ne '')
+	{
+		$response = $self->browser->get($current_url);	  
+		my $last_url = $response->request()->uri();	
+		$status = $response->status_line;
 
-	my $decoded_response = $response->decoded_content;
+		############# check redireccion http --> https ############
+		#Peticion original  https://186.121.202.25/
+		my @url_array1 = split("/",$url_original);
+		my $protocolo1 = $url_array1[0];
 
+		#Peticion 2 (si fue redireccionada)
+		my @url_array2 = split("/",$last_url);
+		my $protocolo2 = $url_array2[0];
+		if ($protocolo1 ne $protocolo2)
+		{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
+		#######################################
 
-	#print "decoded_response $decoded_response" if ($debug);
-	########################	
-	REDIRECT:
-	$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
-	$decoded_response =~ s/<noscript>.*?<\/noscript>//s;
-	$decoded_response =~ s/.*\/logout.*\n//g; #eliminar la linea que contenga logout
-	$decoded_response =~ s/.*sclogin.html*//g; 
-	$decoded_response =~ s/.*index.html*//g; 
-	$decoded_response =~ s/.*?console*//g; 
-	
-
-	#obtener redirect javascrip/html
-	my $redirect_url = getRedirect($decoded_response);	
-	print "redirect_url $redirect_url \n" if ($debug);
-
-	# ruta completa http://10.0.0.1/owa
-	if($redirect_url =~ /http/m ){	 		
-		$response = $self->browser->get($redirect_url);
-		$decoded_response = $response->decoded_content; 	 
-	}  
-	#ruta parcial /cgi-bin/login.htm	
-	elsif ( $redirect_url ne ''  )
-	{			
-		my $firstChar = substr($redirect_url, 0, 1);
-		print "firstChar $firstChar \n" if ($debug);
-		chop($url); #delete / char
-		print "url $url \n" if ($debug);
-		if ($firstChar eq "/")
-			{$final_url_redirect = $url.$redirect_url;}
-		else
-			{$final_url_redirect = $url."/".$redirect_url;}
-
+		######### Check domain redirect ######
+		my $domain_original = URI->new($url_original)->host;
+		my $url_final = URI->new($last_url);
+		my $domain_final = $url_final->host;		
 		
-		print "final_url_redirect $final_url_redirect \n" if ($debug);		
-		$response = $self->browser->get($final_url_redirect);
+		print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
+		if ($domain_original ne $domain_final)	    
+			{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
+		###########################
 
-		$decoded_response = $response->decoded_content; 	
-		$final_url_redirect = $response->request()->uri();	
+		$decoded_response = $response->decoded_content;
+		$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
+		$decoded_response =~ s/<noscript>.*?<\/noscript>//s;
+		$decoded_response =~ s/.*\/logout.*\n//g; #eliminar la linea que contenga logout
+		$decoded_response =~ s/.*sclogin.html*//g; 
+		$decoded_response =~ s/.*index.html*//g; 
+		$decoded_response =~ s/.*?console*//g; 
 		
-		if($decoded_response =~ /meta http-equiv="refresh"/m){	 
-			$url = $final_url_redirect;
-			$url =~ s/index.php|index.asp//g;  
-			goto REDIRECT;
-		}	
-		
+
+		#obtener redirect javascrip/html
+		$redirect_url = getRedirect($decoded_response);	
+		print "redirect_url $redirect_url \n" if ($debug);
+				
+		if ( $redirect_url ne ''  )
+		{		
+			# ruta completa http://10.0.0.1/owa
+			if($redirect_url =~ /http/m ){	 		
+				$final_url_redirect = $redirect_url
+			} 
+			else #ruta parcial /cgi-bin/login.htm	
+			{
+				my $firstChar = substr($redirect_url, 0, 1);
+				print "firstChar $firstChar \n" if ($debug);
+				#chop($redirect_url); #delete / char
+				print "url_original $url_original  \n" if ($debug);
+				if ($firstChar eq "/")		#/admin		
+					{$final_url_redirect = $url_original.substr($redirect_url, 1);} #quitar /
+				else
+					{$final_url_redirect = $url_original.$redirect_url;}
+			} 
+			print "final_url_redirect $final_url_redirect \n" if ($debug);	
+			$current_url = $final_url_redirect;
+		}
+		my $longitud_respuesta = length($decoded_response);
+		print "longitud_respuesta $longitud_respuesta \n" if ($debug);	
+		if ($longitud_respuesta > 500)#si tiene esa longitud puede que tenga otra redireccion
+		{
+			last;
+		}
+		############################
+	print("\n");
 	}
-	############################
 
 	
-	my $response_headers = $response->headers_as_string;
-	my $final_url = $response->request->uri;
-	print "final_url $final_url \n" if ($debug);
-	$self->final_url($final_url);
-
+	my $response_headers = $response->headers_as_string;	
 	my $decoded_header_response = $response_headers."\n".$decoded_response;	
 	$decoded_response =~ s/'/"/g;
 	$decoded_response =~ s/[^\x00-\x7f]//g;
@@ -1446,17 +1451,23 @@ sub getData
 	print "vulnerability $vulnerability \n" if ($debug);	
 
 	my ($poweredBy) = ($decoded_header_response =~ /X-Powered-By:(.*?)\n/i);
-	if ($poweredBy eq '')
-		{	
-		if($decoded_header_response =~ /laravel_session/m){$poweredBy="Laravel";} 			
-		}	
-
+	
+	if($decoded_header_response =~ /laravel_session/m)
+		{$poweredBy=$poweredBy."Laravel";} 
 	# ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
-
 	#my $title;#) =~ /<title>(.+)<\/title>/s;
 
-	$decoded_header_response =~ /<title(.{1,90})<\/title>/s ;
-	my $title =$1; 
+	#$decoded_header_response =~ /<title(.{1,90})<\/title>/s ;
+	
+	#<title>Sudamericana Clientes</title>
+	my $title ;
+	if ($decoded_header_response =~ m/>(.*?)<\/title>/) {
+		$title = $1; 
+	}	
+	print ("title ($title)\n");	
+
+
+	#my $title =$1; 
 	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 	if ($title eq '')
 		{($title) = ($decoded_header_response =~ /<title(.*?)\n/i);}
@@ -1529,6 +1540,20 @@ sub getData
 	if ($jquery1 ne '')
 		{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
 
+	# >AssureSoft</h1>
+	my ($h1) = ($decoded_header_response =~ />(.*?)<\/h1>/i);		
+	$poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 1);
+
+	my ($h2) = ($decoded_header_response =~ />(.*?)<\/h2>/i);		
+	$poweredBy = $poweredBy.'| H2='.$h2 if (length($h2) > 1);
+
+	my ($h3) = ($decoded_header_response =~ />(.*?)<\/h3>/i);		
+	$poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 1);
+
+	my ($h4) = ($decoded_header_response =~ />(.*?)<\/h4>/i);		
+	$poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 1);
+
+
 	if($decoded_header_response =~ /GASOLINERA/m)
 		{$type=$type."|"."GASOLINERA";} 		
 
@@ -1571,8 +1596,11 @@ sub getData
 		{$type=$type."|"."drupal";} 	
 		
 	if($decoded_header_response =~ /wp-content|wp-admin|wp-caption/i)
-		{$type=$type."|"."wordpress";} 		
-			
+		{$type=$type."|"."wordpress";} 	
+
+	if($decoded_header_response =~ /Powered by Abrenet/i)
+		{$poweredBy=$poweredBy."|"."Powered by Abrenet";} 	
+	#print($decoded_header_response);
 
 	if($decoded_header_response =~ /csrfmiddlewaretoken/i)
 		{$type=$type."|"."Django";} 	
@@ -1592,8 +1620,13 @@ sub getData
 	if($decoded_header_response =~ /Set-Cookie: webvpn/i)
 		{$type=$type."|"."ciscoASA";} 	
 		
-	if($decoded_header_response =~ /Huawei/i)
-		{$type=$type."|"."Huawei";} 	
+	if($decoded_header_response =~ /Huawei Technologies Co/i){
+		$title='optical network terminal (ONT)';
+		$server='Huawei';
+		my ($ProductName) = ($decoded_header_response =~ /var ProductName = "(.*?)"/i);		
+		$type=$type."|".$ProductName;		
+		
+	} 	
 
 	if($decoded_header_response =~ /connect.sid|X-Powered-By: Express/i)
 		{$type=$type."|"."Express APP";}	
@@ -2020,12 +2053,10 @@ sub _build_browser {
 		else
 			{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 	}
-	#$proxy_host='127.0.0.1';
-	#$proxy_port='8083';
-	#$ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;
-	#$browser->env_proxy;
-
-	#$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
+	# $proxy_host='127.0.0.1';
+	# $proxy_port='8083';
+	# $ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;	
+	# $browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
 	
 	return $browser;     
 }
