@@ -1457,27 +1457,27 @@ sub getData
 	
 	if($decoded_header_response =~ /laravel_session/m)
 		{$poweredBy=$poweredBy."Laravel";} 
-	# ($hours, $minutes, $second) = ($time =~ /(\d\d):(\d\d):(\d\d)/);
+	
 	#my $title;#) =~ /<title>(.+)<\/title>/s;
-
-	#$decoded_header_response =~ /<title(.{1,90})<\/title>/s ;
-	
-	#<title>Sudamericana Clientes</title>
 	my $title ;
-	if ($decoded_header_response =~ m/>(.*?)<\/title>/) {
-		$title = $1; 
-	}	
-	
+	#<title>Sudamericana Clientes</title>
+	$decoded_header_response =~ /<title>(.*?)<\/title>/s ;
+	$title = $1; 
 
-	#my $title =$1; 
-	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 	if ($title eq '')
 		{($title) = ($decoded_header_response =~ /<title(.*?)\n/i);}
 
 	if ($title eq '')
 		{($title) = ($decoded_header_response =~ /Title:(.*?)\n/i);}
+	
+	if ($title eq '')
+	{
+		$decoded_header_response =~ m/>(.*?)<\/title>/;
+		$title = $1; 
+	}
+	
 
-
+	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 	$title = only_ascii($title);
 	
 	print "title $title \n" if ($debug);	
