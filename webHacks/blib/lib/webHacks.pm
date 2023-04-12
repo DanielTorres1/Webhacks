@@ -112,30 +112,30 @@ my $result_table = Text::Table->new(
     
 print $result_table;
 
-foreach my $file (@links) {
+foreach my $file_name (@links) {
     $pm->start and next; # do the fork   
-    $file =~ s/\n//g; 	
+    $file_name =~ s/\n//g; 	
 	#Adicionar backslash
-	#if (! ($file =~ /\./m)){	 
+	#if (! ($file_name =~ /\./m)){	 
 	if ($url_file =~ "directorios"){	 
-		$file = $file."/";
-	}
+		$file_name = $file_name."/";
+	}	
 	
 	switch ($extension) {
-	case "php"	{ $file =~ s/EXT/php/g;  }	
-	case "html"	{ $file =~ s/EXT/html/g;  }
-	case "asp"	{ $file =~ s/EXT/asp/g;  }
-	case "aspx"	{ $file =~ s/EXT/aspx/g;  }
-	case "htm"	{ $file =~ s/EXT/htm/g;  }
-	case "jsp"	{ $file =~ s/EXT/jsp/g;  }
-	case "pl"	{ $file =~ s/EXT/pl/g;  }
+	case "php"	{ $file_name =~ s/EXT/php/g;  }	
+	case "html"	{ $file_name =~ s/EXT/html/g;  }
+	case "asp"	{ $file_name =~ s/EXT/asp/g;  }
+	case "aspx"	{ $file_name =~ s/EXT/aspx/g;  }
+	case "htm"	{ $file_name =~ s/EXT/htm/g;  }
+	case "jsp"	{ $file_name =~ s/EXT/jsp/g;  }
+	case "pl"	{ $file_name =~ s/EXT/pl/g;  }
     }
 
 	my $url ;
 	if ($rport eq '80' || $rport eq '443')
-		{$url = "$proto://".$rhost.$path.$file; }
+		{$url = "$proto://".$rhost.$path.$file_name; }
 	else
-		{$url = "$proto://".$rhost.":".$rport.$path.$file; }
+		{$url = "$proto://".$rhost.":".$rport.$path.$file_name; }
         
 	#print "getting $url \n";
 	
@@ -154,9 +154,9 @@ foreach my $file (@links) {
 		#$decoded_content = $response->decoded_content; 	 
 		$url = $url.$redirect_path
 	}  
-	#########################################
-	
-		 
+	#########################################		
+
+
 	if ($error404 ne '')		
 		{			
 			if($decoded_content =~ /$error404/m){	
@@ -183,12 +183,15 @@ foreach my $file (@links) {
 			{$status="404";}
 	}
 	##################
-	print "vuln $vuln \n" if ($debug);	
+	print "vuln $vuln \n" if ($debug);
 		
 	my $content_length = $response->content_length;
-	#print "content_length $content_length \n";
-	#print " pinche status2 $status \n";
-
+	#Revisar si realmente es un archivo phpinfo
+	if ($file_name =~ /phpinfo/m && $url_file =~ "divulgacionInformacion"  ){	 
+		#print ("check phpinfo");
+			if( $decoded_content !~ /HTTP_X_FORWARDED_HOST|HTTP_X_FORWARDED_SERVER|phpinfo\(\)/i)
+				{$status="404"; }
+	}
 	
 	if($status !~ /404|400|302/m){		
 		my @status_array = split(" ",$status);	
@@ -302,11 +305,11 @@ my $result_table = Text::Table->new(
     
 print $result_table;    
 
-foreach my $file (@links) {
+foreach my $file_name (@links) {
     $pm->start and next; # do the fork   
-    $file =~ s/\n//g; 	
+    $file_name =~ s/\n//g; 	
 
-	my $url = "$proto://".$rhost.":".$rport.$path."~".$file."/";
+	my $url = "$proto://".$rhost.":".$rport.$path."~".$file_name."/";
         
 	#print "getting $url \n";
 	##############  thread ##############
@@ -396,16 +399,16 @@ my $result_table = Text::Table->new(
 
 print $result_table;
 
-foreach my $file (@links) 
+foreach my $file_name (@links) 
 {
 	
 	my @backups = (".FILE.EXT.swp","FILE.inc","FILE~","FILE.bak","FILE.tmp","FILE.temp","FILE.old","FILE.bakup","FILE-bak", "FILE~", "FILE.save", "FILE.swp", "FILE.old","Copy of FILE","FILE (copia 1)","FILE::\$DATA");
-	$file =~ s/\n//g; 	
-	#print "file $file \n";
+	$file_name =~ s/\n//g; 	
+	#print "file $file_name \n";
 	my $url;
 
 	foreach my $backup_file (@backups) {			
-		$backup_file =~ s/FILE/$file/g;    		
+		$backup_file =~ s/FILE/$file_name/g;    		
 		
 		$url = "$proto://".$rhost.":".$rport.$path.$backup_file;
 				    
@@ -1464,8 +1467,7 @@ sub getData
 	if ($decoded_header_response =~ m/>(.*?)<\/title>/) {
 		$title = $1; 
 	}	
-	print ("title ($title)\n");	
-
+	
 
 	#my $title =$1; 
 	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
@@ -1477,7 +1479,8 @@ sub getData
 
 
 	$title = only_ascii($title);
-
+	
+	print "title $title \n" if ($debug);	
 
 	#<meta name="geo.placename" content="Quillacollo" />
 	my ($geo) = ($decoded_header_response =~ /name="geo.placename" content="(.*?)"/i);			

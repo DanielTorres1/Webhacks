@@ -8,9 +8,6 @@ accounts.xml
 activity.log
 admin/access.log
 admin/error.log
-admin/fckeditor/editor/filemanager/connectors/php/connector.php
-admin/fckeditor/editor/filemanager/connectors/php/upload.php
-admin/fckeditor/editor/filemanager/upload/php/upload.php
 admin/logs/
 admin/_logs/access-log
 admin/_logs/access.log
@@ -26,7 +23,6 @@ admin/_logs/error_log
 admin/logs/error-log
 admin/logs/error.log
 admin/logs/error_log
-aniversario.php
 apache/logs/access.log
 apache/logs/error.log
 api.log
@@ -58,7 +54,6 @@ apps/frontend/config/databases.yml
 assets/npm-debug.log
 asterisk.log
 atlassian-ide-plugin.xml
-ault/connectors/php/connector.php
 backend/core/info.xml
 behat.yml
 BingSiteAuth.xml
@@ -68,7 +63,6 @@ bitrix/modules/error.log.old
 bitrix/modules/smtpd.log
 bitrix/modules/updater.log
 bitrix/modules/updater_partner.log
-bitrix/php_interface/dbconn.php
 black/template.xml
 build_config_private.ini
 build.local.xml
@@ -165,7 +159,6 @@ etc/config.ini
 etc/database.xml
 eudora.ini
 ex071101.log
-fckeditor/editor/filemanager/connectors/php/connector.php
 fckeditor/editor/filemanager/connectors/php/upload.php
 fckeditor/editor/filemanager/upload/php/upload.php
 .filezilla/sitemanager.xml.xml
@@ -398,11 +391,6 @@ web.xml
 wp-app.log
 /wp-content/debug.log
 wp-content/debug.log
-wp-content/plugins/akismet/admin.php
-wp-content/plugins/count-per-day/js/yc/d00.php
-wp-content/plugins/google-sitemap-generator/sitemap-core.php
-wp-includes/rss-functions.php
-wp.php
 ws_ftp.ini
 WS_FTP.ini
 ws_ftp.log
