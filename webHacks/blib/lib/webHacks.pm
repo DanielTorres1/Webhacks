@@ -1544,16 +1544,16 @@ sub getData
 		{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
 
 	# >AssureSoft</h1>
-	my ($h1) = ($decoded_header_response =~ />(.*?)<\/h1>/i);		
+	my ($h1) = ($decoded_header_response =~ />([\w\s]+)<\/h1>/i);		
 	$poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 1);
 
-	my ($h2) = ($decoded_header_response =~ />(.*?)<\/h2>/i);		
+	my ($h2) = ($decoded_header_response =~ />([\w\s]+)<\/h2>/i);		
 	$poweredBy = $poweredBy.'| H2='.$h2 if (length($h2) > 1);
 
-	my ($h3) = ($decoded_header_response =~ />(.*?)<\/h3>/i);		
+	my ($h3) = ($decoded_header_response =~ />([\w\s]+)<\/h3>/i);		
 	$poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 1);
 
-	my ($h4) = ($decoded_header_response =~ />(.*?)<\/h4>/i);		
+	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);		
 	$poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 1);
 
 
