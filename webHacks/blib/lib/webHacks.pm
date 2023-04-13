@@ -1543,18 +1543,19 @@ sub getData
 	if ($jquery1 ne '')
 		{$poweredBy = $poweredBy."| JQuery ".$jquery1.".".$jquery2;}	
 
-	# >AssureSoft</h1>
+	# >AssureSoft</h1>					#extraer alfanumericos + espacios
 	my ($h1) = ($decoded_header_response =~ />([\w\s]+)<\/h1>/i);		
-	$poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 1);
+	#elimiinar saltos de linea y espacios consecutivos
+	$h1 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 2);
 
 	my ($h2) = ($decoded_header_response =~ />([\w\s]+)<\/h2>/i);		
-	$poweredBy = $poweredBy.'| H2='.$h2 if (length($h2) > 1);
+	$h2 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H2='.$h2 if (length($h2) > 2);
 
 	my ($h3) = ($decoded_header_response =~ />([\w\s]+)<\/h3>/i);		
-	$poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 1);
+	$h3 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 2);
 
 	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);		
-	$poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 1);
+	$h4 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);
 
 
 	if($decoded_header_response =~ /GASOLINERA/m)
