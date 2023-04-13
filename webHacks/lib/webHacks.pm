@@ -1931,6 +1931,10 @@ sub checkVuln (){
 	if ($decoded_content =~ /db\=information_schema/i){	 
 		$vuln = "OpenPhpMyAdmin";
 	}		
+
+	if ($decoded_content =~ /var user = "admin";/i){	 
+		$vuln = "OpenMikrotik";
+	}		
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
@@ -1951,6 +1955,9 @@ sub checkVuln (){
 	
 	if($decoded_content =~ /HTTP_X_FORWARDED_HOST|HTTP_X_FORWARDED_SERVER|phpinfo\(\)/i)
 		{$vuln = "divulgacionInformacion";} 
+
+	if($decoded_content =~ /Client IP:/i)
+		{$vuln = "IPinterna";} 
 	
 	return $vuln;
 }
