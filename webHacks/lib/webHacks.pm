@@ -1366,6 +1366,7 @@ sub getData
 	my $newdomain;
 	while ($redirect_url ne '')
 	{
+		print "redirect_url en WHILE1 $redirect_url \n" if ($debug);
 		$response = $self->browser->get($current_url);	  
 		my $last_url = $response->request()->uri();	
 		$status = $response->status_line;
@@ -1399,12 +1400,20 @@ sub getData
 		$decoded_response =~ s/.*sclogin.html*//g; 
 		$decoded_response =~ s/.*index.html*//g; 
 		$decoded_response =~ s/.*?console*//g; 
+		#print($decoded_response );
 		
 
 		#obtener redirect javascrip/html
 		$redirect_url = getRedirect($decoded_response);	
-		print "redirect_url $redirect_url \n" if ($debug);
-				
+		print "redirect_url nuevo $redirect_url \n" if ($debug);
+		
+		my $longitud_respuesta = length($decoded_response);
+		print "longitud_respuesta $longitud_respuesta \n" if ($debug);	
+		if ($longitud_respuesta > 900)#si tiene esa longitud puede que tenga otra redireccion
+		{
+			last;
+		}
+
 		if ( $redirect_url ne ''  )
 		{		
 			# ruta completa http://10.0.0.1/owa
@@ -1425,14 +1434,7 @@ sub getData
 			print "final_url_redirect $final_url_redirect \n" if ($debug);	
 			$current_url = $final_url_redirect;
 		}
-		my $longitud_respuesta = length($decoded_response);
-		print "longitud_respuesta $longitud_respuesta \n" if ($debug);	
-		if ($longitud_respuesta > 500)#si tiene esa longitud puede que tenga otra redireccion
-		{
-			last;
-		}
-		############################
-	print("\n");
+		print "redirect_url en WHILE2 $redirect_url \n" if ($debug);				
 	}
 
 	
@@ -1555,8 +1557,7 @@ sub getData
 	$h3 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 2);
 
 	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);		
-	$h4 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);
-
+	$h4 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);	
 
 	if($decoded_header_response =~ /GASOLINERA/m)
 		{$type=$type."|"."GASOLINERA";} 		
@@ -1576,6 +1577,10 @@ sub getData
 	
 	if($decoded_header_response =~ /CSCOE/i)
 		{$server="ciscoASA";} 
+
+	if($decoded_header_response =~ /Cisco EPN Manage/i)
+		{$server="Cisco EPN Manage";} 
+	
 
 	if($decoded_header_response =~ /Boa\/0.9/i)
 		{if ($title eq '') {$title="Broadband device web server";}} 	
@@ -1679,6 +1684,10 @@ sub getData
 
 	if($decoded_header_response =~ /Hikvision Digital/i)
 		{$title="Hikvision Digital";} 			
+
+	if($decoded_header_response =~ /szErrorTip/i)
+		{$title="Hikvision Digital";} 	
+		
 		
 	if($decoded_header_response =~ /FreeNAS/i)
 		{$title="FreeNAS";} 			
@@ -2064,10 +2073,10 @@ sub _build_browser {
 		else
 			{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 	}
-	# $proxy_host='127.0.0.1';
-	# $proxy_port='8083';
-	# $ENV{HTTPS_PROXY} = "http://".$proxy_host.":".$proxy_port;	
-	# $browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
+	$proxy_host='127.0.0.1';
+	$proxy_port='8083';
+	#$ENV{HTTPS_PROXY} = "https://".$proxy_host.":".$proxy_port;	
+	#$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
 	
 	return $browser;     
 }
