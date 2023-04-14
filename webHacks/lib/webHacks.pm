@@ -165,6 +165,10 @@ foreach my $file_name (@links) {
 			}
 		}
 	
+	if($decoded_content =~ /Endpoint not found/m){	
+		$status="404"; 		
+	}
+	
 	############# check vulnerabilities ###
 	my $vuln=checkVuln($decoded_content);
 	if ($vuln ne ""){
@@ -1659,6 +1663,9 @@ sub getData
 		{$server="Dahua";}			
 
 	if($decoded_header_response =~ /\/webplugin.exe/i)
+		{$server="Dahua";}	
+
+	if($title =~ /WEB SERVICE/i)
 		{$server="Dahua";}			
 
 	if($decoded_header_response =~ /ftnt-fortinet-grid icon-xl/i)

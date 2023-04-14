@@ -1659,6 +1659,9 @@ sub getData
 		{$server="Dahua";}			
 
 	if($decoded_header_response =~ /\/webplugin.exe/i)
+		{$server="Dahua";}	
+
+	if($title =~ /WEB SERVICE/i)
 		{$server="Dahua";}			
 
 	if($decoded_header_response =~ /ftnt-fortinet-grid icon-xl/i)
