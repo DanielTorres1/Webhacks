@@ -39,12 +39,12 @@ for item in subject:
 try:
 	san = loaded_cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
 	dns_names = san.value.get_values_for_type(x509.DNSName)
-	i=0
+	i=0	
 	for dns in dns_names:
 		certificate_data_json[f'subdomain{i}'] = dns
 		i=i+1
 except:
-  print("")
+  c=1 # solo para que no falle el try
 
 
 print(certificate_data_json)

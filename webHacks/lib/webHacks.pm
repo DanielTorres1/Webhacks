@@ -589,6 +589,58 @@ sub passwordTest
 	else
 		{$url = "$proto://".$rhost.":".$rport.$path; }
         
+
+
+	############### HUAWEI-AR
+	if ($module eq "HUAWEI-AR")
+	{
+
+		$headers->header("Origin" => $url);
+		$headers->header("Referer" => $url);
+		$headers->header("Upgrade-Insecure-Requests" => 1);
+			
+
+		my @passwords_list = []; 
+		if ($passwords_file ne '' )
+		{
+			print "Archivo password";
+			open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+			while (my $password=<MYINPUT>)
+			{ 						
+				push @passwords_list,$password; 
+			}
+		}
+		else
+		{
+			@passwords_list[0]=$password; 
+		}
+		
+		
+		foreach my $password (@passwords_list) 
+		{
+			$password =~ s/\n//g;				
+			my $hash_data = {'UserName' => $user, 
+			'Password' => $password,
+			'frashnum'=> '',
+			'LanguageType'=> 0			
+			};	
+
+			my $post_data = convert_hash($hash_data);
+			
+			my $response = $self->dispatch(url => $url,method => 'POST',post_data =>$post_data, headers => $headers);
+			my $decoded_response = $response->decoded_content;
+			my $status = $response->status_line;								
+			print "[+] user:$user password:$password status:$status\n";
+			#print($decoded_response);
+			if ($decoded_response !~ /ErrorMsg/m) # si la respuesta no tiene error
+			{					
+				print "Password encontrado: [HUAWEI-AR] $url Usuario:$user Password:$password \n";
+				last;											
+			}	
+		}				
+		close MYINPUT;	
+	}
+	
 	############### ZTE-ONT-4G
 	if ($module eq "ZTE-ONT-4G")
 	{
@@ -1656,6 +1708,9 @@ sub getData
 	if($decoded_header_response =~ /roundcube_sessid/i)
 		{$type=$type."|"."Roundcube";}	 
 
+	if($decoded_header_response =~ /mbrico N 300Mbps WR840N/i)
+		{$server="TL-WR840N";$title='Router inalámbrico N 300Mbps WR840N';}
+
 	if($decoded_header_response =~ /playback_bottom_bar/i)
 		{$server="Dahua";}
 
@@ -1665,8 +1720,16 @@ sub getData
 	if($decoded_header_response =~ /\/webplugin.exe/i)
 		{$server="Dahua";}	
 
+	if($decoded_header_response =~ /login\/bower_components\/requirejs\/require.js/i)
+		{$server="MDS Orbit Device Manager ";}	
+
+		
+
 	if($title =~ /WEB SERVICE/i)
-		{$server="Dahua";}			
+		{$server="Dahua";}	
+
+	if($decoded_header_response =~ /ATEN International Co/i)
+		{$server="Super micro";}		 		
 
 	if($decoded_header_response =~ /ftnt-fortinet-grid icon-xl/i)
 		{$type=$type."|"."Fortinet";$server='Fortinet';}	 			
