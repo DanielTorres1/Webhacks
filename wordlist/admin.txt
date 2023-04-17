@@ -302,6 +302,7 @@ jmx-console/HtmlAdaptor
 LiveUser_Admin/
 login/
 login1/
+db/
 login.asp
 login_db/
 loginflat/

@@ -1723,6 +1723,8 @@ sub getData
 	if($decoded_header_response =~ /login\/bower_components\/requirejs\/require.js/i)
 		{$server="MDS Orbit Device Manager ";}	
 
+	if($decoded_header_response =~ /MoodleSession|content="moodle/i)
+		{$type=$type."|"."moodle";}	 
 		
 
 	if($title =~ /WEB SERVICE/i)
