@@ -1519,8 +1519,9 @@ sub getData
 	#my $title;#) =~ /<title>(.+)<\/title>/s;
 	my $title ;
 	#<title>Sudamericana Clientes</title>
-	$decoded_header_response =~ /<title>(.*?)<\/title>/s ;
+	$decoded_header_response =~ /<title>(.*?)<\/title>/i ;
 	$title = $1; 
+	print ("title222 $title");
 
 	if ($title eq '')
 		{($title) = ($decoded_header_response =~ /<title(.*?)\n/i);}
@@ -1537,6 +1538,7 @@ sub getData
 
 	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
 	$title = only_ascii($title);
+	$title = substr($title, 0, 50);
 	
 	print "title $title \n" if ($debug);	
 
@@ -1604,16 +1606,16 @@ sub getData
 	# >AssureSoft</h1>					#extraer alfanumericos + espacios
 	my ($h1) = ($decoded_header_response =~ />([\w\s]+)<\/h1>/i);		
 	#elimiinar saltos de linea y espacios consecutivos
-	$h1 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 2);
+	$h1 =~ s/\n|\s+/ /g; $h1 = only_ascii($h1); $poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 2);
 
 	my ($h2) = ($decoded_header_response =~ />([\w\s]+)<\/h2>/i);		
-	$h2 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H2='.$h2 if (length($h2) > 2);
+	$h2 =~ s/\n|\s+/ /g; $h2 = only_ascii($h2); $poweredBy = $poweredBy.'| H2='.$h2 if (length($h2) > 2);
 
 	my ($h3) = ($decoded_header_response =~ />([\w\s]+)<\/h3>/i);		
-	$h3 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 2);
+	$h3 =~ s/\n|\s+/ /g; $h3 = only_ascii($h3); $poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 2);
 
 	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);		
-	$h4 =~ s/\n|\s+/ /g; $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);	
+	$h4 =~ s/\n|\s+/ /g; $h4 = only_ascii($h4); $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);	
 
 	if($decoded_header_response =~ /GASOLINERA/m)
 		{$type=$type."|"."GASOLINERA";} 		
@@ -1726,7 +1728,6 @@ sub getData
 	if($decoded_header_response =~ /MoodleSession|content="moodle/i)
 		{$type=$type."|"."moodle";}	 
 		
-
 	if($title =~ /WEB SERVICE/i)
 		{$server="Dahua";}	
 
@@ -1978,6 +1979,7 @@ $text =~ s/Ó/O/g;
 $text =~ s/Ú/U/g;
 $text =~ s/Ñ/N/g;
 
+$text =~ s/[^[:ascii:]]//g;
 return $text;
 }
 
