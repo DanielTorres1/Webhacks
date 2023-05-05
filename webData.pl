@@ -84,6 +84,7 @@ my $title = %data{'title'};
 my $server = %data{'server'};
 my $status = %data{'status'};
 my $redirect_url = %data{'redirect_url'};
+my $last_url = %data{'last_url'};
 my $type = %data{'type'};
 my $newdomain = %data{'newdomain'};
 my $vulnerability = %data{'vulnerability'};
@@ -120,13 +121,13 @@ if($status =~ /Name or service not known/m){
  } 
 
 if ($newdomain ne '')		
-	{print "$title~$server~$status~$redirect_url~$type~$poweredBy~$vulnerability~^$wappalyzer^Dominio identificado^$newdomain";}
+	{print "$title~$server~$status~$redirect_url~$last_url~$type~$poweredBy~$vulnerability~^$wappalyzer^Dominio identificado^$newdomain";}
 else
 {
 	if ($domain ne '')
 		{print "^$wappalyzer^Dominio identificado^$domain";}
 	else
-		{print "$title~$server~$status~$redirect_url~$type~$poweredBy~$vulnerability~^$wappalyzer";}
+		{print "$title~$server~$status~$redirect_url~$last_url~$type~$poweredBy~$vulnerability~^$wappalyzer";}
 }
 
 

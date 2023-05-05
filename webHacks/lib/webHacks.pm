@@ -158,14 +158,14 @@ foreach my $file_name (@links) {
 
 
 	if ($error404 ne '')		
-		{			
-			if($decoded_content =~ /$error404/m){	
-				$status="404"; 
-				#print " pinche NEWWWW status $status de $url \n";
-			}
+	{			
+		if($decoded_content =~ /$error404/m){	
+			$status="404"; 
+			#print " pinche NEWWWW status $status de $url \n";
 		}
+	}
 	
-	if($decoded_content =~ /Endpoint not found/m){	
+	if($decoded_content =~ /Endpoint not found|Can't connect to MySQL server|Cannot log in to the MySQL server|Could not connect to MySQL/m){	
 		$status="404"; 		
 	}
 	
@@ -1226,7 +1226,7 @@ sub passwordTest
 			#close (SALIDA);
 				
 						
-			if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|1045 El servidor MySQL/i))
+			if (!($decoded_response =~ /pma_username/m) && !($decoded_response =~ /Cannot log in to the MySQL server|Can't connect to MySQL server|1045 El servidor MySQL/i))
 			{			
 				print "Password encontrado: [phpmyadmin] $url Usuario:$user Password:$password\n";
 				last;									
@@ -1420,11 +1420,13 @@ sub getData
 	my $decoded_response;
 	my $status;
 	my $newdomain;
+	my $last_url;
 	while ($redirect_url ne '')
 	{
 		print "redirect_url en WHILE1 $redirect_url \n" if ($debug);
 		$response = $self->browser->get($current_url);	  
-		my $last_url = $response->request()->uri();	
+		$last_url = $response->request()->uri();	
+		print "last_url $last_url\n" if ($debug);
 		$status = $response->status_line;
 
 		############# check redireccion http --> https ############
@@ -1460,7 +1462,7 @@ sub getData
 		
 
 		#obtener redirect javascrip/html
-		$redirect_url = getRedirect($decoded_response);	
+		$redirect_url = getRedirect($decoded_response);	#Obtener redireccion javascript o html
 		print "redirect_url nuevo $redirect_url \n" if ($debug);
 		
 		my $longitud_respuesta = length($decoded_response);
@@ -1800,6 +1802,7 @@ sub getData
 				"server" => $server,
 				"status" => $status,
 				"redirect_url" => $final_url_redirect,
+				"last_url" => $last_url,
 				"type" => $type,            				
 				"newdomain" => $newdomain,			
 				"poweredBy" => $poweredBy,
@@ -2146,8 +2149,8 @@ sub _build_browser {
 		else
 			{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 	}
-	$proxy_host='127.0.0.1';
-	$proxy_port='8083';
+	#$proxy_host='127.0.0.1';
+	#$proxy_port='8083';
 	#$ENV{HTTPS_PROXY} = "https://".$proxy_host.":".$proxy_port;	
 	#$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
 	
