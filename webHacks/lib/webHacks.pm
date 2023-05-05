@@ -1426,8 +1426,13 @@ sub getData
 		print "redirect_url en WHILE1 $redirect_url \n" if ($debug);
 		$response = $self->browser->get($current_url);	  
 		$last_url = $response->request()->uri();	
-		print "last_url $last_url\n" if ($debug);
 		$status = $response->status_line;
+
+		print "last_url $last_url\n" if ($debug);
+		print "url_original $url_original\n" if ($debug);	
+		if ($url_original ne $last_url)
+			{$type=$type."|301 Moved";}  # hubo redireccion http --> https 	
+		
 
 		############# check redireccion http --> https ############
 		#Peticion original  https://186.121.202.25/
@@ -1615,8 +1620,9 @@ sub getData
 	my ($h3) = ($decoded_header_response =~ />([\w\s]+)<\/h3>/i);		
 	$h3 =~ s/\n|\s+/ /g; $h3 = only_ascii($h3); $poweredBy = $poweredBy.'| H3='.$h3 if (length($h3) > 2);
 
-	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);		
-	$h4 =~ s/\n|\s+/ /g; $h4 = only_ascii($h4); $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);	
+	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);
+	$h4 =~ s/\n|\s+/ /g; $h4 = only_ascii($h4); $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);
+	
 
 	if($decoded_header_response =~ /GASOLINERA/m)
 		{$type=$type."|"."GASOLINERA";} 		
