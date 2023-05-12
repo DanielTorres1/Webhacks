@@ -182,6 +182,7 @@ localhost.sql
 main.mdb
 manifest.mf
 MANIFEST.MF
+test.aspx
 members.sql
 members.sql.gz
 members.sqlite

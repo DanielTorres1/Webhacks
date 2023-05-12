@@ -304,6 +304,7 @@ login/
 login1/
 db/
 login.asp
+cobratel
 login_db/
 loginflat/
 login.html

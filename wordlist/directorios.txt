@@ -19,8 +19,12 @@ Comprobante
 Transferencia
 ConsultaFavorito
 ConfiguracionCuenta
+ummm
 ActualizarEstadoBloqueo
 0manager
+afijos
+donwebradio
+sigreh
 1
 10
 11

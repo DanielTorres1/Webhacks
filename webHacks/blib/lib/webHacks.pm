@@ -1,11 +1,7 @@
-#module-starter --module=webHacks --author="Daniel Torres" --email=daniel.torres@owasp.org
-# May 27 2017
-# web Hacks
 package webHacks;
 our $VERSION = '1.0';
 use Moose;
 use Text::Table;
-use Data::Dumper;
 use LWP::UserAgent;
 use HTTP::Cookies;
 use URI::Escape;
@@ -14,14 +10,8 @@ use HTTP::Response;
 use HTML::Scrubber;
 use Switch;
 use Parallel::ForkManager;
-use Term::ANSIColor;
 use utf8;
-use Text::Unidecode;
-use Digest::MD5 qw(md5_hex);
-#use Net::SSL;
 binmode STDOUT, ":encoding(UTF-8)";
-
-
 no warnings 'uninitialized';
 
 {
@@ -1524,22 +1514,30 @@ sub getData
 		{$poweredBy=$poweredBy."Laravel";} 
 	
 	#my $title;#) =~ /<title>(.+)<\/title>/s;
-	my $title ;
-	#<title>Sudamericana Clientes</title>
-	$decoded_header_response =~ /<title>(.*?)<\/title>/i ;
-	$title = $1; 
+	my $title = '';
+	#<title>Sudamericana Clientes</title>	
+	{($title) = ($decoded_header_response =~ /<title>(.*?)<\/title>/i);}	
 
 	if ($title eq '')
-		{($title) = ($decoded_header_response =~ /<title(.*?)\n/i);}
+		{($title) = ($decoded_header_response =~ /<title>\s*(.*?)\s*<\/title>/s);}
 
 	if ($title eq '')
-		{($title) = ($decoded_header_response =~ /Title:(.*?)\n/i);}
-	
+		{($title) = ($decoded_header_response =~ /<title(.*?)\n/i);}	
+
+	if ($title eq '')
+		{($title) = ($decoded_header_response =~ /Title:(.*?)\n/i);}	
+
 	if ($title eq '')
 	{
 		$decoded_header_response =~ m/>(.*?)<\/title>/;
 		$title = $1; 
 	}
+
+	if ($title eq '')
+	{
+		$decoded_header_response =~ m/\n(.*?)\n<\/title>/;
+		$title = $1; 
+	}	
 	
 
 	$title =~ s/>|\n|\t|\r//g; #borrar saltos de linea
@@ -1611,7 +1609,7 @@ sub getData
 
 	# >AssureSoft</h1>					#extraer alfanumericos + espacios
 	my ($h1) = ($decoded_header_response =~ />([\w\s]+)<\/h1>/i);		
-	#elimiinar saltos de linea y espacios consecutivos
+	#eliminar saltos de linea y espacios consecutivos
 	$h1 =~ s/\n|\s+/ /g; $h1 = only_ascii($h1); $poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 2);
 
 	my ($h2) = ($decoded_header_response =~ />([\w\s]+)<\/h2>/i);		
@@ -1622,12 +1620,13 @@ sub getData
 
 	my ($h4) = ($decoded_header_response =~ />([\w\s]+)<\/h4>/i);
 	$h4 =~ s/\n|\s+/ /g; $h4 = only_ascii($h4); $poweredBy = $poweredBy.'| H4='.$h4 if (length($h4) > 2);
-
-	my ($small) = ($decoded_header_response =~ />([\w\s]+)<\/small>/i);
-	$small =~ s/\n|\s+/ /g; $small = only_ascii($small); $poweredBy = $poweredBy.'| tag-small='.$small if (length($small) > 2);
+	
 
 	if($decoded_header_response =~ /GASOLINERA/m)
-		{$type=$type."|"."GASOLINERA";} 		
+		{$type=$type."|"."GASOLINERA";} 
+
+	if($decoded_header_response =~ /<FORM/m)
+		{$type=$type."|"."formulario-login";} 	
 
 	if($decoded_header_response =~ /2008-2017 ZTE Corporation/m)
 		{$type=$type."|"."ZTE-2017";} 
@@ -1676,7 +1675,6 @@ sub getData
 
 	if($decoded_header_response =~ /Powered by Abrenet/i)
 		{$poweredBy=$poweredBy."|"."Powered by Abrenet";} 	
-	#print($decoded_header_response);
 
 	if($decoded_header_response =~ /csrfmiddlewaretoken/i)
 		{$type=$type."|"."Django";} 	
@@ -1704,6 +1702,13 @@ sub getData
 		
 	} 	
 
+	if($decoded_header_response =~ /ui_huawei_fw_ver/i)
+		{$server='Huawei';} 	
+	
+	if($decoded_header_response =~ /WVRTM-127ACN/i)
+		{$type=$type."|WVRTM-127ACN";		} 	
+		
+
 	if($decoded_header_response =~ /connect.sid|X-Powered-By: Express/i)
 		{$type=$type."|"."Express APP";}	
 
@@ -1722,23 +1727,17 @@ sub getData
 	if($decoded_header_response =~ /mbrico N 300Mbps WR840N/i)
 		{$server="TL-WR840N";$title='Router inalámbrico N 300Mbps WR840N';}
 
-	if($decoded_header_response =~ /playback_bottom_bar/i)
-		{$server="Dahua";}
-
 	if((($decoded_header_response =~ /custom_logo\/web_logo.png/i) || ($decoded_header_response =~ /baseProj\/images\/favicon.ico/i) ) && ($decoded_header_response =~ /WEB SERVICE/i))
 		{$server="Dahua";}			
 
-	if($decoded_header_response =~ /\/webplugin.exe/i)
+	if($decoded_header_response =~ /webplugin.exe|BackUpBeginTimeChanged|playback_bottom_bar/i)
 		{$server="Dahua";}	
-
+	
 	if($decoded_header_response =~ /login\/bower_components\/requirejs\/require.js/i)
 		{$server="MDS Orbit Device Manager ";}	
 
 	if($decoded_header_response =~ /MoodleSession|content="moodle/i)
 		{$type=$type."|"."moodle";}	 
-		
-	if($title =~ /WEB SERVICE/i)
-		{$server="Dahua";}	
 
 	if($decoded_header_response =~ /ATEN International Co/i)
 		{$server="Super micro";}		 		
@@ -1830,7 +1829,6 @@ sub getData
 		);
 
 	my $final_content = $scrubber->scrub($decoded_response);
-	#print $final_content;
 			
 	$self->html($final_content);
 	return %data;
@@ -1838,104 +1836,10 @@ sub getData
 }
 
 
-
-sub sqli_test
-{
-my $self = shift;
-my $headers = $self->headers;
-my $rhost = $self->rhost;
-my $rport = $self->rport;
-my $debug = $self->debug;
-my $proto = $self->proto;
-my $html = $self->html;
-my $url = $self->final_url;
-#print "html  $html  \n" ;	
-print "Tessting SQLi\n" if ($debug );
-my ($inyection)=@_;
-
-my @sqlerrors = ( 'error in your SQL syntax',
- 'mysql_fetch',
- 'sqlsrv_fetch_object',
- "Unclosed quotation mark after the character",
- 'num_rows',
- "syntax error at or near",
- "SQL command not properly ended",
- 'ORA-01756',
- "quoted string not properly terminated",
- 'Error Executing Database Query',
- "Failed to open SQL Connection",
- 'SQLServer JDBC Driver',
- 'Microsoft OLE DB Provider for SQL Server',
- 'Unclosed quotation mark',
- 'ODBC Microsoft Access Driver',
- 'Microsoft JET Database',
- 'Error Occurred While Processing Request',
- 'Microsoft OLE DB Provider for ODBC Drivers error',
- 'Invalid Querystring',
- 'OLE DB Provider for ODBC',
- 'VBScript Runtime',
- 'ADODB.Field',
- 'BOF or EOF',
- 'ADODB.Command',
- 'JET Database',
- 'mysql_fetch_array()',
- 'Syntax error',
- 'mysql_numrows()',
- 'GetArray()',
- 'FetchRow()');
- 
-my $error_response="";
-my $pwned;
- 
-$html =~ /<form action="(.*?)"/;			
-my $action = $1; 
-print "action $action \n" if ($debug );
-
-my $post_data = "";
-while($html =~ /<input name="(.*?)"/g) 
-{    
-    $post_data = $post_data.$1."=XXX&";
-}
-chop($post_data); # delete last character (&)
-
-$post_data =~ s/XXX/$inyection/g; 
-print "post_data  $post_data  \n" if ($debug );
-
-if ($post_data ne '')
-{
-	my $final_url = $url.$action;	
-	print "final_url  $final_url  \n" if ($debug );
-	$headers->header("Content-Type" => 'application/x-www-form-urlencoded');	
-	my $response = $self->dispatch(url => $final_url, method => 'POST',post_data =>$post_data, headers => $headers);
-	my $decoded_response = $response->decoded_content;
-	
-	#open (SALIDA,">sqli.html") || die "ERROR: No puedo abrir el fichero google.html\n";
-	#print SALIDA $decoded_response;
-	#close (SALIDA);   
-
-	###### chech error in response #####
-	foreach (@sqlerrors)
-	{	
-		 if($decoded_response =~ /$_/i)
-		 {
-			$error_response = $_;			
-			$pwned=1;		
-			last;
-		  }
-		else
-			{$error_response = ""}
-	}	
-}
-		
-
-return($error_response);
-}
-
 ################################### build objects ########################
 
 ################### build headers object #####################
 sub _build_headers {   
-#print "building header \n";
 my $self = shift;
 my $debug = $self->debug;
 my $mostrarTodo = $self->mostrarTodo;
@@ -1955,13 +1859,6 @@ $headers->header('Accept' => '*/*');
 $headers->header('Connection' => 'close'); 
 $headers->header('Cache-Control' => 'max-age=0'); 
 $headers->header('DNT' => '1'); 
-#$headers->header('Upgrade-Insecure-Requests' => '1'); 
-#$headers->header('' => ''); 
-
-#Connection
-#$headers->header('Content-Type' => 'application/x-www-form-urlencoded');
-#$headers->header('Accept-Encoding' => [ HTTP::Message::decodable() ]);
-
 
 return $headers; 
 }
@@ -1969,8 +1866,6 @@ return $headers;
 
 ###################################### internal functions ###################
 
-
-# remve acents and ñ
 sub only_ascii
 {
  my ($text) = @_;
@@ -1993,8 +1888,6 @@ $text =~ s/[^[:ascii:]]//g;
 return $text;
 }
 
-
-#Convert a hash in a string format used to send POST request
 sub convert_hash
 {
 my ($hash_data)=@_;
@@ -2003,17 +1896,13 @@ foreach my $key (keys %{ $hash_data }) {
     my $value = $hash_data->{$key};
     $post_data = $post_data.uri_escape($key)."=".$value."&";    
 }	
-chop($post_data); # delete last character (&)
- #$post_data = uri_escape($post_data);
+chop($post_data);
 return $post_data;
 }
 
 sub checkVuln (){
 	my ($decoded_content) = @_;
-	# check body and headers
 	my $vuln="";
-
-
 	if($decoded_content =~ /APP_ENV|DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/i){	 
 		$vuln = "debugHabilitado";
 	}
@@ -2032,7 +1921,6 @@ sub checkVuln (){
 	
 	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
 	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
-	#Stack trace
 	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information|E_WARNING/i)
 		{$vuln = "MensajeError";}	
 			 			
@@ -2065,8 +1953,6 @@ my $url = $options{ url };
 my $method = $options{ method };
 my $headers = $options{ headers };
 my $response;
-
-#print Dumper $headers;
 
 if ($method eq 'POST_OLD')
   {     
@@ -2103,7 +1989,6 @@ if ($method eq 'POST_MULTIPART')
    $headers->header('Content_Type' => 'multipart/form-data');
     my $req = HTTP::Request->new(POST => $url, $headers);
    $req->content($post_data);
-   #$response = $self->browser->post($url,Content_Type => 'multipart/form-data', Content => $post_data, $headers);
    $response = $self->browser->request($req);    
   } 
 
@@ -2112,8 +1997,7 @@ if ($method eq 'POST_FILE')
 	my $post_data = $options{ post_data };         	    
 	$headers->header('Content_Type' => 'application/xml');
     my $req = HTTP::Request->new(POST => $url, $headers);
-    $req->content($post_data);
-    #$response = $self->browser->post( $url, Content_Type => 'application/atom+xml', Content => $post_data, $headers);                 
+    $req->content($post_data);    
     $response = $self->browser->request($req);    
   }  
       
@@ -2157,11 +2041,6 @@ sub _build_browser {
 		else
 			{$self->proto('http'); print "NO SSL detected \n" if ($debug);}
 	}
-	#$proxy_host='127.0.0.1';
-	#$proxy_port='8083';
-	#$ENV{HTTPS_PROXY} = "https://".$proxy_host.":".$proxy_port;	
-	#$browser->proxy(['http', 'https'], 'http://'.$proxy_host.':'.$proxy_port); # Using a public proxy
-	
 	return $browser;     
 }
     
