@@ -200,11 +200,6 @@ if ($mode eq "registroHabilitado"){
 	print "\n";
 }
 
-if ($mode eq "test" ){	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/test.txt");	
-	print "\n";
-}
-
 
 if ($mode eq "graphQL" ){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/graphQL.txt");	
@@ -225,6 +220,12 @@ if ($mode eq "admin"){
 # fuzz with archivosPeligrosos
 if ($mode eq "archivosPeligrosos"){	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/archivosPeligrosos.txt");	
+	print "\n";
+}
+
+# fuzz with sap
+if ($mode eq "sap"){	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/sap.txt");	
 	print "\n";
 }
 
@@ -398,13 +399,5 @@ if ($mode eq "tomcatServer" ){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/files.txt","htm");		
 	print "\n";
 }
-
-
-# fuzz with user names 
-if ($mode eq "username"){	
-	my $webHacks->userbuster("/usr/share/webhacks/wordlist/nombres.txt");	
-	print "\n";
-}
-
 
 

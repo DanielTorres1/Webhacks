@@ -1,6 +1,7 @@
 package webHacks;
 our $VERSION = '1.0';
 use Moose;
+use Term::ANSIColor;
 use Text::Table;
 use LWP::UserAgent;
 use HTTP::Cookies;
@@ -205,22 +206,13 @@ foreach my $file_name (@links) {
 				$vuln= ' (Registro habilitado)';				
 			}			
 		}
-		print "$current_status\t$url$vuln $options \n";
-
-		# if($status =~ /200/m){	
-		# open (SALIDA,">log.html") || die "ERROR: No puedo abrir el fichero log.html\n";
-		# print SALIDA $decoded_content;
-		# close (SALIDA);
-		# sleep 10;		
-		# }
-		
-		#$result_table->add($url,$status,$options);			
+		print "$current_status\t$url$vuln $options \n";	
 	}
 	else
 	{
 		print "$status\t$url$vuln  \n" if ($mostrarTodo);
 	}
-   $pm->finish; # do the exit in the child process
+   $pm->finish;
   }
   $pm->wait_all_children;
 
@@ -1275,7 +1267,7 @@ sub getData
 	my $proto = $self->proto;
 	my $path = $self->path;
 
-	my $type=""; #Aqui se guarda que tipo de app es taiga/express/camara,etc
+	my $poweredBy=""; #Aqui se guarda que tipo de app es taiga/express/camara,etc
 	my %options = @_;
 	my $log_file = $options{ log_file };
 
@@ -1313,7 +1305,7 @@ sub getData
 		print "last_url $last_url\n" if ($debug);
 		print "url_original $url_original\n" if ($debug);	
 		if ($url_original ne $last_url)
-			{$type=$type."|301 Moved";}  # hubo redireccion http --> https 	
+			{$poweredBy=$poweredBy."|301 Moved";}  # hubo redireccion http --> https 	
 		
 
 		############# check redireccion http --> https ############
@@ -1325,7 +1317,7 @@ sub getData
 		my @url_array2 = split("/",$last_url);
 		my $protocolo2 = $url_array2[0];
 		if ($protocolo1 ne $protocolo2)
-		{$type=$type."|HTTPSredirect";}  # hubo redireccion http --> https 
+		{$poweredBy=$poweredBy."|HTTPSredirect";}  # hubo redireccion http --> https 
 		#######################################
 
 		######### Check domain redirect ######
@@ -1335,7 +1327,7 @@ sub getData
 		
 		print "domain_original $domain_original domain_final $domain_final \n" if ($debug);
 		if ($domain_original ne $domain_final)	    
-			{$type=$type."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
+			{$poweredBy=$poweredBy."|301 Moved";$newdomain = $domain_final;}  # hubo redireccion http://dominio.com --> http://www.dominio.com o 192.168.0.1 --> dominio.com
 		###########################
 
 		$decoded_response = $response->decoded_content;
@@ -1400,7 +1392,7 @@ sub getData
 	my $vulnerability=checkVuln($decoded_response);
 	print "vulnerability $vulnerability \n" if ($debug);	
 
-	my ($poweredBy) = ($decoded_header_response =~ /X-Powered-By:(.*?)\n/i);
+	$poweredBy = ($decoded_header_response =~ /X-Powered-By:(.*?)\n/i);
 	
 	if($decoded_header_response =~ /laravel_session/m)
 		{$poweredBy=$poweredBy."Laravel";} 
@@ -1515,16 +1507,16 @@ sub getData
 	
 
 	if($decoded_header_response =~ /GASOLINERA/m)
-		{$type=$type."|"."GASOLINERA";} 
+		{$poweredBy=$poweredBy."|"."GASOLINERA";} 
 
 	if($decoded_header_response =~ /<FORM/m)
-		{$type=$type."|"."formulario-login";} 	
+		{$poweredBy=$poweredBy."|"."formulario-login";} 	
 
 	if($decoded_header_response =~ /2008-2017 ZTE Corporation/m)
-		{$type=$type."|"."ZTE-2017";} 
+		{$poweredBy=$poweredBy."|"."ZTE-2017";} 
 	
 	if($decoded_header_response =~ /2008-2018 ZTE Corporation/m)
-		{$type=$type."|"."ZTE-2018";} 
+		{$poweredBy=$poweredBy."|"."ZTE-2018";} 
 
 
 	if(($decoded_header_response =~ /You have logged out of the Cisco Router/i) || ($decoded_header_response =~ /Cisco RV340 Configuration Utility/i))
@@ -1550,47 +1542,47 @@ sub getData
 		{$server="Janus WebRTC Server";} 
 
 	if($decoded_header_response =~ /X-OWA-Version/i)
-		{$type=$type."|"."owa";} 	
+		{$poweredBy=$poweredBy."|"."owa";} 	
 				
 	if($decoded_header_response =~ /idrac/i)
 		{$title ='Dell iDRAC';} 	
 		
 
 	if($decoded_header_response =~ /FortiGate/i)
-		{$type=$type."|"."FortiGate";$server='FortiGate';} 	
+		{$poweredBy=$poweredBy."|"."FortiGate";$server='FortiGate';} 	
 
 	if($decoded_header_response =~ /www.drupal.org/i)
-		{$type=$type."|"."drupal";} 	
+		{$poweredBy=$poweredBy."|"."drupal";} 	
 		
 	if($decoded_header_response =~ /wp-content|wp-admin|wp-caption/i)
-		{$type=$type."|"."wordpress";} 	
+		{$poweredBy=$poweredBy."|"."wordpress";} 	
 
 	if($decoded_header_response =~ /Powered by Abrenet/i)
 		{$poweredBy=$poweredBy."|"."Powered by Abrenet";} 	
 
 	if($decoded_header_response =~ /csrfmiddlewaretoken/i)
-		{$type=$type."|"."Django";} 	
+		{$poweredBy=$poweredBy."|"."Django";} 	
 
 	if($decoded_header_response =~ /IP Phone/i)
-		{$type=$type."|"." IP Phone ";} 			
+		{$poweredBy=$poweredBy."|"." IP Phone ";} 			
 
 	if($decoded_header_response =~ /X-Amz-/i)
-		{$type=$type."|"."amazon";} 	
+		{$poweredBy=$poweredBy."|"."amazon";} 	
 
 	if($decoded_header_response =~ /X-Planisys-/i)
-		{$type=$type."|"."Planisys";} 		
+		{$poweredBy=$poweredBy."|"."Planisys";} 		
 
 	if($decoded_header_response =~ /phpmyadmin.css/i)
-		{$type=$type."|"."phpmyadmin";} 		
+		{$poweredBy=$poweredBy."|"."phpmyadmin";} 		
 		
 	if($decoded_header_response =~ /Set-Cookie: webvpn/i)
-		{$type=$type."|"."ciscoASA";} 	
+		{$poweredBy=$poweredBy."|"."ciscoASA";} 	
 		
 	if($decoded_header_response =~ /Huawei Technologies Co/i){
 		$title='optical network terminal (ONT)';
 		$server='Huawei';
 		my ($ProductName) = ($decoded_header_response =~ /var ProductName = "(.*?)"/i);		
-		$type=$type."|".$ProductName;		
+		$poweredBy=$poweredBy."|".$ProductName;		
 		
 	} 	
 
@@ -1598,23 +1590,23 @@ sub getData
 		{$server='Huawei';} 	
 	
 	if($decoded_header_response =~ /WVRTM-127ACN/i)
-		{$type=$type."|WVRTM-127ACN";		} 	
+		{$poweredBy=$poweredBy."|WVRTM-127ACN";		} 	
 		
 
 	if($decoded_header_response =~ /connect.sid|X-Powered-By: Express/i)
-		{$type=$type."|"."Express APP";}	
+		{$poweredBy=$poweredBy."|"."Express APP";}	
 
 	if($decoded_header_response =~ /X-ORACLE-DMS/i)
-		{$type=$type."|"."Oracle Dynamic Monitoring";}	
+		{$poweredBy=$poweredBy."|"."Oracle Dynamic Monitoring";}	
 
 	if($decoded_header_response =~ /www.enterprisedb.com"><img src="images\/edblogo.png"/i)
-		{$type=$type."|"."Postgres web";}	
+		{$poweredBy=$poweredBy."|"."Postgres web";}	
 
 	if($decoded_header_response =~ /src="app\//i)
-		{$type=$type."|"."AngularJS";}			
+		{$poweredBy=$poweredBy."|"."AngularJS";}			
 
 	if($decoded_header_response =~ /roundcube_sessid/i)
-		{$type=$type."|"."Roundcube";}	 
+		{$poweredBy=$poweredBy."|"."Roundcube";}	 
 
 	if($decoded_header_response =~ /mbrico N 300Mbps WR840N/i)
 		{$server="TL-WR840N";$title='Router inalámbrico N 300Mbps WR840N';}
@@ -1629,29 +1621,29 @@ sub getData
 		{$server="MDS Orbit Device Manager ";}	
 
 	if($decoded_header_response =~ /MoodleSession|content="moodle/i)
-		{$type=$type."|"."moodle";}	 
+		{$poweredBy=$poweredBy."|"."moodle";}	 
 
 	if($decoded_header_response =~ /ATEN International Co/i)
 		{$server="Super micro";}		 		
 
 	if($decoded_header_response =~ /ftnt-fortinet-grid icon-xl/i)
-		{$type=$type."|"."Fortinet";$server='Fortinet';}	 			
+		{$poweredBy=$poweredBy."|"."Fortinet";$server='Fortinet';}	 			
 		
 
 	if($decoded_header_response =~ /theme-taiga.css/i)
-		{$type=$type."|"."Taiga";}	 
+		{$poweredBy=$poweredBy."|"."Taiga";}	 
 			
 	if($decoded_header_response =~ /X-Powered-By-Plesk/i)
-		{$type=$type."|"."PleskWin";}	 
+		{$poweredBy=$poweredBy."|"."PleskWin";}	 
 
 	if($decoded_header_response =~ /Web Services/i)	
-		{$type=$type."|"."Web Service";$title="Web Service" if ($title eq "");}	
+		{$poweredBy=$poweredBy."|"."Web Service";$title="Web Service" if ($title eq "");}	
 
 	if($decoded_header_response =~ /Acceso no autorizado/i)
 		{$title="Acceso no autorizado" if ($title eq "");} 	
 				
 	if($decoded_header_response =~ /login__block__header/i)	
-		{$type=$type."|"."login";$title="Panel de logueo" if ($title eq "");}	
+		{$poweredBy=$poweredBy."|"."login";$title="Panel de logueo" if ($title eq "");}	
 				
 
 
@@ -1701,8 +1693,7 @@ sub getData
 				"server" => $server,
 				"status" => $status,
 				"redirect_url" => $final_url_redirect,
-				"last_url" => $last_url,
-				"type" => $type,            				
+				"last_url" => $last_url,				           				
 				"newdomain" => $newdomain,			
 				"poweredBy" => $poweredBy,
 				"vulnerability" => $vulnerability
@@ -1795,7 +1786,7 @@ return $post_data;
 sub checkVuln (){
 	my ($decoded_content) = @_;
 	my $vuln="";
-	if($decoded_content =~ /APP_ENV|DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/i){	 
+	if($decoded_content =~ /DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/i){	  #APP_ENV
 		$vuln = "debugHabilitado";
 	}
 

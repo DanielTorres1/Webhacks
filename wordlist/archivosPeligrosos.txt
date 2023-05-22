@@ -21,10 +21,6 @@ CVS/
 CFIDE/scripts/ajax/FCKeditor/editor/filemanager/connectors/cfm/upload.cfm
 .ssh
 .listing
-.git/config
-.git/HEAD
-.git/logs/HEAD
-.git/index
 .subversion
 sql/
 .github/
@@ -46,9 +42,6 @@ Pass.txt
 passwd.txt
 passWD.txt
 Passwd.txt
-.git/config
-.git/configf
-.git/HEAD
 passwordlist.txt
 passwordList.txt
 Passwordlist.txt
