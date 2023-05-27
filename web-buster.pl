@@ -274,15 +274,6 @@ if ($mode eq "php" ){
 	print "\n";
 }
 
-if ($mode eq "common" ){		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/common.txt");			
-	print "\n";
-}
-
-if ($mode eq "extended" ){		
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/extended.txt");			
-	print "\n";
-}
 
 # php 
 if ($mode eq "information"){	
@@ -304,12 +295,6 @@ if ($mode eq "iis"){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/iis.txt");		
 	print "\n";
 }
-# fuzz with asp files
-if ($mode eq "asp"){			
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","asp");	
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","aspx");		
-	print "\n";
-}
 
 # sharepoint 
 if ($mode eq "sharepoint"){	
@@ -318,9 +303,12 @@ if ($mode eq "sharepoint"){
 }
 
 
-
-##########################
-
+# fuzz with asp files
+if ($mode eq "asp"){			
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","asp");	
+	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","aspx");		
+	print "\n";
+}
 
 #########################
 # fuzz with tomcat

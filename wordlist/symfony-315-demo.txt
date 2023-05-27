@@ -7,6 +7,13 @@ app/AppCache.php
 app/AppKernel.php
 app/autoload.php
 app/config
+symfony/apps/frontend/config/routing.yml
+symfony/apps/frontend/config/settings.yml
+symfony/config/databases.yml
+symphony/apps/frontend/config/app.yml
+symphony/apps/frontend/config/databases.yml
+symphony/config/app.yml
+symphony/config/databases.yml
 app/config/config.yml
 app/config/config_dev.yml
 app/config/config_prod.yml

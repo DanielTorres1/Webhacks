@@ -31,7 +31,6 @@ cp hackWeb.pl /usr/bin/
 cp webData.pl /usr/bin/
 cp passWeb.pl /usr/bin/
 cp web-buster.pl /usr/bin/
-cp get_ssl_cert.py /usr/bin/
 
 mkdir /usr/share/webhacks 2>/dev/null
 cp -R wordlist /usr/share/webhacks
@@ -40,7 +39,6 @@ chmod a+x /usr/bin/hackWeb.pl
 chmod a+x /usr/bin/passWeb.pl
 chmod a+x /usr/bin/webData.pl
 chmod a+x /usr/bin/web-buster.pl
-chmod a+x /usr/bin/get_ssl_cert.py
 
 echo -e "$OKGREEN [+] Instalando librerias perl necesarias $RESET" 
 

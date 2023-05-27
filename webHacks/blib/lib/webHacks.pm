@@ -158,7 +158,8 @@ foreach my $file_name (@links) {
 	if($decoded_content =~ /Endpoint not found|Can't connect to MySQL server|Cannot log in to the MySQL server|Could not connect to MySQL/m){	
 		$status="404"; 		
 	}
-	
+
+
 	############# check vulnerabilities ###
 	my $vuln=checkVuln($decoded_content);
 	if ($vuln ne ""){
@@ -1786,6 +1787,11 @@ return $post_data;
 sub checkVuln (){
 	my ($decoded_content) = @_;
 	my $vuln="";
+
+	if($decoded_content =~ /Lorem ipsum/m){	
+		$vuln="contenidoPrueba";	
+	}	
+
 	if($decoded_content =~ /DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/i){	  #APP_ENV
 		$vuln = "debugHabilitado";
 	}

@@ -13,6 +13,8 @@ CHANGELOGS
 CHANGELOGS.txt
 README.html
 README
+readme
+Readme
 README.txt
 read_more.txt
 read-more.txt
