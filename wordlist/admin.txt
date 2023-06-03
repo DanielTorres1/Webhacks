@@ -316,6 +316,7 @@ Lotus_Domino_Admin/
 macadmin/
 manager/
 maintenance/
+auth/
 manager/html
 manuallogin/
 memberadmin/
