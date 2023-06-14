@@ -322,6 +322,7 @@ manuallogin/
 memberadmin/
 memberadmin.asp
 memberadmin.cfm
+OWA/
 memberadmin.php
 memlogin/
 meta_login/
@@ -437,6 +438,8 @@ user.html
 UserLogin/
 user.php
 usuario/
+contratistaext/
+contratista/
 usuarios/
 usuarios/login.php
 utility_login/

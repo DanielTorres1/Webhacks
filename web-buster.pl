@@ -303,9 +303,9 @@ if ($mode eq "sharepoint"){
 }
 
 
-# fuzz with asp files
-if ($mode eq "asp"){			
-	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","asp");	
+# fuzz with aspx files
+if ($mode eq "aspx"){			
+	#$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","asp");	
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","aspx");		
 	print "\n";
 }
