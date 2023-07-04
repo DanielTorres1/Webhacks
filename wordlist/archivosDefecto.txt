@@ -13,6 +13,8 @@ CHANGELOGS
 CHANGELOGS.txt
 README.html
 README
+Default.asp
+Default.aspx
 readme
 Readme
 README.txt
