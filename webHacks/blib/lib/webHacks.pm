@@ -91,7 +91,8 @@ if ($extension ne "")
 	{print "con extension: $extension ##################### \n";}
 else
 	{print "##################### \n";}
-
+#print("error404 $error404");
+$error404 =~ s/~/ /g;
 print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie  error404:$error404 mostrarTodo $mostrarTodo\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
 print color('reset');
