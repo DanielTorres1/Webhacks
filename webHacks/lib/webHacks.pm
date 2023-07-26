@@ -1793,7 +1793,7 @@ sub checkVuln (){
 		$vuln="contenidoPrueba";	
 	}	
 
-	if($decoded_content =~ /DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/i){	  #APP_ENV
+	if($decoded_content =~ /DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/){	  #APP_ENV
 		$vuln = "debugHabilitado";
 	}
 
