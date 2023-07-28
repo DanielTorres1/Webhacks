@@ -35,6 +35,7 @@ has cookie      => ( isa => 'Str', is => 'rw', default => '' );
 has ajax      => ( isa => 'Str', is => 'rw', default => '0' );
 has threads      => ( isa => 'Int', is => 'rw', default => 10 );
 has debug      => ( isa => 'Int', is => 'rw', default => 0 );
+has timeout      => ( isa => 'Int', is => 'rw', default => 15 );
 has mostrarTodo      => ( isa => 'Int', is => 'rw', default => 1 );
 has headers  => ( isa => 'Object', is => 'rw', lazy => 1, builder => '_build_headers' );
 has browser  => ( isa => 'Object', is => 'rw', lazy => 1, builder => '_build_browser' );
@@ -136,6 +137,8 @@ foreach my $file_name (@links) {
 	my $status = $response->status_line;
 	#print " pinche status $status de $url buscando error $error404 \n";
 	my $decoded_content = $response->decoded_content;
+	#print("status $status decoded_content $decoded_content");
+	#sleep 5;
 
 	############ check if there is a redirect (HTML)
 	my $redirect_path = getRedirect($decoded_content);
@@ -1793,7 +1796,8 @@ sub checkVuln (){
 		$vuln="contenidoPrueba";	
 	}	
 
-	if($decoded_content =~ /DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT/){	  #APP_ENV
+	if($decoded_content =~ /DEBUG = True|app\/controllers|SERVER_ADDR|REMOTE_ADDR|DOCUMENT_ROOT\/|TimeoutException|vendor\/laravel\/framework\/src\/Illuminate/){	  #APP_ENV
+	
 		$vuln = "debugHabilitado";
 	}
 
@@ -1910,14 +1914,14 @@ sub _build_browser {
 	my $proxy_user = $self->proxy_user;
 	my $proxy_pass = $self->proxy_pass;
 	my $proxy_env = $self->proxy_env;
-
+	my $timeout = $self->timeout;
 	my $max_redirect = $self->max_redirect;
 
 	print "building browser \n" if ($debug);
 	print "max_redirect $max_redirect \n" if ($debug);
 
 	
-	my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => 15, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
+	my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => $timeout, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
 	$browser->cookie_jar(HTTP::Cookies->new());
 	$browser->show_progress(1) if ($debug);
 

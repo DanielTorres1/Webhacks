@@ -5,7 +5,7 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('t:p:d:r:j:h:c:e:s:m:o:q', \%opts);
+getopts('t:p:d:r:j:h:c:e:s:m:i:o:u:q', \%opts);
 
 my $site = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
@@ -15,6 +15,7 @@ my $max_redirect = $opts{'r'} if $opts{'r'};
 
 my $cookie = "";
 $cookie = $opts{'c'} if $opts{'c'};
+my $custom_dir = $opts{'u'} if $opts{'u'};
 my $proto = $opts{'s'};
 my $mostrarTodo = $opts{'o'};
 my $ajax = "0";
@@ -23,6 +24,7 @@ my $mode = $opts{'m'} if $opts{'m'};
 my $threads = $opts{'h'} if $opts{'h'};
 my $quiet = $opts{'q'} if $opts{'q'};
 my $error404 = $opts{'e'} if $opts{'e'};
+my $timeout = $opts{'i'} if $opts{'i'};
 #my $debug = $opts{'d'} if $opts{'d'};
 my $debug=0;
 # scan for comments
@@ -60,6 +62,8 @@ sub usage {
   print "-t : IP o dominio del servidor web \n";
   print "-p : Puerto del servidor web \n";
   print "-r : Seguir n redirecciones \n";
+  print "-u : Directorio personalizado \n";
+  print "-i : Time out (segundos) \n";
   print "-d : Ruta donde empezara a probar directorios \n";
   print "-j : Adicionar header ajax (xmlhttprequest) 1 para habilitar \n";
   print "-h : Numero de hilos (Conexiones en paralelo) \n";
@@ -106,12 +110,17 @@ sub usage {
 # iis asp, aspx
 # tomcat jsp
 # apache/nginx php
-# comunes: html, htm,  
+# comunes: html  
 
 # Print help message if required
 if (!(%opts)) {
 	usage();
 	exit 0;
+}
+
+if ($timeout eq '')
+{
+	$timeout = 15;
 }
 
 if ($quiet ne 1)
@@ -133,6 +142,7 @@ if($error404 eq '' and $proto eq '')
 						path => $path,
 						threads => $threads,						
 						cookie => $cookie,
+						timeout => $timeout,
 						ajax => $ajax,						
 						max_redirect => $max_redirect,
 					    debug => $debug,
@@ -151,6 +161,7 @@ if($error404 ne '' and $proto eq '' )
 						threads => $threads,
 						error404 => $error404,						
 						cookie => $cookie,
+						timeout => $timeout,
 						ajax => $ajax,						
 						max_redirect => $max_redirect,
 					    debug => $debug,
@@ -170,6 +181,7 @@ if($proto ne '' and $error404 eq '' )
 						threads => $threads,
 						proto => $proto,
 						cookie => $cookie,
+						timeout => $timeout,
 						ajax => $ajax,						
 						max_redirect => $max_redirect,
 					    debug => $debug,
@@ -185,6 +197,7 @@ if ($error404 ne ''  and $proto ne '' )
 						error404 => $error404,
 						proto => $proto,
 						cookie => $cookie,
+						timeout => $timeout,
 						ajax => $ajax,						
 						max_redirect => $max_redirect,
 					    debug => $debug,
@@ -192,7 +205,11 @@ if ($error404 ne ''  and $proto ne '' )
 }
 
 
-
+# especific dic
+if ($mode eq "custom"){	
+	$webHacks->dirbuster($custom_dir);	
+	print "\n";
+}
 
 # registration URL 
 if ($mode eq "registroHabilitado"){	
