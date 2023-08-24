@@ -5,13 +5,13 @@ use strict;
 use Getopt::Std;
 
 my %opts;
-getopts('t:p:d:r:j:h:c:e:s:m:i:o:u:q', \%opts);
+getopts('t:p:d:r:j:h:c:s:m:i:o:u:q:e:', \%opts);
+
 
 my $site = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $path = $opts{'d'} if $opts{'d'};
 my $max_redirect = $opts{'r'} if $opts{'r'};
-
 
 my $cookie = "";
 $cookie = $opts{'c'} if $opts{'c'};
@@ -23,12 +23,13 @@ $ajax = $opts{'j'} if $opts{'j'};
 my $mode = $opts{'m'} if $opts{'m'};
 my $threads = $opts{'h'} if $opts{'h'};
 my $quiet = $opts{'q'} if $opts{'q'};
-my $error404 = $opts{'e'} if $opts{'e'};
 my $timeout = $opts{'i'} if $opts{'i'};
+my $error404 = $opts{'e'} if $opts{'e'};
 #my $debug = $opts{'d'} if $opts{'d'};
 my $debug=0;
 # scan for comments
-
+#print Dumper(\%opts);
+#print "error404 ($error404)";		
 #PATTERNS = {
     # "<!%-.-%-!?>", -- HTML comment
     # "/%*.-%*/", -- Javascript multiline comment
@@ -45,7 +46,6 @@ my $debug=0;
 
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-
 my $banner = <<EOF;
       ___  __      __        __  ___  ___  __  
 |  | |__  |__)    |__) |  | /__`  |  |__  |__) 
@@ -130,8 +130,7 @@ if ($quiet ne 1)
 $mostrarTodo = 1 if ($mostrarTodo eq '');
 print "mostrarTodo $mostrarTodo" if ($debug);
 
-$max_redirect = 0 if ($max_redirect eq '');
-#print "max_redirect $max_redirect";					    
+$max_redirect = 0 if ($max_redirect eq '');				    
 my $webHacks ;
 
 if($error404 eq '' and $proto eq '')
