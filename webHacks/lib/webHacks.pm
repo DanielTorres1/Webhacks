@@ -92,7 +92,7 @@ if ($extension ne "")
 	{print "con extension: $extension ##################### \n";}
 else
 	{print "##################### \n";}
-print("error404sss $error404");
+#print("error404sss $error404");
 $error404 =~ s/~/ /g;
 print "Configuracion : Hilos: $threads \t SSL:$proto \t Ajax: $ajax \t Cookie: $cookie  error404:$error404 mostrarTodo $mostrarTodo\n";
 print "Tiempo estimado en probar $lines URLs : $time minutos\n\n";
@@ -150,10 +150,10 @@ foreach my $file_name (@links) {
 	}  
 	#########################################		
 
-	print " error404 $error404 \n";	
+	#print " error404 $error404 \n";	
 	if ($error404 ne '')		
 	{		
-		print " decoded_content $decoded_content \n";	
+		#print " decoded_content $decoded_content \n";	
 		if($decoded_content =~ /$error404/m){	
 			$status="404"; 			
 		}
