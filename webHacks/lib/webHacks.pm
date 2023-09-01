@@ -1558,6 +1558,9 @@ sub getData
 
 	if($decoded_header_response =~ /www.drupal.org/i)
 		{$poweredBy=$poweredBy."|"."drupal";} 	
+	
+	if($decoded_header_response =~ /laravel_session/i)
+		{$poweredBy=$poweredBy."|"."laravel";} 	
 		
 	if($decoded_header_response =~ /wp-content|wp-admin|wp-caption/i)
 		{$poweredBy=$poweredBy."|"."wordpress";} 	
