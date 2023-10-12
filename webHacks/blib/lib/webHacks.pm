@@ -380,6 +380,7 @@ my $path = $options{ path };
 
 print color('bold blue') if($debug);
 print "######### Testendo: $module ##################### \n\n" if($debug);
+print "proto=$proto rhost=$rhost rport=$rport path=$path";
 print color('reset') if($debug);
 
 my $url ;

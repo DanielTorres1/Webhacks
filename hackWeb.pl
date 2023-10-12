@@ -14,7 +14,7 @@ my $target = $opts{'t'} if $opts{'t'};
 my $port = $opts{'p'} if $opts{'p'};
 my $module = $opts{'m'} if $opts{'m'};
 my $user = $opts{'u'} if $opts{'u'};
-my $ssl = $opts{'s'};
+my $proto = $opts{'s'};
 my $correo = $opts{'c'} if $opts{'c'};
 
 sub usage { 
@@ -38,8 +38,8 @@ if ($opts{'h'} || !(%opts)) {
 my $webHacks = webHacks->new( rhost => $target,
 						rport => $port,
 						max_redirect => 1,
-						ssl => $ssl,
-					    debug => 0);
+						proto => $proto,
+					    debug => 1);
 					    
 
 # Need to make a request to discover if SSL is in use
