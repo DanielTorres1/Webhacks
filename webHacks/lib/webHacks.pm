@@ -876,34 +876,25 @@ sub passwordTest
 			$password =~ s/\n//g; 	
 
 
-			my $response = $self->dispatch(url => $url.'index.php/login' ,method => 'GET', headers => $headers);
-			my $decoded_response = $response->decoded_content;			
-			$decoded_response =~ /data: \{ '(.*?)':/;
-			my $aj001sr001qwerty = $1; 
-
-			$decoded_response =~ /:'(.*?)' }}/;
-			my $token = $1; 
-			print "[+] aj001sr001qwerty:$aj001sr001qwerty token:$token \n";
-
-
 			my $hash_data = {'usu_login' => $user, 
 					'usu_password' => $password,
-					$aj001sr001qwerty => $token
+					'aj001sr001qwerty' => '3730329decdf984212942a59de68a819'
 					};	
 		
 			my $post_data = convert_hash($hash_data);
 			
-
-					
-			$response = $self->dispatch(url => $url."login",method => 'POST',post_data =>$post_data, headers => $headers);
-			$decoded_response = $response->decoded_content;
+ 
+			$headers->header("Content-Type" => "application/x-www-form-urlencoded");
+			$headers->header("Cookie" => "aj001sr001qwertycks=3730329decdf984212942a59de68a819");
+			my $response = $self->dispatch(url => $url."login",method => 'POST',post_data =>$post_data, headers => $headers);
+			my $decoded_response = $response->decoded_content;
 			my $status = $response->status_line;
 			
 			print "[+] user:$user password:$password status:$status\n";
 			#print($decoded_response);
 			if ($status =~ /303/m)
 			{				
-				print "Password encontrado: [ZKSoftware] $url Usuario:$user Password:$password\n";
+				print "Password encontrado: [AMLC] $url Usuario:$user Password:$password\n";
 				last;				
 			}	
 		}				
@@ -1603,6 +1594,9 @@ sub getData
 
 	if($decoded_header_response =~ /X-OWA-Version/i)
 		{$poweredBy=$poweredBy."|"."owa";} 	
+		
+	if($decoded_header_response =~ /AMLC COMPLIANCE/i)
+		{$poweredBy=$poweredBy."|"."AMLC COMPLIANCE";} 
 				
 	if($decoded_header_response =~ /idrac/i)
 		{$title ='Dell iDRAC';} 	
@@ -1967,8 +1961,8 @@ sub _build_browser {
 
 	my $debug = $self->debug;
 	my $mostrarTodo = $self->mostrarTodo;
-	my $proxy_host = $self->proxy_host;
-	my $proxy_port = $self->proxy_port;
+	my $proxy_host = '127.0.0.1'; #$self->proxy_host;
+	my $proxy_port = 8083; $self->proxy_port;
 	my $proxy_user = $self->proxy_user;
 	my $proxy_pass = $self->proxy_pass;
 	my $proxy_env = $self->proxy_env;
@@ -1982,6 +1976,9 @@ sub _build_browser {
 	my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => $timeout, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
 	$browser->cookie_jar(HTTP::Cookies->new());
 	$browser->show_progress(1) if ($debug);
+	
+	# Configuración del proxy
+	#$browser->proxy(['http', 'https'], 'http://127.0.0.1:8083');
 
 
 	if ($proto eq '')
