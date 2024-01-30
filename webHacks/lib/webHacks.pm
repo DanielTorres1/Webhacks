@@ -1674,6 +1674,9 @@ sub getData
 	if($decoded_header_response =~ /webplugin.exe|BackUpBeginTimeChanged|playback_bottom_bar/i)
 		{$server="Dahua";}	
 	
+	if($decoded_header_response =~ /pgm-theatre-staging-div/i)
+		{$server="printer HP laser";}	
+	
 	if($decoded_header_response =~ /login\/bower_components\/requirejs\/require.js/i)
 		{$server="MDS Orbit Device Manager ";}	
 
