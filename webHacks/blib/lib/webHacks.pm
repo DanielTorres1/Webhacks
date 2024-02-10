@@ -1649,7 +1649,7 @@ sub getData
 	if($decoded_header_response =~ /WVRTM-127ACN/i)
 		{$poweredBy=$poweredBy."|WVRTM-127ACN";		} 	
 	
-	if($decoded_header_response =~ /app.js/i)
+	if($decoded_header_response =~ /<div id="app">/i)
 		{$poweredBy=$poweredBy."|javascriptFramework";		} 	
 		
 

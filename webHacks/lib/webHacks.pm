@@ -1649,8 +1649,8 @@ sub getData
 	if($decoded_header_response =~ /WVRTM-127ACN/i)
 		{$poweredBy=$poweredBy."|WVRTM-127ACN";		} 	
 	
-	if($decoded_header_response =~ /Vuetify Vuejs/i)
-		{$poweredBy=$poweredBy."|Vuejs";		} 	
+	if($decoded_header_response =~ /<div id="app">/i)
+		{$poweredBy=$poweredBy."|javascriptFramework";		} 	
 		
 
 	if($decoded_header_response =~ /connect.sid|X-Powered-By: Express/i)
