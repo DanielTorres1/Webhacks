@@ -1382,6 +1382,13 @@ sub getData
 		###########################
 
 		$decoded_response = $response->decoded_content;
+
+		open (SALIDA,">>$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
+		print SALIDA $decoded_response;
+		close (SALIDA);
+
+
+
 		$decoded_response =~ s/'/"/g; # convertir comilla simple en comilla doble
 		$decoded_response =~ s/<noscript>.*?<\/noscript>//s;
 		$decoded_response =~ s/.*\/logout.*\n//g; #eliminar la linea que contenga logout
@@ -1389,8 +1396,7 @@ sub getData
 		$decoded_response =~ s/.*index.html*//g; 
 		$decoded_response =~ s/.*?console*//g; 
 		#print($decoded_response );
-		
-
+	
 		#obtener redirect javascrip/html
 		$redirect_url = getRedirect($decoded_response);	#Obtener redireccion javascript o html
 		print "redirect_url nuevo $redirect_url \n" if ($debug);
@@ -1436,9 +1442,6 @@ sub getData
 	$decoded_response =~ s/admin\@example.com//g;
 	$decoded_response =~ s/postmaster\@example.com//g;		
 
-	open (SALIDA,">>$log_file") || die "ERROR: No puedo abrir el fichero $log_file\n";
-	print SALIDA $decoded_response;
-	close (SALIDA);
 
 	my $vulnerability=checkVuln($decoded_response);
 	print "vulnerability $vulnerability \n" if ($debug);	
@@ -1652,7 +1655,6 @@ sub getData
 	if($decoded_header_response =~ /<div id="app">/i)
 		{$poweredBy=$poweredBy."|javascriptFramework";		} 	
 		
-
 	if($decoded_header_response =~ /connect.sid|X-Powered-By: Express/i)
 		{$poweredBy=$poweredBy."|"."Express APP";}	
 
