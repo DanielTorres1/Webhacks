@@ -96,3 +96,4 @@ wp-content/plugins/contact-form-7/includes/searchreplacedb2.php
 wp-content/plugins/contact-form-7/searchreplacedb2.php
 wp-content/themes/bridge/js/searchreplacedb2.php
 wsdl/
+wp-config.php.bk
