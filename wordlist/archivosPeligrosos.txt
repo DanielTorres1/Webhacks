@@ -3,7 +3,11 @@ admin/fckeditor/editor/filemanager/browser/default/frmupload.html
 admin/fckeditor/editor/filemanager/upload/test.html
 admin/files/
 admin.php
+storage/logs 
+vendor
 api
+telescope
+horizon
 api/apidocs
 api/datosLog 
 apidocs
@@ -27,6 +31,7 @@ database/
 db/
 emergency.php
 .env
+../.env
 .git/
 .git2/
 .github/
