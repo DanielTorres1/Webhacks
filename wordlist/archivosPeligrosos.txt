@@ -3,7 +3,9 @@ admin/fckeditor/editor/filemanager/browser/default/frmupload.html
 admin/fckeditor/editor/filemanager/upload/test.html
 admin/files/
 admin.php
-storage/logs 
+storage/logs/
+pswa/en-US/logon.aspx
+pswa
 vendor
 api
 telescope
