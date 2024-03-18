@@ -92,19 +92,7 @@ my $wappalyzer = '';
 
 $vulnerability="vulnerabilidad=$vulnerability" if (length($vulnerability)>1);	
 
-#print " vulnerability2  $vulnerability \n" ;
-#$wappalyzer=`wappalyzer $proto://$target:$port$path 2>/dev/null| wappalyzer-parser.py`; 
-
-
-# 	print "Title: $title \n" if ($title ne '' && $title ne ' ');
-# 	print "poweredBy $poweredBy \n" if ($poweredBy ne '' && $poweredBy ne ' ');
-# 	print "Generator ($Generator) \n" if ($Generator ne '' && $Generator ne ' ');
-# 	print "langVersion $langVersion \n" if ($langVersion ne '' && $langVersion ne ' ');
-# 	print "Proxy $proxy \n" if ($proxy ne '' && $proxy ne ' ');
-# #	print "redirect_url $server \n" if ($redirect_url ne '' && $redirect_url ne ' ');
-# 	print "server $server \n" if ($server ne '' && $server ne ' ');
 my $domain; 
-
 
 if($status =~ /Name or service not known/m){	 
 	$status =~ /Can't connect to (.*?):/;

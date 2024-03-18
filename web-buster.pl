@@ -25,39 +25,12 @@ my $threads = $opts{'h'} if $opts{'h'};
 my $quiet = $opts{'q'} if $opts{'q'};
 my $timeout = $opts{'i'} if $opts{'i'};
 my $error404 = $opts{'e'} if $opts{'e'};
-#my $debug = $opts{'d'} if $opts{'d'};
 my $debug=0;
-# scan for comments
-#print Dumper(\%opts);
-#print "error404 ($error404)";		
-#PATTERNS = {
-    # "<!%-.-%-!?>", -- HTML comment
-    # "/%*.-%*/", -- Javascript multiline comment
-    #"[ ,\n]//.-\n" -- Javascript one-line comment. Could be better?    
-    #}
-    
-    # <!-- Copyright (c) Rohde & Schwarz GmbH & Co. KG Munich Germany All Rights Reserved.-->
-    #<meta name="description" content="WVC80N">
-    
-# ADD FUNCTIONALITY 
-#   Source code comments
-    #Errors (MySQL errors, warnings, fatals, etc)
-    #Linux file paths    
 
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-my $banner = <<EOF;
-      ___  __      __        __  ___  ___  __  
-|  | |__  |__)    |__) |  | /__`  |  |__  |__) 
-|/\\| |___ |__)    |__) \\__/ .__/  |  |___ |  \\ v1.0                                              
-
-Author: Daniel Torres Sandi
-EOF
-
 
 sub usage { 
-  
-  print $banner;
   print "Uso:  \n";  
   print "-t : IP o dominio del servidor web \n";
   print "-p : Puerto del servidor web \n";
@@ -93,7 +66,6 @@ sub usage {
   print "	  apacheServer: Probara Todos los modulos de Apache \n";
   print "	  tomcatServer: Probara Todos los modulos de Tomcat \n";
   print "	  iisServer: Probara Todos los modulos de IIS \n";
-  #print "	  username: Probara si existen directorios de usuarios tipo http://192.168.0.2/~daniel \n";  
   print "\n";
   print "Ejemplo 1:  Buscar arhivos comunes en el directorio raiz (/) del host 192.168.0.2 en el puerto 80  con 10 hilos\n";
   print "	  web-buster.pl -r 1 -t 192.168.0.2 -p 80 -d / -m archivos -h 10 \n";
@@ -105,12 +77,6 @@ sub usage {
   print "	  web-buster.pl -r 1 -t 192.168.0.2 -p 443 -d / -m apache -s https -h 30\n";  
   print "\n";  
 }	
-
-#extensiones:  
-# iis asp, aspx
-# tomcat jsp
-# apache/nginx php
-# comunes: html  
 
 # Print help message if required
 if (!(%opts)) {
@@ -125,7 +91,6 @@ if ($timeout eq '')
 
 if ($quiet ne 1)
 {print $banner,"\n";}
-
 
 $mostrarTodo = 1 if ($mostrarTodo eq '');
 print "mostrarTodo $mostrarTodo" if ($debug);
@@ -173,7 +138,6 @@ $webHacks->dispatch(url => "http://$site:$port$path",method => 'GET');
 
 if($proto ne '' and $error404 eq '' )
 {
-
 	$webHacks = webHacks->new( rhost => $site,
 						rport => $port,
 						path => $path,
@@ -345,19 +309,6 @@ if ($mode eq "perl"  ){
 }
 #######################
 
-#file.ext~, file.ext.bak, file.ext.tmp, file.ext.old, file.bak, file.tmp and file.old
-# fuzz with backup names (add .bak, .swp, etc)
-if ($mode eq "backupApache"){			
-	$webHacks->backupbuster("/usr/share/webhacks/wordlist/configFilesApache.txt");	
-	print "\n";
-}
-
-# fuzz with backup names (add .bak, .swp, etc)
-if ($mode eq "backupIIS" ){			
-	$webHacks->backupbuster("/usr/share/webhacks/wordlist/configFilesIIS.txt");	
-	print "\n";
-}
-
 
 #
 if ($mode eq "apacheServer" ){			
@@ -375,6 +326,21 @@ if ($mode eq "apacheServer" ){
 	$webHacks->dirbuster("/usr/share/webhacks/wordlist/filesEXT.txt","html");		
 	print "\n";
 }
+
+
+#file.ext~, file.ext.bak, file.ext.tmp, file.ext.old, file.bak, file.tmp and file.old
+# fuzz with backup names (add .bak, .swp, etc)
+if ($mode eq "backupApache"){			
+	$webHacks->backupbuster("/usr/share/webhacks/wordlist/configFilesApache.txt");	
+	print "\n";
+}
+
+# fuzz with backup names (add .bak, .swp, etc)
+if ($mode eq "backupIIS" ){			
+	$webHacks->backupbuster("/usr/share/webhacks/wordlist/configFilesIIS.txt");	
+	print "\n";
+}
+
 
 
 if ($mode eq "iisServer" ){				

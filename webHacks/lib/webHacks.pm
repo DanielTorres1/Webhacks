@@ -107,9 +107,7 @@ print $result_table;
 
 foreach my $file_name (@links) {
     $pm->start and next; # do the fork   
-    $file_name =~ s/\n//g; 	
-	#Adicionar backslash
-	#if (! ($file_name =~ /\./m)){	 
+    $file_name =~ s/\n//g; 	 
 	if ($url_file =~ "directorios"){	 
 		$file_name = $file_name."/";
 	}	
@@ -129,24 +127,15 @@ foreach my $file_name (@links) {
 		{$url = "$proto://".$rhost.$path.$file_name; }
 	else
 		{$url = "$proto://".$rhost.":".$rport.$path.$file_name; }
-        
-	#print "getting $url \n";
-	
-	
+
 	##############  thread ##############
 	my $response = $self->dispatch(url => $url,method => 'GET',headers => $headers);
 	my $status = $response->status_line;
-	#print " pinche status $status de $url buscando error $error404 \n";
 	my $decoded_content = $response->decoded_content;
-	#print("status $status decoded_content $decoded_content");
-	#sleep 5;
 
 	############ check if there is a redirect (HTML)
 	my $redirect_path = getRedirect($decoded_content);
-	if ( $redirect_path ne ''  ){
-		#print("redirect_path  $redirect_path ");
-		#$response = $self->dispatch(url => $redirect_path, method => 'GET', headers => $headers);
-		#$decoded_content = $response->decoded_content; 	 
+	if ( $redirect_path ne ''  ){ 
 		$url = $url.$redirect_path
 	}  
 	#########################################		
@@ -170,7 +159,6 @@ foreach my $file_name (@links) {
 	if ($vuln ne ""){
 		$vuln=" (vulnerabilidad=$vuln)\t";
 	}
-
 	
 	if ($decoded_content eq ""){	 
 		$vuln = " (Archivo vacio)\t";
@@ -221,7 +209,6 @@ foreach my $file_name (@links) {
    $pm->finish;
   }
   $pm->wait_all_children;
-
 }
 
 
@@ -323,43 +310,6 @@ foreach my $file_name (@links)
 } # end foreach file
 }
 
-
-sub openrelay
-{
-my $self = shift;
-my $headers = $self->headers;
-my $debug = $self->debug;
-
-my %options = @_;
-my $ip = $options{ ip };
-my $port = $options{ port };
-my $correo = $options{ correo };
-
-
-$headers->header("Content-Type" => "application/x-www-form-urlencoded");
-$headers->header("Cookie" => "ZM_TEST=true");
-$headers->header("Referer" => "http://www.dnsexit.com/Direct.sv?cmd=testMailServer");
-$headers->header("Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");				
-		
-
-my $hash_data = {'actioncode' => 1, 
-				'from' => $correo,
-				'to' => $correo,
-				'emailserver' => $ip,
-				'port' => $port,
-				'Submit' => "Check+Email+Server",
-				
-				};		
-	my $post_data = convert_hash($hash_data);
-		
-	my $response = $self->dispatch(url => "http://www.dnsexit.com/Direct.sv?cmd=testMailServer",method => 'POST', post_data =>$post_data ,headers => $headers);
-	my $decoded_response = $response->decoded_content;
-	#$decoded_response =~ /<textarea name=(.*?\n\r\t)<\/textarea>/;
-	#my $result = $1; 
-	print "$decoded_response \n";
-	#print "$decoded_response \n";
-
-}
 
 
 
@@ -1547,7 +1497,7 @@ sub getData
 
 	# >AssureSoft</h1>					#extraer alfanumericos + espacios
 	my ($h1) = ($decoded_header_response =~ />([\w\s]+)<\/h1>/i);		
-	#eliminar saltos de linea y espacios consecutivos
+
 	$h1 =~ s/\n|\s+/ /g; $h1 = only_ascii($h1); $poweredBy = $poweredBy.'| H1='.$h1 if (length($h1) > 2);
 
 	my ($h2) = ($decoded_header_response =~ />([\w\s]+)<\/h2>/i);		
@@ -1741,7 +1691,6 @@ sub getData
 	if($decoded_header_response =~ /portal.peplink.com/i)
 		{$title="Web Admin PepLink";} 	
 
-	# <h1>RouterOS v6.47.4</h1>
 	if($decoded_header_response =~ /RouterOS router/i)
 		{	$decoded_header_response =~ /\<h1\>(.*?)\<\/h1\>/;	
 			$server=$1;} 	
@@ -1873,14 +1822,11 @@ sub checkVuln (){
 		$vuln = "OpenMikrotik";
 	}		
 	
-	# Warning: mktime() expects parameter 6 to be long, string given in C:\inetpub\vhosts\mnhn.gob.bo\httpdocs\scripts\fecha.ph
-	# Fatal error: Uncaught exception 'Symfony\Component\Routing\Exception\ResourceNotFoundException'
 	if($decoded_content =~ /undefined function|Fatal error|Uncaught exception|No such file or directory|Lost connection to MySQL|mysql_select_db|ERROR DE CONSULTA|no se pudo conectar al servidor|Fatal error:|Uncaught Error:|Stack trace|Exception information|E_WARNING/i)
 		{$vuln = "MensajeError";}	
 			 			
 	if($decoded_content =~ /Access denied for/i)
 	{
-		#Access denied for user 'acanqui'@'192.168.4.20' 
 		$decoded_content =~ /Access denied for user (.*?)\(/;
 		my $usuario_ip = $1; 
 		$vuln = "ExposicionUsuarios";
@@ -1908,21 +1854,11 @@ my $method = $options{ method };
 my $headers = $options{ headers };
 my $response;
 
-if ($method eq 'POST_OLD')
-  {     
-   my $post_data = $options{ post_data };        
-   $response = $self->browser->post($url,$post_data);
-  }  
     
 if ($method eq 'GET')
   { my $req = HTTP::Request->new(GET => $url, $headers);
     $response = $self->browser->request($req)
   }
-
-if ($method eq 'HEAD')
-  { my $req = HTTP::Request->new(HEAD => $url, $headers, "\n\n");
-    $response = $self->browser->request($req)
-  }  
 
 if ($method eq 'OPTIONS')
   { my $req = HTTP::Request->new(OPTIONS => $url, $headers);
@@ -1969,7 +1905,7 @@ sub _build_browser {
 
 	my $debug = $self->debug;
 	my $mostrarTodo = $self->mostrarTodo;
-	my $proxy_host = '127.0.0.1'; #$self->proxy_host;
+	my $proxy_host = '127.0.0.1'; 
 	my $proxy_port = 8083; $self->proxy_port;
 	my $proxy_user = $self->proxy_user;
 	my $proxy_pass = $self->proxy_pass;
@@ -1979,15 +1915,10 @@ sub _build_browser {
 
 	print "building browser \n" if ($debug);
 	print "max_redirect $max_redirect \n" if ($debug);
-
 	
 	my $browser = LWP::UserAgent->new( max_redirect => $max_redirect, env_proxy => 1,keep_alive => 1, timeout => $timeout, agent => "Mozilla/4.76 [en] (Win98; U)",ssl_opts => { verify_hostname => 0 ,  SSL_verify_mode => 0});
 	$browser->cookie_jar(HTTP::Cookies->new());
 	$browser->show_progress(1) if ($debug);
-	
-	# Configuración del proxy
-	#$browser->proxy(['http', 'https'], 'http://127.0.0.1:8083');
-
 
 	if ($proto eq '')
 	{
